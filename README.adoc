@@ -1,0 +1,4 @@
+= SRS (Stöd för Rätt Sjukskrivning)
+
+To run: ./gradlew clean build; java -jar build/libs/*.jar
+
