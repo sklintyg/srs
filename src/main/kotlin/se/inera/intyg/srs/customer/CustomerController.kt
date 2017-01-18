@@ -1,4 +1,4 @@
-package se.inera.intyg.srs
+package se.inera.intyg.srs.customer
 
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable

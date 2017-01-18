@@ -5,6 +5,8 @@ import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.Bean
+import se.inera.intyg.srs.customer.Customer
+import se.inera.intyg.srs.customer.CustomerRepository
 
 @SpringBootApplication
 class Application {

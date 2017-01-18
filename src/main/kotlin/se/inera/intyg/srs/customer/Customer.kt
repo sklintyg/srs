@@ -1,4 +1,4 @@
-package se.inera.intyg.srs
+package se.inera.intyg.srs.customer
 
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
