@@ -1,16 +1,24 @@
 package se.inera.intyg.srs
 
+import org.apache.cxf.Bus
+import org.apache.cxf.jaxws.EndpointImpl
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.Bean
 import se.inera.intyg.srs.customer.Customer
 import se.inera.intyg.srs.customer.CustomerRepository
+import se.inera.intyg.srs.service.GetSRSInformationResponderImpl
+import javax.xml.ws.Endpoint
 
 @SpringBootApplication
 class Application {
     private val log = LoggerFactory.getLogger(this.javaClass.name)
+
+    @Autowired
+    lateinit var bus: Bus
 
     @Bean
     fun init(repository: CustomerRepository) = CommandLineRunner {
@@ -40,6 +48,14 @@ class Application {
         }
         log.info("")
     }
+
+    @Bean
+    fun endpoint(): Endpoint {
+        val endpoint = EndpointImpl(bus, GetSRSInformationResponderImpl())
+        endpoint.publish("/getsrs")
+        return endpoint
+    }
+
 }
 
 fun main(args: Array<String>) {
