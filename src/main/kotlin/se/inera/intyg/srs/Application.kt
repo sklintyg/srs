@@ -2,7 +2,7 @@ package se.inera.intyg.srs
 
 import org.apache.cxf.Bus
 import org.apache.cxf.jaxws.EndpointImpl
-import org.slf4j.LoggerFactory
+import org.apache.logging.log4j.LogManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.SpringApplication
@@ -15,7 +15,7 @@ import javax.xml.ws.Endpoint
 
 @SpringBootApplication
 class Application {
-    private val log = LoggerFactory.getLogger(this.javaClass.name)
+    private val log = LogManager.getLogger()
 
     @Autowired
     lateinit var bus: Bus
