@@ -1,4 +1,7 @@
 = SRS (Stöd för Rätt Sjukskrivning)
 
-To run: ./gradlew clean build; java -jar build/libs/*.jar
+To run:
 
+. In schemas/intyg/clinicalprocess-healthcond-srs: ./gradle clean build install
+
+. In this direcotory: ./gradlew clean build; java -jar build/libs/*.jar

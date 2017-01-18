@@ -18,9 +18,7 @@ class ServiceConfig {
     @Bean
     fun endpoint(): Endpoint {
         val endpoint = EndpointImpl(bus, GetSRSInformationResponderImpl())
-        endpoint.publish("/Hello")
+        endpoint.publish("/getsrs")
         return endpoint
     }
 }
-
-
