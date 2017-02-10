@@ -277,12 +277,21 @@
             <urn1:extension>123456</urn1:extension>
          </urn:konsument-id>
          <urn:individer>
-            <!--1 or more repetitions:-->
             <urn:individ>
                <urn:person-id>197308051234</urn:person-id>
-               <!--1 or more repetitions:-->
                <urn:diagnos>
                   <urn1:code>Z74</urn1:code>
+                  <urn1:codeSystem>1.2.752.116.1.1.1.1.3</urn1:codeSystem>
+               </urn:diagnos>
+               <urn:diagnos>
+                  <urn1:code>A24</urn1:code>
+                  <urn1:codeSystem>1.2.752.116.1.1.1.1.3</urn1:codeSystem>
+               </urn:diagnos>
+            </urn:individ>
+            <urn:individ>
+               <urn:person-id>195408151244</urn:person-id>
+               <urn:diagnos>
+                  <urn1:code>B45</urn1:code>
                   <urn1:codeSystem>1.2.752.116.1.1.1.1.3</urn1:codeSystem>
                </urn:diagnos>
             </urn:individ>
@@ -291,7 +300,6 @@
             <urn:prediktion>true</urn:prediktion>
             <urn:fmbinformation>true</urn:fmbinformation>
          </urn:utdatafilter>
-         <!--You may enter ANY elements at this point-->
       </urn:GetSRSInformationRequest>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:riv:clinicalprocess:healthcond:srs:GetSRSInformationResponder:1:GetSRSInformation"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/><con:oAuth1ProfileContainer/></con:soapui-project>

@@ -16,6 +16,6 @@ class ApplicationTests {
 
     @Test
     fun dummyTest() {
-        
+
     }
 }

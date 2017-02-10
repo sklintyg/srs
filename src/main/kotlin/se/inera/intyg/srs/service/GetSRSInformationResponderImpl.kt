@@ -3,14 +3,14 @@ package se.inera.intyg.srs.service
 import org.apache.cxf.annotations.SchemaValidation
 import org.apache.logging.log4j.LogManager
 import org.springframework.stereotype.Service
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Bedomningsunderlag
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.GetSRSInformationRequestType
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.GetSRSInformationResponderInterface
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.GetSRSInformationResponseType
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Individ
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.ResultCodeEnum
-import se.inera.intyg.srs.vo.Diagnos
+import se.inera.intyg.srs.vo.Diagnose
 import se.inera.intyg.srs.vo.Extent
-import se.inera.intyg.srs.vo.FmbInformationModule
 import se.inera.intyg.srs.vo.Person
 import se.inera.intyg.srs.vo.PrediktionInformationModule
 import se.inera.intyg.srs.vo.Sex
@@ -26,16 +26,19 @@ class GetSRSInformationResponderImpl : GetSRSInformationResponderInterface {
         log.info("Received request from ${request.konsumentId.extension}")
 
         val persons = transform(request.individer.individ)
-        val results = mutableListOf<String>()
-
-        if (request.utdatafilter.isFmbinformation) {
-            results.add(FmbInformationModule().getInfo(persons))
-        }
-        if (request.utdatafilter.isPrediktion) {
-            results.add(PrediktionInformationModule().getInfo(persons))
-        }
-
         val response = GetSRSInformationResponseType()
+
+        if (request.utdatafilter.isPrediktion) {
+            val infoModule = PrediktionInformationModule()
+            val predictions = infoModule.getInfo(persons)
+            persons.forEach { person ->
+                val underlag = Bedomningsunderlag()
+                underlag.personId = person.personId
+                underlag.prediktion = predictions[person]
+                response.bedomningsunderlag.add(underlag)
+            }
+        }
+
         response.resultCode = ResultCodeEnum.OK
         return response
     }
@@ -44,12 +47,12 @@ class GetSRSInformationResponderImpl : GetSRSInformationResponderInterface {
             individer.map { individ ->
                 val age = calulateAge(individ.personId)
                 val sex = calculateSex(individ.personId)
-                val extent = if (individ.omfattning != null) Extent.valueOf(individ.omfattning) else null
-                val diagnoses = individ.diagnos!!.map { diagnos -> Diagnos(diagnos.code) }
+                val extent = if (individ.omfattning != null) Extent.valueOf(individ.omfattning.value()) else null
+                val diagnoses = individ.diagnos!!.map { diagnos -> Diagnose(diagnos.code) }
                 Person(individ.personId, age, sex, extent, diagnoses)
             }
 
-    fun calulateAge(personId: String): Int {
+    private fun calulateAge(personId: String): Int {
         val year = personId.substring(0..3).toInt()
         val month = personId.substring(4..5).toInt()
         val day = personId.substring(6..7).toInt()
@@ -58,7 +61,6 @@ class GetSRSInformationResponderImpl : GetSRSInformationResponderInterface {
         return ChronoUnit.YEARS.between(birthDate, today).toInt()
     }
 
-    fun calculateSex(personId: String) = if (personId.substring(10).toInt() % 2 == 0) Sex.WOMAN else Sex.MAN
-
+    private fun calculateSex(personId: String) = if (personId.substring(10).toInt() % 2 == 0) Sex.WOMAN else Sex.MAN
 
 }

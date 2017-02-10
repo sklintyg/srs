@@ -7,9 +7,9 @@ buildscript {
     repositories {
         mavenLocal()
         maven { url "https://build-inera.nordicmedtest.se/nexus/content/repositories/releases/" }
-        mavenCentral()
         maven { url "https://repo.spring.io/snapshot" }
         maven { url "https://repo.spring.io/milestone" }
+        mavenCentral()
     }
 
     dependencies {
@@ -36,9 +36,9 @@ sourceCompatibility = 1.8
 repositories {
     mavenLocal()
     maven { url "https://build-inera.nordicmedtest.se/nexus/content/repositories/releases/" }
-    mavenCentral()
     maven { url "https://repo.spring.io/snapshot" }
     maven { url "https://repo.spring.io/milestone" }
+    mavenCentral()
 }
 
 dependencies {
