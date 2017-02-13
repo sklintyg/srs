@@ -61,6 +61,6 @@ class GetSRSInformationResponderImpl : GetSRSInformationResponderInterface {
         return ChronoUnit.YEARS.between(birthDate, today).toInt()
     }
 
-    private fun calculateSex(personId: String) = if (personId.substring(10).toInt() % 2 == 0) Sex.WOMAN else Sex.MAN
+    private fun calculateSex(personId: String) = if (personId[10].toInt() % 2 == 0) Sex.WOMAN else Sex.MAN
 
 }

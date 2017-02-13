@@ -64,7 +64,7 @@ class PrediktionInformationModule : InformationModule<Prediktion> {
                 Sex.MAN -> 0.41
             }
 
-    private fun extentTerm(person: Person): Double =
+    private fun extentTerm(person: Person) =
             when (person.extent) {
                 null -> 0.0
                 HELT_NEDSATT -> 0.49
