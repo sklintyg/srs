@@ -28,10 +28,18 @@ apply plugin: 'org.springframework.boot'
 
 jar {
     baseName = 'srs'
-    version = '0.0.1-SNAPSHOT'
+    version = System.properties['buildVersion'] ?: '0.0.1-SNAPSHOT'
 }
 
 sourceCompatibility = 1.8
+
+uploadArchives.repositories.mavenDeployer {
+    repository(url: "https://build-inera.nordicmedtest.se/nexus/content/repositories/releases") {
+        authentication(userName: System.properties['nexusUsername'], password: System.properties['nexusPassword'])
+    }
+}
+
+task tagRelease(type: TagReleaseTask)
 
 repositories {
     mavenLocal()
