@@ -35,8 +35,10 @@ apply plugin: 'org.ajoberstar.grgit'
 
 jar {
     baseName = 'srs'
-    version = System.properties['buildVersion'] ?: '0.0.1-SNAPSHOT'
 }
+
+group = 'se.inera.intyg.srs'
+version = System.properties['buildVersion'] ?: '0.0.1-SNAPSHOT'
 
 sourceCompatibility = 1.8
 
