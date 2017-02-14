@@ -3,6 +3,7 @@ buildscript {
         kotlinVersion = '1.0.6'
         springBootVersion = '1.4.3.RELEASE'
         schemasVersion = System.properties['schemasVersion'] ?: '0-SNAPSHOT'
+        rivtaItintegrationMonitoringSchemasVersion = "1.0.0.4"
     }
 
     repositories {
@@ -42,6 +43,9 @@ version = System.properties['buildVersion'] ?: '0.0.1-SNAPSHOT'
 
 sourceCompatibility = 1.8
 
+task createVersionPropertyFile(type: VersionPropertyFileTask)
+jar.dependsOn createVersionPropertyFile
+
 uploadArchives.repositories.mavenDeployer {
     repository(url: "https://build-inera.nordicmedtest.se/nexus/content/repositories/releases") {
         authentication(userName: System.properties['nexusUsername'], password: System.properties['nexusPassword'])
@@ -60,6 +64,7 @@ repositories {
 
 dependencies {
     compile "se.inera.intyg.clinicalprocess.healthcond.srs:intyg-clinicalprocess-healthcond-srs-schemas:${schemasVersion}"
+    compile "se.riv.itintegration.monitoring:itintegration-monitoring-schemas:${rivtaItintegrationMonitoringSchemasVersion}"
 
     compile "org.springframework.boot:spring-boot-starter-web"
     compile "org.springframework.boot:spring-boot-starter-data-jpa"

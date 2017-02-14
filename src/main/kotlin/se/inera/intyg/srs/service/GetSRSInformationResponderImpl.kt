@@ -3,17 +3,8 @@ package se.inera.intyg.srs.service
 import org.apache.cxf.annotations.SchemaValidation
 import org.apache.logging.log4j.LogManager
 import org.springframework.stereotype.Service
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Bedomningsunderlag
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.GetSRSInformationRequestType
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.GetSRSInformationResponderInterface
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.GetSRSInformationResponseType
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Individ
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.ResultCodeEnum
-import se.inera.intyg.srs.vo.Diagnose
-import se.inera.intyg.srs.vo.Extent
-import se.inera.intyg.srs.vo.Person
-import se.inera.intyg.srs.vo.PrediktionInformationModule
-import se.inera.intyg.srs.vo.Sex
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.*
+import se.inera.intyg.srs.vo.*
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 

@@ -7,7 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.Bean
-import se.inera.intyg.srs.service.GetSRSInformationResponderImpl
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.GetSRSInformationResponderInterface
+import se.riv.itintegration.monitoring.rivtabp21.v1.PingForConfigurationResponderInterface
 import javax.xml.ws.Endpoint
 
 @SpringBootApplication
@@ -17,10 +18,24 @@ class Application {
     @Autowired
     lateinit var bus: Bus
 
+    @Autowired
+    lateinit var pingResponder: PingForConfigurationResponderInterface
+
+    @Autowired
+    lateinit var srsResponder: GetSRSInformationResponderInterface
     @Bean
     fun endpoint(): Endpoint {
-        val endpoint = EndpointImpl(bus, GetSRSInformationResponderImpl())
+        val endpoint = EndpointImpl(bus, srsResponder)
+        endpoint.schemaLocations = listOf("classpath:core_components/clinicalprocess_healthcond_certificate_types_2.0.xsd",
+                "classpath:interactions/GetSRSInformation/GetSRSInformationResponder_1.0.xsd")
         endpoint.publish("/getsrs")
+        return endpoint
+    }
+
+    @Bean
+    fun monitoringEndpoint(): Endpoint {
+        val endpoint = EndpointImpl(bus, pingResponder)
+        endpoint.publish("/ping-for-configuration")
         return endpoint
     }
 
