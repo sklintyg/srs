@@ -2,16 +2,17 @@ package se.inera.intyg.srs.service
 
 import org.apache.cxf.annotations.SchemaValidation
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.PropertySource
 import org.springframework.stereotype.Service
 import se.riv.itintegration.monitoring.rivtabp21.v1.PingForConfigurationResponderInterface
 import se.riv.itintegration.monitoring.v1.ConfigurationType
 import se.riv.itintegration.monitoring.v1.PingForConfigurationResponseType
 import se.riv.itintegration.monitoring.v1.PingForConfigurationType
 import java.time.LocalDateTime
-import javax.annotation.PostConstruct
 
 @Service
 @SchemaValidation(type = SchemaValidation.SchemaValidationType.BOTH)
+@PropertySource("classpath:version.properties")
 class PingForConfigurationResponderImpl : PingForConfigurationResponderInterface {
 
     @Value("\${project.version}")
@@ -22,11 +23,6 @@ class PingForConfigurationResponderImpl : PingForConfigurationResponderInterface
 
     @Value("\${buildTime}")
     lateinit var buildTimeString: String
-
-    @PostConstruct
-    fun init() {
-        System.err.println("BEAN INIT")
-    }
 
     override fun pingForConfiguration(p0: String?, p1: PingForConfigurationType?): PingForConfigurationResponseType {
         val response = PingForConfigurationResponseType()

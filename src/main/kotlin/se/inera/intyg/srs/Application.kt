@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.PropertySource
+import org.springframework.context.annotation.PropertySources
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.GetSRSInformationResponderInterface
 import se.riv.itintegration.monitoring.rivtabp21.v1.PingForConfigurationResponderInterface
 import javax.xml.ws.Endpoint
