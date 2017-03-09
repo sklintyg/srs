@@ -4,4 +4,4 @@ To run:
 
 . In schemas/intyg/clinicalprocess-healthcond-srs: ./gradlew clean build install
 
-. In this direcotory: ./gradlew clean build; java -jar build/libs/*.jar
+. In this directory: ./gradlew clean build; java -jar build/libs/*.war
