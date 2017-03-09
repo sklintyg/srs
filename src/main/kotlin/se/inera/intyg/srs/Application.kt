@@ -6,13 +6,15 @@ import org.apache.logging.log4j.LogManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.builder.SpringApplicationBuilder
+import org.springframework.boot.web.support.SpringBootServletInitializer
 import org.springframework.context.annotation.Bean
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.GetSRSInformationResponderInterface
 import se.riv.itintegration.monitoring.rivtabp21.v1.PingForConfigurationResponderInterface
 import javax.xml.ws.Endpoint
 
 @SpringBootApplication
-class Application {
+class Application : SpringBootServletInitializer() {
     private val log = LogManager.getLogger()
 
     @Autowired
@@ -23,6 +25,11 @@ class Application {
 
     @Autowired
     lateinit var srsResponder: GetSRSInformationResponderInterface
+
+    override fun configure(application: SpringApplicationBuilder): SpringApplicationBuilder {
+        return application.sources(Application::class.java)
+    }
+
     @Bean
     fun endpoint(): Endpoint {
         val endpoint = EndpointImpl(bus, srsResponder)

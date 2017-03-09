@@ -1,0 +1,30 @@
+---
+# Does the srs-specific provision needed, and then deploys the given <version> of srs onto the specfied tomcat
+# instances. Since ansible is idempotent, running provisioning each deployment is not a problem performance-wise.
+# However, tags can be used to run provisioning or deployment indepedently.
+
+
+# Required parameters:
+#---------------------
+
+# version=1.0.13 : which srs version to deploy to tomcat instances, matched against nexus
+# OR
+# localWarPath=/home/user/long/path/srs-x.y.z.war : will use specified war-file instead of the
+
+
+# Optional parameters:
+#---------------------
+
+# Vagrant
+# vagrantIp=127.0.0.1 : dev-only
+# vagrantPort=2222 : dev-only
+# keyFile=/home/user/long/path/.vagrant/machines/default/virtualbox/private_key : dev-only
+
+- hosts: tomcat
+  serial: 1
+  become: yes
+  environment:
+    "{{ proxy_env}}"
+  roles:
+    - deploy
+

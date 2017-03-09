@@ -1,0 +1,6 @@
+---
+# Configuration repository
+environment_name: "dev"
+
+deploy_from_repo: false
+

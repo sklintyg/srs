@@ -1,0 +1,25 @@
+---
+
+# General
+inera_root: /opt/inera
+java_home: "{{ inera_root }}/jre8"
+releases_folder: "{{ inera_root }}/releases"
+deploy_from_repo: true
+
+#Dummy value for proxy_env
+proxy_env: {}
+
+# Application resources
+# Note: end with slash, in order to copy only files inside the source folder, not the folder itself
+app_resources_src: "{{ playbook_dir }}/../src/main/resources/"
+app_resources_folder: "{{ inera_root }}/{{ inventory_hostname }}-resources"
+
+# Tomcat installation
+tomcat_service: "{{ inventory_hostname }}-tomcat"
+inera_tomcat_folder: "{{ inera_root }}/{{ tomcat_service }}"
+
+tomcat_conf: "{{ inera_tomcat_folder }}/conf"
+tomcat_bin: "{{ inera_tomcat_folder }}/bin"
+tomcat_lib: "{{ inera_tomcat_folder }}/lib"
+webapps_folder: "{{ inera_tomcat_folder }}/webapps"
+
