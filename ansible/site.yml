@@ -8,12 +8,12 @@
 #---------------------
 
 # version=1.0.13 : which srs version to deploy to tomcat instances, matched against nexus
-# OR
-# localWarPath=/home/user/long/path/srs-x.y.z.war : will use specified war-file instead of the
 
 
 # Optional parameters:
 #---------------------
+
+# deploy_from_repo: true/false. Default is true.
 
 # Vagrant
 # vagrantIp=127.0.0.1 : dev-only

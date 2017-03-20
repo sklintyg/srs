@@ -35,7 +35,7 @@
     dest: "{{ releases_folder }}/srs-{{ version }}.war"
   when: deploy_from_repo|bool
 
-- name: Using local war-file pointed out by localWarPath, instead of online repo
+- name: Using local war-file, instead of online repo
   copy:
     src: "{{ playbook_dir }}/../build/libs/srs-{{ version }}.war"
     dest: "{{ releases_folder}}/srs-{{ version }}.war"
