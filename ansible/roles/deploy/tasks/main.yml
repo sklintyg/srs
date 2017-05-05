@@ -28,7 +28,7 @@
 
 - name: Retrieve war file from nexus
   maven_artifact: 
-    repository_url: https://build-inera.nordicmedtest.se/nexus/content/repositories/releases
+    repository_url: https://build-inera.nordicmedtest.se/nexus/repository/releases/
     group_id: se.inera.intyg.srs
     artifact_id: srs
     extension: war
