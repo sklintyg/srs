@@ -32,10 +32,12 @@ class PingForConfigurationResponderImpl : PingForConfigurationResponderInterface
         response.configuration.add(configuration("buildTime", buildTimeString))
         return response
     }
+
     private fun configuration(name: String, value: String): ConfigurationType {
         val res = ConfigurationType()
         res.name = name
         res.value = value
         return res
     }
+
 }

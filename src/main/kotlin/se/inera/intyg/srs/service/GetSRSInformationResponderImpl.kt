@@ -20,12 +20,18 @@ class GetSRSInformationResponderImpl : GetSRSInformationResponderInterface {
         val response = GetSRSInformationResponseType()
 
         if (request.utdatafilter.isPrediktion) {
-            val infoModule = PrediktionInformationModule()
+            val infoModule = PredictionInformationModule()
             val predictions = infoModule.getInfo(persons)
             persons.forEach { person ->
                 val underlag = Bedomningsunderlag()
                 underlag.personId = person.personId
                 underlag.prediktion = predictions[person]
+                response.bedomningsunderlag.add(underlag)
+            }
+        }
+        if (request.utdatafilter.isInsatsrekommendation) {
+            persons.forEach { person ->
+                val underlag = Bedomningsunderlag()
                 response.bedomningsunderlag.add(underlag)
             }
         }

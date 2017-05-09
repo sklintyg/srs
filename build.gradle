@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        kotlinVersion = '1.0.6'
+        kotlinVersion = '1.1.2'
         springBootVersion = '1.4.3.RELEASE'
         schemasVersion = System.properties['schemasVersion'] ?: '0-SNAPSHOT'
         rivtaItintegrationMonitoringSchemasVersion = "1.0.0.4"
@@ -36,11 +36,11 @@ apply plugin: 'inera-intyg'
 apply plugin: 'maven'
 apply plugin: 'org.ajoberstar.grgit'
 
-apply plugin: 'war'
+//apply plugin: 'war'
 
-war {
-    baseName = 'srs'
-}
+//war {
+//    baseName = 'srs'
+//}
 
 group = 'se.inera.intyg.srs'
 version = System.properties['buildVersion'] ?: '0.0.1-SNAPSHOT'
@@ -48,7 +48,8 @@ version = System.properties['buildVersion'] ?: '0.0.1-SNAPSHOT'
 sourceCompatibility = 1.8
 
 task createVersionPropertyFile(type: VersionPropertyFileTask)
-war.dependsOn createVersionPropertyFile
+
+//war.dependsOn createVersionPropertyFile
 
 uploadArchives.repositories.mavenDeployer {
     repository(url: "https://build-inera.nordicmedtest.se/nexus/repository/releases/") {
@@ -81,16 +82,22 @@ dependencies {
     compile "se.riv.itintegration.monitoring:itintegration-monitoring-schemas:${rivtaItintegrationMonitoringSchemasVersion}"
 
     compile "org.springframework.boot:spring-boot-starter-web"
+    compile "org.springframework.boot:spring-boot-starter-jdbc"
+    compile "org.springframework.boot:spring-boot-starter-data-jpa"
     compile "org.springframework.boot:spring-boot-starter-test"
     compile "org.springframework.boot:spring-boot-starter-web-services"
     compile 'org.springframework.boot:spring-boot-starter-actuator'
-    providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+    compile 'org.liquibase:liquibase-core'
     compile "org.apache.cxf:cxf-spring-boot-starter-jaxws:3.1.9"
     compile "org.apache.logging.log4j:log4j-api:2.7"
     compile "org.apache.logging.log4j:log4j-core:2.7"
     compile "org.jetbrains.kotlin:kotlin-stdlib:${kotlinVersion}"
     compile "org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}"
     compile "com.fasterxml.jackson.module:jackson-module-kotlin:2.8.4"
+
+    runtime "com.h2database:h2"
+
+  //  providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
 
     testCompile "org.springframework.boot:spring-boot-starter-test"
     testCompile "com.jayway.restassured:rest-assured:${restassuredVersion}"

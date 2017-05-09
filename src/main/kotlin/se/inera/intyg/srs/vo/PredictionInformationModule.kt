@@ -14,7 +14,7 @@ import java.util.*
 
 const val INTERCEPT = -1.66
 
-class PrediktionInformationModule : InformationModule<Prediktion> {
+class PredictionInformationModule : InformationModule<Prediktion> {
 
     private val log = LogManager.getLogger()
 
