@@ -1,6 +1,7 @@
 package se.inera.intyg.srs.vo
 
 import org.apache.logging.log4j.LogManager
+import org.springframework.stereotype.Service
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Diagnos
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Diagnosprediktion
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Prediktion
@@ -11,9 +12,9 @@ import se.inera.intyg.srs.vo.Extent.TRE_FJARDEDEL
 import java.lang.Math.exp
 import java.util.*
 
-
 const val INTERCEPT = -1.66
 
+@Service
 class PredictionInformationModule : InformationModule<Prediktion> {
 
     private val log = LogManager.getLogger()

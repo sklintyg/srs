@@ -2,6 +2,7 @@ package se.inera.intyg.srs.service
 
 import org.apache.cxf.annotations.SchemaValidation
 import org.apache.logging.log4j.LogManager
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.*
 import se.inera.intyg.srs.vo.*
@@ -13,26 +14,37 @@ import java.time.temporal.ChronoUnit
 class GetSRSInformationResponderImpl : GetSRSInformationResponderInterface {
     private val log = LogManager.getLogger()
 
+    @Autowired
+    lateinit var measureModule: MeasureInformationModule
+
+    @Autowired
+    lateinit var predictionModule: PredictionInformationModule
+
     override fun getSRSInformation(request: GetSRSInformationRequestType): GetSRSInformationResponseType {
         log.info("Received request from ${request.konsumentId.extension}")
 
         val persons = transform(request.individer.individ)
         val response = GetSRSInformationResponseType()
 
+        persons.forEach { person ->
+            val underlag = Bedomningsunderlag()
+            underlag.personId = person.personId
+            response.bedomningsunderlag.add(underlag)
+        }
+
         if (request.utdatafilter.isPrediktion) {
-            val infoModule = PredictionInformationModule()
-            val predictions = infoModule.getInfo(persons)
-            persons.forEach { person ->
-                val underlag = Bedomningsunderlag()
-                underlag.personId = person.personId
-                underlag.prediktion = predictions[person]
-                response.bedomningsunderlag.add(underlag)
+            val predictions = predictionModule.getInfo(persons)
+            predictions.forEach { prediction ->
+                val underlag = response.bedomningsunderlag.find { it.personId == prediction.key.personId }
+                underlag!!.prediktion = prediction.value
             }
         }
+
         if (request.utdatafilter.isInsatsrekommendation) {
-            persons.forEach { person ->
-                val underlag = Bedomningsunderlag()
-                response.bedomningsunderlag.add(underlag)
+            val measures = measureModule.getInfo(persons)
+            measures.forEach { measure ->
+                val underlag = response.bedomningsunderlag.find { it.personId == measure.key.personId }
+                underlag!!.insatsrekommendationer = measure.value
             }
         }
 
