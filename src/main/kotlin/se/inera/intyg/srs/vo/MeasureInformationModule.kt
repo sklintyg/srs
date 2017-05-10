@@ -3,12 +3,14 @@ package se.inera.intyg.srs.vo
 import org.apache.logging.log4j.LogManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Atgard
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Diagnos
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Insatsrekommendation
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Insatsrekommendationer
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Insatsrekommendationstatus
 import se.inera.intyg.srs.db.Measure
 import se.inera.intyg.srs.db.MeasureRepository
+import java.math.BigInteger
 import java.util.*
 
 @Service
@@ -31,47 +33,56 @@ class MeasureInformationModule : InformationModule<Insatsrekommendationer> {
     }
 
     private fun createInfo(person: Person): Insatsrekommendationer {
-        val measures = Insatsrekommendationer()
+        val recommendations = Insatsrekommendationer()
         person.diagnoses.forEach { diagnose ->
             val recommendation = Insatsrekommendation()
-            val (measure, status) = diagnoseInfo(diagnose.code)
+            val (measures, status) = getMeasuresForDiagnose(diagnose.code)
 
             val diagnos = Diagnos()
             diagnos.codeSystem = diagnose.codeSystem
 
-            if (measure == null) {
+            if (status == Insatsrekommendationstatus.INFORMATION_SAKNAS) {
                 diagnos.code = diagnose.code
             } else {
-                diagnos.code = measure.diagnoseId
-                diagnos.displayName = measure.diagnoseText
+                measures.forEach {
+                    diagnos.code = it.diagnoseId
+                    diagnos.displayName = it.diagnoseText
+                    val atgard = Atgard()
+                    atgard.atgardsforslag = it.measureText
+                    atgard.prioritet = BigInteger.valueOf(it.priority.toLong())
+                    atgard.version = it.version
+                    recommendation.atgard.add(atgard)
+                }
 
             }
 
             recommendation.diagnos = diagnos
             recommendation.insatsrekommendationstatus = status
-            measures.rekommendation.add(recommendation)
+            recommendations.rekommendation.add(recommendation)
         }
-        return measures
+        return recommendations
     }
 
-    private fun diagnoseInfo(diagnoseId: String): Pair<Measure?, Insatsrekommendationstatus> {
+    private fun getMeasuresForDiagnose(diagnoseId: String): Pair<List<Measure>, Insatsrekommendationstatus> {
         val possibleMeasures = measureRepo.findByDiagnoseIdStartingWith(diagnoseId.substring(0, MIN_ID_POSITIONS))
         var status: Insatsrekommendationstatus = Insatsrekommendationstatus.OK
-        var currentId = clean(diagnoseId)
+        var currentId = cleanDiagnoseCode(diagnoseId)
         while (currentId.length >= MIN_ID_POSITIONS) {
-            val measure = measureExists(possibleMeasures, currentId)
-            if (measure != null) {
-                return Pair(measure, status)
+            val measures = measuresForCode(possibleMeasures, currentId)
+            if (measures.size > 0) {
+                return Pair(measures, status)
             }
             // Make the icd10-code one position shorter, and thus more general.
             currentId = currentId.substring(0, currentId.length - 1)
+            // Once we have shortened the code, we need to indicate that the info is not on the original level
             status = Insatsrekommendationstatus.DIAGNOSKOD_PA_HOGRE_NIVA
         }
-        return Pair(null, Insatsrekommendationstatus.INFORMATION_SAKNAS)
+        return Pair(emptyList(), Insatsrekommendationstatus.INFORMATION_SAKNAS)
     }
 
-    private fun measureExists(measures: List<Measure>, diagnoseId: String): Measure? =
-            measures.find { clean(it.diagnoseId) == diagnoseId }
+    private fun measuresForCode(measures: List<Measure>, diagnoseId: String): List<Measure> =
+            measures.filter { cleanDiagnoseCode(it.diagnoseId) == diagnoseId }
 
-    private fun clean(diagnoseId: String): String = diagnoseId.toUpperCase(Locale.ENGLISH).replace(".", "")
+    private fun cleanDiagnoseCode(diagnoseId: String): String = diagnoseId.toUpperCase(Locale.ENGLISH).replace(".", "")
+
 }
