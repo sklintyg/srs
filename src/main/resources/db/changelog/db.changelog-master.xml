@@ -25,23 +25,23 @@
             </column>
         </createTable>
 
-        <createTable tableName="RECOMMENDATION">
-            <column name="ID" type="INT">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="RECOMMENDATION_TEXT" type="varchar(4096)">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
+        <!--<createTable tableName="RECOMMENDATION">-->
+            <!--<column name="ID" type="INT">-->
+                <!--<constraints primaryKey="true" nullable="false"/>-->
+            <!--</column>-->
+            <!--<column name="RECOMMENDATION_TEXT" type="varchar(4096)">-->
+                <!--<constraints nullable="false"/>-->
+            <!--</column>-->
+        <!--</createTable>-->
 
-        <createTable tableName="MEASURE_RECOMMENDATIONS">
-            <column name="MEASURE_ID" type="INT">
-                <constraints nullable="false"/>
-            </column>
-            <column name="RECOMMENDATION_ID" type="INT">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
+        <!--<createTable tableName="MEASURE_RECOMMENDATIONS">-->
+            <!--<column name="MEASURE_ID" type="INT">-->
+                <!--<constraints nullable="false"/>-->
+            <!--</column>-->
+            <!--<column name="RECOMMENDATION_ID" type="INT">-->
+                <!--<constraints nullable="false"/>-->
+            <!--</column>-->
+        <!--</createTable>-->
 
     </changeSet>
 

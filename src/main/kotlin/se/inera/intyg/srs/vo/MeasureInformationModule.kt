@@ -49,8 +49,8 @@ class MeasureInformationModule : InformationModule<Insatsrekommendationer> {
                 // TODO: recommendation.version = measure.version
                 measure.recommendations.forEach {
                     val atgard = Atgard()
-                    atgard.atgardsforslag = it.recommendationText
-                    // TODO: atgard.prioritet = BigInteger.valueOf(it.priority.toLong())
+                    atgard.atgardsforslag = it.recommendation.recommendationText
+                    atgard.prioritet = BigInteger.valueOf(it.priority.toLong())
                     recommendation.atgard.add(atgard)
                 }
 

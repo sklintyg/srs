@@ -5,15 +5,15 @@ import javax.persistence.FetchType
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
-import javax.persistence.ManyToMany
+import javax.persistence.OneToMany
 
 @Entity
 class Measure(val diagnoseId: String,
               val diagnoseText: String,
               val priority: Int,
               val version: String,
-              @ManyToMany(fetch = FetchType.EAGER)
-              val recommendations: Collection<Recommendation>,
+              @OneToMany(fetch = FetchType.EAGER)
+              var recommendations: MutableCollection<Priority> = mutableListOf(),
               @Id @GeneratedValue(strategy = GenerationType.AUTO)
               val id: Long = -1) {
 

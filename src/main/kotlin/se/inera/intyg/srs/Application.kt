@@ -13,6 +13,8 @@ import org.springframework.context.annotation.Bean
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.GetSRSInformationResponderInterface
 import se.inera.intyg.srs.persistence.Measure
 import se.inera.intyg.srs.persistence.MeasureRepository
+import se.inera.intyg.srs.persistence.Priority
+import se.inera.intyg.srs.persistence.PriorityRepository
 import se.inera.intyg.srs.persistence.Recommendation
 import se.inera.intyg.srs.persistence.RecommendationRepository
 import se.riv.itintegration.monitoring.rivtabp21.v1.PingForConfigurationResponderInterface
@@ -52,7 +54,7 @@ class Application : SpringBootServletInitializer() {
     }
 
     @Bean
-    fun init(measureRepo: MeasureRepository, recommendationRepo: RecommendationRepository) = CommandLineRunner {
+    fun init(measureRepo: MeasureRepository, recommendationRepo: RecommendationRepository, priorityRepo: PriorityRepository) = CommandLineRunner {
 
         val recommendation01 = recommendationRepo.save(Recommendation("patienten bör överväga att kontakta företagshälsovård och arbetsgivare för att avgränsa eller byta arbetsuppgifter, eller t.o.m. byta yrke eller arbetsplats"))
         val recommendation02 = recommendationRepo.save(Recommendation("remiss till behandling med psykoterapeutiska metoder"))
@@ -67,11 +69,28 @@ class Application : SpringBootServletInitializer() {
         val recommendation11 = recommendationRepo.save(Recommendation("partiell sjukskrivning"))
         val recommendation12 = recommendationRepo.save(Recommendation("FaR med regelbunden styrketräning för att förebygger nya besvär"))
 
-        measureRepo.save(Measure("F43.8A", "Utmattningssyndrom", 1, "1.0", mutableListOf(recommendation01, recommendation02, recommendation03)))
-        measureRepo.save(Measure("M75", "Sjukdomstillstånd i skulderled", 1, "1.0", mutableListOf(recommendation04, recommendation05)))
-        measureRepo.save(Measure("F32", "Depressiv episod", 1, "1.0", mutableListOf(recommendation06, recommendation07, recommendation08)))
-        measureRepo.save(Measure("F41", "Andra ångestsyndrom", 1, "1.0", mutableListOf(recommendation07, recommendation09, recommendation10)))
-        measureRepo.save(Measure("M54", "Ryggvärk", 1, "1.0", mutableListOf(recommendation11, recommendation12)))
+        val measure1 = measureRepo.save(Measure("F43.8A", "Utmattningssyndrom", 1, "1.0"))
+        val measure2 = measureRepo.save(Measure("M75", "Sjukdomstillstånd i skulderled", 1, "1.0"))
+        val measure3 = measureRepo.save(Measure("F32", "Depressiv episod", 1, "1.0"))
+        val measure4 = measureRepo.save(Measure("F41", "Andra ångestsyndrom", 1, "1.0"))
+        val measure5 = measureRepo.save(Measure("M54", "Ryggvärk", 1, "1.0"))
+
+        val priority01 = priorityRepo.save(Priority(1, measure1, recommendation01))
+        val priority02 = priorityRepo.save(Priority(2, measure1, recommendation02))
+        val priority03 = priorityRepo.save(Priority(3, measure1, recommendation03))
+        val priority04 = priorityRepo.save(Priority(1, measure2, recommendation04))
+        val priority05 = priorityRepo.save(Priority(2, measure2, recommendation05))
+        val priority06 = priorityRepo.save(Priority(1, measure3, recommendation06))
+        val priority07 = priorityRepo.save(Priority(2, measure3, recommendation07))
+        val priority08 = priorityRepo.save(Priority(3, measure3, recommendation08))
+        val priority09 = priorityRepo.save(Priority(1, measure4, recommendation07))
+        val priority10 = priorityRepo.save(Priority(2, measure4, recommendation09))
+        val priority11 = priorityRepo.save(Priority(3, measure4, recommendation10))
+        val priority12 = priorityRepo.save(Priority(1, measure5, recommendation11))
+        val priority13 = priorityRepo.save(Priority(2, measure5, recommendation12))
+
+        measure1.recommendations.add(priority01)
+        measureRepo.save(measure1)
     }
 }
 
