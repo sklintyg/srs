@@ -54,7 +54,7 @@ class Application : SpringBootServletInitializer() {
     }
 
     @Bean
-    fun init(measureRepo: MeasureRepository, recommendationRepo: RecommendationRepository, priorityRepo: PriorityRepository) = CommandLineRunner {
+    fun init(measureRepo: MeasureRepository, recommendationRepo: RecommendationRepository, prioRepo: PriorityRepository) = CommandLineRunner {
 
         val recommendation01 = recommendationRepo.save(Recommendation("patienten bör överväga att kontakta företagshälsovård och arbetsgivare för att avgränsa eller byta arbetsuppgifter, eller t.o.m. byta yrke eller arbetsplats"))
         val recommendation02 = recommendationRepo.save(Recommendation("remiss till behandling med psykoterapeutiska metoder"))
@@ -69,28 +69,25 @@ class Application : SpringBootServletInitializer() {
         val recommendation11 = recommendationRepo.save(Recommendation("partiell sjukskrivning"))
         val recommendation12 = recommendationRepo.save(Recommendation("FaR med regelbunden styrketräning för att förebygger nya besvär"))
 
-        val measure1 = measureRepo.save(Measure("F43.8A", "Utmattningssyndrom", 1, "1.0"))
-        val measure2 = measureRepo.save(Measure("M75", "Sjukdomstillstånd i skulderled", 1, "1.0"))
-        val measure3 = measureRepo.save(Measure("F32", "Depressiv episod", 1, "1.0"))
-        val measure4 = measureRepo.save(Measure("F41", "Andra ångestsyndrom", 1, "1.0"))
-        val measure5 = measureRepo.save(Measure("M54", "Ryggvärk", 1, "1.0"))
+        val prio01 = prioRepo.save(Priority(1, recommendation01))
+        val prio02 = prioRepo.save(Priority(2, recommendation02))
+        val prio03 = prioRepo.save(Priority(3, recommendation03))
+        val prio04 = prioRepo.save(Priority(1, recommendation04))
+        val prio05 = prioRepo.save(Priority(2, recommendation05))
+        val prio06 = prioRepo.save(Priority(1, recommendation06))
+        val prio07 = prioRepo.save(Priority(2, recommendation07))
+        val prio08 = prioRepo.save(Priority(3, recommendation08))
+        val prio09 = prioRepo.save(Priority(1, recommendation07))
+        val prio10 = prioRepo.save(Priority(2, recommendation09))
+        val prio11 = prioRepo.save(Priority(3, recommendation10))
+        val prio12 = prioRepo.save(Priority(1, recommendation11))
+        val prio13 = prioRepo.save(Priority(2, recommendation12))
 
-        val priority01 = priorityRepo.save(Priority(1, measure1, recommendation01))
-        val priority02 = priorityRepo.save(Priority(2, measure1, recommendation02))
-        val priority03 = priorityRepo.save(Priority(3, measure1, recommendation03))
-        val priority04 = priorityRepo.save(Priority(1, measure2, recommendation04))
-        val priority05 = priorityRepo.save(Priority(2, measure2, recommendation05))
-        val priority06 = priorityRepo.save(Priority(1, measure3, recommendation06))
-        val priority07 = priorityRepo.save(Priority(2, measure3, recommendation07))
-        val priority08 = priorityRepo.save(Priority(3, measure3, recommendation08))
-        val priority09 = priorityRepo.save(Priority(1, measure4, recommendation07))
-        val priority10 = priorityRepo.save(Priority(2, measure4, recommendation09))
-        val priority11 = priorityRepo.save(Priority(3, measure4, recommendation10))
-        val priority12 = priorityRepo.save(Priority(1, measure5, recommendation11))
-        val priority13 = priorityRepo.save(Priority(2, measure5, recommendation12))
-
-        measure1.recommendations.add(priority01)
-        measureRepo.save(measure1)
+        val measure1 = measureRepo.save(Measure("F43.8A", "Utmattningssyndrom", "1.0", listOf(prio01, prio02, prio03)))
+        val measure2 = measureRepo.save(Measure("M75", "Sjukdomstillstånd i skulderled", "1.0", listOf(prio04, prio05)))
+        val measure3 = measureRepo.save(Measure("F32", "Depressiv episod", "1.0", listOf(prio06, prio07, prio08)))
+        val measure4 = measureRepo.save(Measure("F41", "Andra ångestsyndrom", "1.0", listOf(prio09, prio10, prio11)))
+        val measure5 = measureRepo.save(Measure("M54", "Ryggvärk", "1.0", listOf(prio12, prio13)))
     }
 }
 

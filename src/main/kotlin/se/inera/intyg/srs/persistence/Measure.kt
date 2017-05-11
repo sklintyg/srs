@@ -10,14 +10,13 @@ import javax.persistence.OneToMany
 @Entity
 class Measure(val diagnoseId: String,
               val diagnoseText: String,
-              val priority: Int,
               val version: String,
               @OneToMany(fetch = FetchType.EAGER)
-              var recommendations: MutableCollection<Priority> = mutableListOf(),
+              val recommendations: Collection<Priority>,
               @Id @GeneratedValue(strategy = GenerationType.AUTO)
               val id: Long = -1) {
 
     override fun toString() =
-            "Measure(id=$id, diagnoseId='$diagnoseId', diagnoseText='$diagnoseText', priority='$priority', version='$version')"
+            "Measure(id=$id, diagnoseId='$diagnoseId', diagnoseText='$diagnoseText', version='$version', recommendations='$recommendations')"
 
 }
