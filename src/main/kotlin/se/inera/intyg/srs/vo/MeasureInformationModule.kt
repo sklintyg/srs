@@ -8,8 +8,8 @@ import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Diagno
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Insatsrekommendation
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Insatsrekommendationer
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Insatsrekommendationstatus
-import se.inera.intyg.srs.db.Measure
-import se.inera.intyg.srs.db.MeasureRepository
+import se.inera.intyg.srs.persistence.Measure
+import se.inera.intyg.srs.persistence.MeasureRepository
 import java.math.BigInteger
 import java.util.*
 
@@ -36,21 +36,21 @@ class MeasureInformationModule : InformationModule<Insatsrekommendationer> {
         val recommendations = Insatsrekommendationer()
         person.diagnoses.forEach { diagnose ->
             val recommendation = Insatsrekommendation()
-            val (measures, status) = getMeasuresForDiagnose(diagnose.code)
+            val (measure, status) = getMeasuresForDiagnose(diagnose.code)
 
             val diagnos = Diagnos()
             diagnos.codeSystem = diagnose.codeSystem
 
-            if (status == Insatsrekommendationstatus.INFORMATION_SAKNAS) {
+            if (measure == null) {
                 diagnos.code = diagnose.code
             } else {
-                measures.forEach {
-                    diagnos.code = it.diagnoseId
-                    diagnos.displayName = it.diagnoseText
+                diagnos.code = measure.diagnoseId
+                diagnos.displayName = measure.diagnoseText
+                // TODO: recommendation.version = measure.version
+                measure.recommendations.forEach {
                     val atgard = Atgard()
-                    atgard.atgardsforslag = it.measureText
-                    atgard.prioritet = BigInteger.valueOf(it.priority.toLong())
-                    atgard.version = it.version
+                    atgard.atgardsforslag = it.recommendationText
+                    // TODO: atgard.prioritet = BigInteger.valueOf(it.priority.toLong())
                     recommendation.atgard.add(atgard)
                 }
 
@@ -63,25 +63,25 @@ class MeasureInformationModule : InformationModule<Insatsrekommendationer> {
         return recommendations
     }
 
-    private fun getMeasuresForDiagnose(diagnoseId: String): Pair<List<Measure>, Insatsrekommendationstatus> {
+    private fun getMeasuresForDiagnose(diagnoseId: String): Pair<Measure?, Insatsrekommendationstatus> {
         val possibleMeasures = measureRepo.findByDiagnoseIdStartingWith(diagnoseId.substring(0, MIN_ID_POSITIONS))
         var status: Insatsrekommendationstatus = Insatsrekommendationstatus.OK
         var currentId = cleanDiagnoseCode(diagnoseId)
         while (currentId.length >= MIN_ID_POSITIONS) {
-            val measures = measuresForCode(possibleMeasures, currentId)
-            if (measures.size > 0) {
-                return Pair(measures, status)
+            val measure = measureForCode(possibleMeasures, currentId)
+            if (measure != null) {
+                return Pair(measure, status)
             }
             // Make the icd10-code one position shorter, and thus more general.
             currentId = currentId.substring(0, currentId.length - 1)
             // Once we have shortened the code, we need to indicate that the info is not on the original level
             status = Insatsrekommendationstatus.DIAGNOSKOD_PA_HOGRE_NIVA
         }
-        return Pair(emptyList(), Insatsrekommendationstatus.INFORMATION_SAKNAS)
+        return Pair(null, Insatsrekommendationstatus.INFORMATION_SAKNAS)
     }
 
-    private fun measuresForCode(measures: List<Measure>, diagnoseId: String): List<Measure> =
-            measures.filter { cleanDiagnoseCode(it.diagnoseId) == diagnoseId }
+    private fun measureForCode(measures: List<Measure>, diagnoseId: String): Measure? =
+            measures.find { cleanDiagnoseCode(it.diagnoseId) == diagnoseId }
 
     private fun cleanDiagnoseCode(diagnoseId: String): String = diagnoseId.toUpperCase(Locale.ENGLISH).replace(".", "")
 

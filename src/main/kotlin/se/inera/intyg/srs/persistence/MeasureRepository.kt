@@ -1,4 +1,4 @@
-package se.inera.intyg.srs.db
+package se.inera.intyg.srs.persistence
 
 import org.springframework.data.repository.CrudRepository
 

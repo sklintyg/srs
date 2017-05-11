@@ -6,8 +6,9 @@
                    logicalFilePath="classpath:/db/changelog/db.changelog-master.xml">
 
     <changeSet id="1" author="jh">
+
         <createTable tableName="MEASURE">
-            <column name="ID" type="varchar(255)">
+            <column name="ID" type="INT">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="DIAGNOSE_ID" type="varchar(255)">
@@ -16,13 +17,28 @@
             <column name="DIAGNOSE_TEXT" type="varchar(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="PRIORITY" type="smallint">
-                <constraints nullable="false"/>
-            </column>
-            <column name="MEASURE_TEXT" type="varchar(4096)">
-                <constraints nullable="false"/>
-            </column>
             <column name="VERSION" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PRIORITY" type="SMALLINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="RECOMMENDATION">
+            <column name="ID" type="INT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="RECOMMENDATION_TEXT" type="varchar(4096)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="MEASURE_RECOMMENDATIONS">
+            <column name="MEASURE_ID" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="RECOMMENDATION_ID" type="INT">
                 <constraints nullable="false"/>
             </column>
         </createTable>
