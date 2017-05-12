@@ -69,25 +69,24 @@ class Application : SpringBootServletInitializer() {
         val recommendation11 = recommendationRepo.save(Recommendation("partiell sjukskrivning"))
         val recommendation12 = recommendationRepo.save(Recommendation("FaR med regelbunden styrketräning för att förebygger nya besvär"))
 
-        val prio01 = prioRepo.save(Priority(1, recommendation01))
-        val prio02 = prioRepo.save(Priority(2, recommendation02))
-        val prio03 = prioRepo.save(Priority(3, recommendation03))
-        val prio04 = prioRepo.save(Priority(1, recommendation04))
-        val prio05 = prioRepo.save(Priority(2, recommendation05))
-        val prio06 = prioRepo.save(Priority(1, recommendation06))
-        val prio07 = prioRepo.save(Priority(2, recommendation07))
-        val prio08 = prioRepo.save(Priority(3, recommendation08))
-        val prio09 = prioRepo.save(Priority(1, recommendation07))
-        val prio10 = prioRepo.save(Priority(2, recommendation09))
-        val prio11 = prioRepo.save(Priority(3, recommendation10))
-        val prio12 = prioRepo.save(Priority(1, recommendation11))
-        val prio13 = prioRepo.save(Priority(2, recommendation12))
-
-        val measure1 = measureRepo.save(Measure("F43.8A", "Utmattningssyndrom", "1.0", listOf(prio01, prio02, prio03)))
-        val measure2 = measureRepo.save(Measure("M75", "Sjukdomstillstånd i skulderled", "1.0", listOf(prio04, prio05)))
-        val measure3 = measureRepo.save(Measure("F32", "Depressiv episod", "1.0", listOf(prio06, prio07, prio08)))
-        val measure4 = measureRepo.save(Measure("F41", "Andra ångestsyndrom", "1.0", listOf(prio09, prio10, prio11)))
-        val measure5 = measureRepo.save(Measure("M54", "Ryggvärk", "1.0", listOf(prio12, prio13)))
+        measureRepo.save(Measure("F43.8A", "Utmattningssyndrom", "1.0",
+                listOf(prioRepo.save(Priority(1, recommendation01)),
+                        prioRepo.save(Priority(2, recommendation02)),
+                        prioRepo.save(Priority(3, recommendation03)))))
+        measureRepo.save(Measure("M75", "Sjukdomstillstånd i skulderled", "1.0",
+                listOf(prioRepo.save(Priority(1, recommendation04)),
+                        prioRepo.save(Priority(2, recommendation05)))))
+        measureRepo.save(Measure("F32", "Depressiv episod", "1.0",
+                listOf(prioRepo.save(Priority(1, recommendation06)),
+                        prioRepo.save(Priority(2, recommendation07)),
+                        prioRepo.save(Priority(3, recommendation08)))))
+        measureRepo.save(Measure("F41", "Andra ångestsyndrom", "1.0",
+                listOf(prioRepo.save(Priority(1, recommendation07)),
+                        prioRepo.save(Priority(2, recommendation09)),
+                        prioRepo.save(Priority(3, recommendation10)))))
+        measureRepo.save(Measure("M54", "Ryggvärk", "1.0",
+                listOf(prioRepo.save(Priority(1, recommendation11)),
+                        prioRepo.save(Priority(2, recommendation12)))))
     }
 }
 
