@@ -47,7 +47,7 @@ class MeasureInformationModule : InformationModule<Insatsrekommendationer> {
                 diagnos.code = measure.diagnoseId
                 diagnos.displayName = measure.diagnoseText
                 // TODO: recommendation.version = measure.version
-                measure.recommendations.forEach {
+                measure.priorities.forEach {
                     val atgard = Atgard()
                     atgard.atgardsforslag = it.recommendation.recommendationText
                     atgard.prioritet = BigInteger.valueOf(it.priority.toLong())
