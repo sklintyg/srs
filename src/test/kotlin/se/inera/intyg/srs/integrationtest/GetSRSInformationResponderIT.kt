@@ -12,7 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.core.io.ClassPathResource
 import org.springframework.test.context.TestPropertySource
 import org.springframework.test.context.junit4.SpringRunner
-import se.inera.intyg.srs.integrationtest.util.When
+import se.inera.intyg.srs.integrationtest.util.whenever
 
 const val SOAP_ROOT = "Envelope.Body.GetSRSInformationResponse"
 
@@ -33,7 +33,7 @@ class GetSRSInformationResponderIT {
     fun testServicePageIsReachable() {
         given()
             .contentType(ContentType.JSON)
-        .When()
+        .whenever()
             .get("/services")
         .then()
             .statusCode(200)
@@ -45,7 +45,7 @@ class GetSRSInformationResponderIT {
         given()
             .contentType(ContentType.XML)
             .body(getClasspathResourceAsString("getSRSInformationRequest.xml"))
-        .When()
+        .whenever()
             .post("/services/getsrs")
         .then()
             .statusCode(200)

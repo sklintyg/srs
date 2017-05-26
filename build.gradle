@@ -100,4 +100,6 @@ dependencies {
 
     testCompile "org.springframework.boot:spring-boot-starter-test"
     testCompile "com.jayway.restassured:rest-assured:${restassuredVersion}"
+    testCompile "com.nhaarman:mockito-kotlin:1.4.0"
+    testCompile "org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}" // Needed to explicitly set mockito-kotlin to use Kotlin 1.1.X
 }
