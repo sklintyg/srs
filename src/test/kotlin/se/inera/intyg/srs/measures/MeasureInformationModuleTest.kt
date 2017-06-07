@@ -17,6 +17,10 @@ import se.inera.intyg.srs.vo.Sex
 
 class MeasureInformationModuleTest {
 
+    private val DIAGNOSE_A1234 = "A1234"
+    private val DIAGNOSE_A12 = "A12"
+    private val DIAGNOSE_B12 = "B12"
+
     lateinit var measureRepo: MeasureRepository
 
     lateinit var module: MeasureInformationModule
@@ -24,23 +28,26 @@ class MeasureInformationModuleTest {
     @Before
     fun setUp() {
         measureRepo = mock()
-        module = MeasureInformationModule()
-        module.measureRepo = measureRepo
+        module = MeasureInformationModule(measureRepo)
         insertMeasureData()
     }
 
     fun insertMeasureData() {
-        whenever(measureRepo.findByDiagnoseIdStartingWith("A12")).thenReturn(listOf(Measure("A12", "Depression", "1.0", listOf((Priority(1, Recommendation("Softa")))))))
+        whenever(measureRepo.findByDiagnoseIdStartingWith("A12")).thenReturn(listOf(Measure(DIAGNOSE_A12, "Depression", "1.0",
+                listOf((Priority(1, Recommendation("Softa")))))))
+        whenever(measureRepo.findByDiagnoseIdStartingWith("B12")).thenReturn(listOf(Measure(DIAGNOSE_B12, "Benbrott", "1.0",
+                listOf((Priority(1, Recommendation("Hoppa på ett ben")))))))
     }
-
-    private val DIAGNOSE1 = "A1234"
 
     @Test
-    fun firstTest() {
-        val person: Person = Person("1212121212", 35, Sex.MAN, Extent.HELT_NEDSATT, listOf(Diagnose(DIAGNOSE1)))
-
+    fun diagnoseCodeIsShortenedUntilItMatches() {
+        val person: Person = Person("1212121212", 35, Sex.MAN, Extent.HELT_NEDSATT, listOf(Diagnose(DIAGNOSE_A1234)))
         val result = module.getInfo(listOf(person))
-        assertEquals("A12", result.get(person)!!.rekommendation.get(0).diagnos.code)
+        assertEquals(DIAGNOSE_A12, result.get(person)!!.rekommendation.get(0).diagnos.code)
     }
 
+    @Test
+    fun measureShouldBeReturnedForEachMatchingDiagnosis() {
+
+    }
 }

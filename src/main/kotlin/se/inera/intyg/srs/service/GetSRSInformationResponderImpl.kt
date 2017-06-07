@@ -11,14 +11,10 @@ import java.time.temporal.ChronoUnit
 
 @Service
 @SchemaValidation(type = SchemaValidation.SchemaValidationType.BOTH)
-class GetSRSInformationResponderImpl : GetSRSInformationResponderInterface {
+class GetSRSInformationResponderImpl(@Autowired val measureModule: MeasureInformationModule,
+                                     @Autowired val predictionModule: PredictionInformationModule) : GetSRSInformationResponderInterface {
+
     private val log = LogManager.getLogger()
-
-    @Autowired
-    lateinit var measureModule: MeasureInformationModule
-
-    @Autowired
-    lateinit var predictionModule: PredictionInformationModule
 
     override fun getSRSInformation(request: GetSRSInformationRequestType): GetSRSInformationResponseType {
         log.info("Received request from ${request.konsumentId.extension}")

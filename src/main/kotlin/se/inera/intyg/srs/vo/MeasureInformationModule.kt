@@ -14,12 +14,9 @@ import java.math.BigInteger
 import java.util.*
 
 @Service
-class MeasureInformationModule : InformationModule<Insatsrekommendationer> {
+class MeasureInformationModule(@Autowired val measureRepo: MeasureRepository) : InformationModule<Insatsrekommendationer> {
 
     private val MIN_ID_POSITIONS = 3
-
-    @Autowired
-    lateinit var measureRepo: MeasureRepository
 
     private val log = LogManager.getLogger()
 
