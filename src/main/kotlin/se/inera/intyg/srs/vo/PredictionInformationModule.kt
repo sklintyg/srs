@@ -1,6 +1,7 @@
 package se.inera.intyg.srs.vo
 
 import org.apache.logging.log4j.LogManager
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Diagnos
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Diagnosprediktion
@@ -17,14 +18,15 @@ const val INTERCEPT = -1.66
 @Service
 class PredictionInformationModule : InformationModule<Prediktion> {
 
+    @Autowired
+    lateinit var rAdapter: PredictionAdapter
+
     private val log = LogManager.getLogger()
 
     override fun getInfo(persons: List<Person>): Map<Person, Prediktion> {
         log.info(persons)
         val predictions = HashMap<Person, Prediktion>()
-        persons.forEach { person ->
-            predictions.put(person, createInfo(person))
-        }
+        rAdapter.doStuff()
         return predictions
     }
 
