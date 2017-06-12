@@ -1,0 +1,16 @@
+---
+
+- name: Create srs-env.sh file
+  template:
+    src: srs-env.sh.j2
+    dest: "{{ inera_tomcat_folder }}/srs-env.sh"
+    mode: 0755
+
+- name: Configure setenv.sh
+  lineinfile:
+    dest: "{{ tomcat_bin }}/setenv.sh"
+    create: yes
+    mode: 0755
+    regexp: "srs-env\\.sh"
+    insertafter: "EOF"
+    line: ". \"{{ inera_tomcat_folder }}/srs-env.sh\""

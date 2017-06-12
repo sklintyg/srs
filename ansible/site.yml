@@ -1,8 +1,4 @@
 ---
-# Does the srs-specific provision needed, and then deploys the given <version> of srs onto the specfied tomcat
-# instances. Since ansible is idempotent, running provisioning each deployment is not a problem performance-wise.
-# However, tags can be used to run provisioning or deployment indepedently.
-
 
 # Required parameters:
 #---------------------
@@ -26,5 +22,10 @@
   environment:
     "{{ proxy_env}}"
   roles:
+    - config-folder
+    - environment
+    - jars
+    - mysql
+    - resources
+    - unlock-config-folder
     - deploy
-
