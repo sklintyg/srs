@@ -18,15 +18,15 @@ const val INTERCEPT = -1.66
 @Service
 class PredictionInformationModule : InformationModule<Prediktion> {
 
-    @Autowired
-    lateinit var rAdapter: PredictionAdapter
+    //@Autowired
+    //lateinit var rAdapter: PredictionAdapter
 
     private val log = LogManager.getLogger()
 
     override fun getInfo(persons: List<Person>): Map<Person, Prediktion> {
         log.info(persons)
         val predictions = HashMap<Person, Prediktion>()
-        rAdapter.doStuff()
+        //rAdapter.doStuff()
         return predictions
     }
 
