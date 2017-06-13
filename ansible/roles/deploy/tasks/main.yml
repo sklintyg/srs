@@ -41,6 +41,11 @@
     dest: "{{ releases_folder}}/srs-{{ version }}.war"
   when: not deploy_from_repo|bool
 
+- name: Remove old version of unpacked war
+  file:
+    state: absent
+    path: "{{ webapps_folder }}/ROOT"
+
 - name: Deploy war-file to tomcat instance, overwriting 
   copy:
     remote_src: True

@@ -11,7 +11,7 @@ import javax.annotation.PreDestroy
 
 @Configuration
 @Profile("runtime")
-class RAdapter(): PredictionAdapter {
+class RAdapter() : PredictionAdapter {
     private val DATA_FILE_EXTENSION = ".rdata"
 
     private val log = LogManager.getLogger()
@@ -20,14 +20,15 @@ class RAdapter(): PredictionAdapter {
 
     val dirPath = "/opt/models"
 
+    // These are hard coded for now, but will later be configurable
+    val DAYS = "90"
+    val EMPLOYMENT = "emp."
+    val SICKDAYS_LASTYEAR = "0"
+
     init {
         // TODO: for now set data file to last found file. This will have to be more sophisticated later on.
         try {
             var dataFilePath: String? = null
-            println(Paths.get(dirPath))
-            Files.walk(Paths.get(dirPath)).forEach {
-                println("Path: " + it.toString())
-            }
             Files.walk(Paths.get(dirPath)).filter {
                 Files.isRegularFile(it) && it.getName(it.getNameCount() - 1).toString().toLowerCase().endsWith(DATA_FILE_EXTENSION)
             }.forEach { file ->
@@ -35,18 +36,21 @@ class RAdapter(): PredictionAdapter {
             }
 
             if (dataFilePath != null) {
-                println("Path: " + dataFilePath)
                 rengine = Rengine(arrayOf("--vanilla"), false, null)
                 val library_result = rengine.eval("library(pch)")
                 val loadmodel_result = rengine.eval("load('$dataFilePath')  ", false)
                 if (loadmodel_result == null) {
                     throw RuntimeException("The prediction model does not exist!")
                 }
+            } else {
+                log.error("No R data files found in $dirPath")
+                throw Exception("No R data files found in $dirPath")
             }
         } catch (e: IOException) {
-            log.error("Error while reading from directory {}", dirPath, e)
+            log.error("Error while reading from directory $dirPath: ", e)
+            throw(e)
         } catch (e: Exception) {
-            log.error("Error while initializing R engine:", e)
+            log.error("Error while initializing R engine: ", e)
             throw(e)
         }
     }
@@ -56,35 +60,29 @@ class RAdapter(): PredictionAdapter {
         rengine.end()
     }
 
-    override fun doStuff() {
-        val in_age = 62
-        val in_sex = "F"
-        val in_saextentfirst = "1"
-        val in_days = 90
-        val in_employment = "emp."
-        val in_satotalgrossdyminus1 = "0"
+    override fun getPrediction(person: Person, /* Ignored, will later determine which R file to use.*/ diagnose: Diagnose): Double {
+        var prediction = 0.0
 
-        // -----Initialize a data frame (R) with indata parameters-----//
         val rDataFrame = "data <- data.frame(" +
-                "days = as.integer(" + in_days + "), " +
-                "age = as.integer(" + in_age + "), " +
-                "sex = '" + in_sex + "', " +
-                "SA_syssStart = '" + in_employment + "', " +
-                "SA_ExtentFirst = '" + in_saextentfirst + "', " +
-                "SA_total_grossd_Yminus1 = '" + in_satotalgrossdyminus1 + "')"
+                "days = as.integer(" + DAYS + "), " +
+                "age = as.integer(" + person.age + "), " +
+                "sex = '" + person.sex.predictionString + "', " +
+                "SA_syssStart = '" + EMPLOYMENT + "', " +
+                "SA_ExtentFirst = '" + person.extent.predictionString + "', " +
+                "SA_total_grossd_Yminus1 = '" + SICKDAYS_LASTYEAR + "')"
 
-        val data_result = rengine.eval(rDataFrame)
-
-        // -----Prepare the R command-----//
         val cmdPrediction = "output <- round(predict(model,newdata = data)\$Surv, 2)"
-        // -----Execute R-----//
+
+        rengine.eval(rDataFrame)
         val rOutput = rengine.eval(cmdPrediction)
+
         if (rOutput != null) {
-            val prediction = rOutput.asDouble()
+            prediction = rOutput.asDouble()
             println("\nSuccessful prediction, result: " + prediction)
         } else {
             println("\n** An error occurred during execution of the prediction model!")
         }
+        return prediction;
     }
 
 }

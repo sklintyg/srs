@@ -5,34 +5,34 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Atgard
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Diagnos
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Insatsrekommendation
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Insatsrekommendationer
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Insatsrekommendationstatus
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Atgardsrekommendation
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Atgardsrekommendationer
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Atgardsrekommendationstatus
 import se.inera.intyg.srs.persistence.Measure
 import se.inera.intyg.srs.persistence.MeasureRepository
 import java.math.BigInteger
 import java.util.*
 
 @Service
-class MeasureInformationModule(@Autowired val measureRepo: MeasureRepository) : InformationModule<Insatsrekommendationer> {
+class MeasureInformationModule(@Autowired val measureRepo: MeasureRepository) : InformationModule<Atgardsrekommendationer> {
 
     private val MIN_ID_POSITIONS = 3
 
     private val log = LogManager.getLogger()
 
-    override fun getInfo(persons: List<Person>): Map<Person, Insatsrekommendationer> {
+    override fun getInfo(persons: List<Person>): Map<Person, Atgardsrekommendationer> {
         log.info(persons)
-        val measures = HashMap<Person, Insatsrekommendationer>()
+        val measures = HashMap<Person, Atgardsrekommendationer>()
         persons.forEach { person ->
             measures.put(person, createInfo(person))
         }
         return measures
     }
 
-    private fun createInfo(person: Person): Insatsrekommendationer {
-        val recommendations = Insatsrekommendationer()
+    private fun createInfo(person: Person): Atgardsrekommendationer {
+        val recommendations = Atgardsrekommendationer()
         person.diagnoses.forEach { diagnose ->
-            val recommendation = Insatsrekommendation()
+            val recommendation = Atgardsrekommendation()
             val (measure, status) = getMeasuresForDiagnose(diagnose.code)
 
             val diagnos = Diagnos()
@@ -43,6 +43,7 @@ class MeasureInformationModule(@Autowired val measureRepo: MeasureRepository) : 
             } else {
                 diagnos.code = measure.diagnoseId
                 diagnos.displayName = measure.diagnoseText
+
                 // TODO: recommendation.version = measure.version
                 measure.priorities.forEach {
                     val atgard = Atgard()
@@ -50,19 +51,18 @@ class MeasureInformationModule(@Autowired val measureRepo: MeasureRepository) : 
                     atgard.prioritet = BigInteger.valueOf(it.priority.toLong())
                     recommendation.atgard.add(atgard)
                 }
-
             }
 
             recommendation.diagnos = diagnos
-            recommendation.insatsrekommendationstatus = status
+            recommendation.atgardsrekommendationstatus = status
             recommendations.rekommendation.add(recommendation)
         }
         return recommendations
     }
 
-    private fun getMeasuresForDiagnose(diagnoseId: String): Pair<Measure?, Insatsrekommendationstatus> {
+    private fun getMeasuresForDiagnose(diagnoseId: String): Pair<Measure?, Atgardsrekommendationstatus> {
         val possibleMeasures = measureRepo.findByDiagnoseIdStartingWith(diagnoseId.substring(0, MIN_ID_POSITIONS))
-        var status: Insatsrekommendationstatus = Insatsrekommendationstatus.OK
+        var status: Atgardsrekommendationstatus = Atgardsrekommendationstatus.OK
         var currentId = cleanDiagnoseCode(diagnoseId)
         while (currentId.length >= MIN_ID_POSITIONS) {
             val measure = measureForCode(possibleMeasures, currentId)
@@ -72,9 +72,9 @@ class MeasureInformationModule(@Autowired val measureRepo: MeasureRepository) : 
             // Make the icd10-code one position shorter, and thus more general.
             currentId = currentId.substring(0, currentId.length - 1)
             // Once we have shortened the code, we need to indicate that the info is not on the original level
-            status = Insatsrekommendationstatus.DIAGNOSKOD_PA_HOGRE_NIVA
+            status = Atgardsrekommendationstatus.DIAGNOSKOD_PA_HOGRE_NIVA
         }
-        return Pair(null, Insatsrekommendationstatus.INFORMATION_SAKNAS)
+        return Pair(null, Atgardsrekommendationstatus.INFORMATION_SAKNAS)
     }
 
     private fun measureForCode(measures: List<Measure>, diagnoseId: String): Measure? =

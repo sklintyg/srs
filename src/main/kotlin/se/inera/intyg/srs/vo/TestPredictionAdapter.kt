@@ -7,8 +7,8 @@ import org.springframework.context.annotation.Profile
 @Profile("test")
 class TestPredictionAdapter: PredictionAdapter {
 
-    override fun doStuff() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun getPrediction(person: Person, diagnose: Diagnose): Double {
+        return 0.0;
     }
 
 }

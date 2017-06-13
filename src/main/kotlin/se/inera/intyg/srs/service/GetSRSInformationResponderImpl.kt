@@ -36,11 +36,11 @@ class GetSRSInformationResponderImpl(@Autowired val measureModule: MeasureInform
             }
         }
 
-        if (request.utdatafilter.isInsatsrekommendation) {
+        if (request.utdatafilter.isAtgardsrekommendation) {
             val measures = measureModule.getInfo(persons)
             measures.forEach { measure ->
                 val underlag = response.bedomningsunderlag.find { it.personId == measure.key.personId }
-                underlag!!.insatsrekommendationer = measure.value
+                underlag!!.atgardsrekommendationer = measure.value
             }
         }
 
@@ -52,7 +52,7 @@ class GetSRSInformationResponderImpl(@Autowired val measureModule: MeasureInform
             individer.map { individ ->
                 val age = calulateAge(individ.personId)
                 val sex = calculateSex(individ.personId)
-                val extent = if (individ.omfattning != null) Extent.valueOf(individ.omfattning.value()) else null
+                val extent = Extent.valueOf(individ.omfattning.value())
                 val diagnoses = individ.diagnos!!.map { diagnos -> Diagnose(diagnos.code) }
                 Person(individ.personId, age, sex, extent, diagnoses)
             }

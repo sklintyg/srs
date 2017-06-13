@@ -2,6 +2,7 @@
 
 # General
 inera_root: /opt/inera
+archive_dir: "{{ inera_root }}/archives"
 java_home: "{{ inera_root }}/jre8"
 releases_folder: "{{ inera_root }}/releases"
 deploy_from_repo: true
@@ -46,3 +47,7 @@ database_pool_maxActive: 20
 database_pool_maxIdle: 20
 database_pool_minIdle: 10
 database_pool_initialSize: 10
+
+# R
+rjava_version: 0.9-8
+pch_version: 1.3
