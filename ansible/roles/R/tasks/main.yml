@@ -1,5 +1,10 @@
 ---
 
+- name: Ensure R is installed.
+  yum:
+    name: R
+    state: present
+
 - name: Download rJava_{{ rjava_version }}.tar.gz
   get_url:
     url: "http://ftp.acc.umu.se/mirror/CRAN/src/contrib/rJava_{{ rjava_version }}.tar.gz"
