@@ -443,11 +443,11 @@
             <urn:individ>
                <urn:person-id>197308051234</urn:person-id>
                <urn:diagnos>
-                  <urn1:code>Z74</urn1:code>
+                  <urn1:code>F43</urn1:code>
                   <urn1:codeSystem>1.2.752.116.1.1.1.1.3</urn1:codeSystem>
                </urn:diagnos>
                <urn:diagnos>
-                  <urn1:code>A24</urn1:code>
+                  <urn1:code>F445</urn1:code>
                   <urn1:codeSystem>1.2.752.116.1.1.1.1.3</urn1:codeSystem>
                </urn:diagnos>
                <urn:omfattning>HELT_NEDSATT</urn:omfattning>
@@ -467,7 +467,7 @@
          </urn:utdatafilter>
       </urn:GetSRSInformationRequest>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:riv:clinicalprocess:healthcond:srs:GetSRSInformationResponder:1:GetSRSInformation"/><con:wsrmConfig version="1.2"/></con:call><con:call id="874ff999-b806-47e1-995b-657955015746" name="getMeasureInfo"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>https://demo.srs.intygstjanster.se/services/getsrs</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:riv:clinicalprocess:healthcond:srs:GetSRSInformationResponder:1" xmlns:urn1="urn:riv:clinicalprocess:healthcond:certificate:types:2">
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:riv:clinicalprocess:healthcond:srs:GetSRSInformationResponder:1:GetSRSInformation"/><con:wsrmConfig version="1.2"/></con:call><con:call id="874ff999-b806-47e1-995b-657955015746" name="getMeasureInfo"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/services/getsrs</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:riv:clinicalprocess:healthcond:srs:GetSRSInformationResponder:1" xmlns:urn1="urn:riv:clinicalprocess:healthcond:certificate:types:2">
    <soapenv:Header/>
    <soapenv:Body>
       <urn:GetSRSInformationRequest>
