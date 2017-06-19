@@ -8,8 +8,8 @@ import javax.persistence.Id
 import javax.persistence.OneToMany
 
 @Entity
-class Measure(val diagnoseId: String,
-              val diagnoseText: String,
+class Measure(val diagnosisId: String,
+              val diagnosisText: String,
               val version: String,
               @OneToMany(fetch = FetchType.EAGER)
               val priorities: Collection<Priority>,
@@ -17,6 +17,6 @@ class Measure(val diagnoseId: String,
               val id: Long = -1) {
 
     override fun toString() =
-            "Measure(id=$id, diagnoseId='$diagnoseId', diagnoseText='$diagnoseText', version='$version', priorities='$priorities')"
+            "Measure(id=$id, diagnosisId='$diagnosisId', diagnosisText='$diagnosisText', version='$version', priorities='$priorities')"
 
 }

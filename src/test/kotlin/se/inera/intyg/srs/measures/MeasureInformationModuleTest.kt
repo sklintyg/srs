@@ -9,7 +9,7 @@ import se.inera.intyg.srs.persistence.Measure
 import se.inera.intyg.srs.persistence.MeasureRepository
 import se.inera.intyg.srs.persistence.Priority
 import se.inera.intyg.srs.persistence.Recommendation
-import se.inera.intyg.srs.vo.Diagnose
+import se.inera.intyg.srs.vo.Diagnosis
 import se.inera.intyg.srs.vo.Extent
 import se.inera.intyg.srs.vo.MeasureInformationModule
 import se.inera.intyg.srs.vo.Person
@@ -17,9 +17,9 @@ import se.inera.intyg.srs.vo.Sex
 
 class MeasureInformationModuleTest {
 
-    private val DIAGNOSE_A1234 = "A1234"
-    private val DIAGNOSE_A12 = "A12"
-    private val DIAGNOSE_B12 = "B12"
+    private val DIAGNOSIS_A1234 = "A1234"
+    private val DIAGNOSIS_A12 = "A12"
+    private val DIAGNOSIS_B12 = "B12"
 
     lateinit var measureRepo: MeasureRepository
 
@@ -33,17 +33,17 @@ class MeasureInformationModuleTest {
     }
 
     fun insertMeasureData() {
-        whenever(measureRepo.findByDiagnoseIdStartingWith("A12")).thenReturn(listOf(Measure(DIAGNOSE_A12, "Depression", "1.0",
+        whenever(measureRepo.findByDiagnosisIdStartingWith("A12")).thenReturn(listOf(Measure(DIAGNOSIS_A12, "Depression", "1.0",
                 listOf((Priority(1, Recommendation("Softa")))))))
-        whenever(measureRepo.findByDiagnoseIdStartingWith("B12")).thenReturn(listOf(Measure(DIAGNOSE_B12, "Benbrott", "1.0",
+        whenever(measureRepo.findByDiagnosisIdStartingWith("B12")).thenReturn(listOf(Measure(DIAGNOSIS_B12, "Benbrott", "1.0",
                 listOf((Priority(1, Recommendation("Hoppa på ett ben")))))))
     }
 
     @Test
-    fun diagnoseCodeIsShortenedUntilItMatches() {
-        val person: Person = Person("1212121212", 35, Sex.MAN, Extent.HELT_NEDSATT, listOf(Diagnose(DIAGNOSE_A1234)))
+    fun diagnosisCodeIsShortenedUntilItMatches() {
+        val person: Person = Person("1212121212", 35, Sex.MAN, Extent.HELT_NEDSATT, listOf(Diagnosis(DIAGNOSIS_A1234)))
         val result = module.getInfo(listOf(person))
-        assertEquals(DIAGNOSE_A12, result.get(person)!!.rekommendation.get(0).diagnos.code)
+        assertEquals(DIAGNOSIS_A12, result.get(person)!!.rekommendation.get(0).diagnos.code)
     }
 
     @Test

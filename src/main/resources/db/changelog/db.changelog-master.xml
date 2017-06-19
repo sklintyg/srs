@@ -11,10 +11,10 @@
             <column name="ID" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="DIAGNOSE_ID" type="VARCHAR(255)">
+            <column name="DIAGNOSIS_ID" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="DIAGNOSE_TEXT" type="VARCHAR(255)">
+            <column name="DIAGNOSIS_TEXT" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
             <column name="VERSION" type="VARCHAR(255)">

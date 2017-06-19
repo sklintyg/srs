@@ -31,20 +31,19 @@ class MeasureInformationModule(@Autowired val measureRepo: MeasureRepository) : 
 
     private fun createInfo(person: Person): Atgardsrekommendationer {
         val recommendations = Atgardsrekommendationer()
-        person.diagnoses.forEach { diagnose ->
+        person.diagnoses.forEach { incomingDiagnosis ->
             val recommendation = Atgardsrekommendation()
-            val (measure, status) = getMeasuresForDiagnose(diagnose.code)
+            val (measure, status) = getMeasuresForDiagnosis(incomingDiagnosis.code)
 
-            val diagnos = Diagnos()
-            diagnos.codeSystem = diagnose.codeSystem
+            val outgoingDiagnosis = Diagnos()
+            outgoingDiagnosis.codeSystem = incomingDiagnosis.codeSystem
 
             if (measure == null) {
-                diagnos.code = diagnose.code
+                outgoingDiagnosis.code = incomingDiagnosis.code
             } else {
-                diagnos.code = measure.diagnoseId
-                diagnos.displayName = measure.diagnoseText
+                outgoingDiagnosis.code = measure.diagnosisId
+                outgoingDiagnosis.displayName = measure.diagnosisText
 
-                // TODO: recommendation.version = measure.version
                 measure.priorities.forEach {
                     val atgard = Atgard()
                     atgard.atgardsforslag = it.recommendation.recommendationText
@@ -53,23 +52,22 @@ class MeasureInformationModule(@Autowired val measureRepo: MeasureRepository) : 
                 }
             }
 
-            recommendation.diagnos = diagnos
+            recommendation.diagnos = outgoingDiagnosis
             recommendation.atgardsrekommendationstatus = status
             recommendations.rekommendation.add(recommendation)
         }
         return recommendations
     }
 
-    private fun getMeasuresForDiagnose(diagnoseId: String): Pair<Measure?, Atgardsrekommendationstatus> {
-        val possibleMeasures = measureRepo.findByDiagnoseIdStartingWith(diagnoseId.substring(0, MIN_ID_POSITIONS))
+    private fun getMeasuresForDiagnosis(diagnosisId: String): Pair<Measure?, Atgardsrekommendationstatus> {
+        var currentId = cleanDiagnosisCode(diagnosisId)
+        val possibleMeasures = measureRepo.findByDiagnosisIdStartingWith(currentId.substring(0, MIN_ID_POSITIONS))
         var status: Atgardsrekommendationstatus = Atgardsrekommendationstatus.OK
-        var currentId = cleanDiagnoseCode(diagnoseId)
         while (currentId.length >= MIN_ID_POSITIONS) {
             val measure = measureForCode(possibleMeasures, currentId)
             if (measure != null) {
                 return Pair(measure, status)
             }
-            // Make the icd10-code one position shorter, and thus more general.
             currentId = currentId.substring(0, currentId.length - 1)
             // Once we have shortened the code, we need to indicate that the info is not on the original level
             status = Atgardsrekommendationstatus.DIAGNOSKOD_PA_HOGRE_NIVA
@@ -77,9 +75,9 @@ class MeasureInformationModule(@Autowired val measureRepo: MeasureRepository) : 
         return Pair(null, Atgardsrekommendationstatus.INFORMATION_SAKNAS)
     }
 
-    private fun measureForCode(measures: List<Measure>, diagnoseId: String): Measure? =
-            measures.find { cleanDiagnoseCode(it.diagnoseId) == diagnoseId }
+    private fun measureForCode(measures: List<Measure>, diagnosisId: String): Measure? =
+            measures.find { cleanDiagnosisCode(it.diagnosisId) == diagnosisId }
 
-    private fun cleanDiagnoseCode(diagnoseId: String): String = diagnoseId.toUpperCase(Locale.ENGLISH).replace(".", "")
+    private fun cleanDiagnosisCode(diagnosisId: String): String = diagnosisId.toUpperCase(Locale.ENGLISH).replace(".", "")
 
 }

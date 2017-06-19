@@ -2,6 +2,7 @@
 
 # Configuration repository
 environment_name: "demo"
+config_etc_folder: "{{ config_folder }}/{{ environment_name }}"
 
 proxy_env:
   http_proxy: http://bf-proxy.sth:8888

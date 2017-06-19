@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Diagnos
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Diagnosprediktion
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Diagnosprediktionstatus
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Prediktion
 import java.util.*
 
@@ -26,19 +27,29 @@ class PredictionInformationModule : InformationModule<Prediktion> {
     }
 
     private fun createInfo(person: Person): Prediktion {
-        val prediction = Prediktion()
-        person.diagnoses.forEach { diagnose ->
-            val diagnos = Diagnos()
-            diagnos.code = diagnose.code
-            diagnos.codeSystem = diagnose.codeSystem
+        val outgoingPrediction = Prediktion()
 
+        person.diagnoses.forEach { incomingDiagnosis ->
             val diagnosPrediktion = Diagnosprediktion()
-            diagnosPrediktion.sannolikhetLangvarig = rAdapter.getPrediction(person, diagnose)
-            diagnosPrediktion.diagnos = diagnos
+            val outgoingDiagnosis = Diagnos()
+            outgoingDiagnosis.codeSystem = incomingDiagnosis.codeSystem
+            diagnosPrediktion.diagnos = outgoingDiagnosis
 
-            prediction.diagnosprediktion.add(diagnosPrediktion)
+            val calculatedPrediction = rAdapter.getPrediction(person, incomingDiagnosis)
+            diagnosPrediktion.diagnosprediktionstatus = calculatedPrediction.status
+
+            if (calculatedPrediction.status == Diagnosprediktionstatus.NOT_OK ||
+                    calculatedPrediction.status == Diagnosprediktionstatus.PREDIKTIONSMODELL_SAKNAS) {
+                outgoingDiagnosis.code = incomingDiagnosis.code
+            } else {
+                outgoingDiagnosis.code = calculatedPrediction.diagnosis
+                diagnosPrediktion.sannolikhetLangvarig = calculatedPrediction.prediction
+            }
+
+            outgoingPrediction.diagnosprediktion.add(diagnosPrediktion)
         }
-        return prediction
+
+        return outgoingPrediction
     }
 
 }

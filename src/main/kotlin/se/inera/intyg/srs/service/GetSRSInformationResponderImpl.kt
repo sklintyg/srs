@@ -29,18 +29,26 @@ class GetSRSInformationResponderImpl(@Autowired val measureModule: MeasureInform
         }
 
         if (request.utdatafilter.isPrediktion) {
-            val predictions = predictionModule.getInfo(persons)
-            predictions.forEach { prediction ->
-                val underlag = response.bedomningsunderlag.find { it.personId == prediction.key.personId }
-                underlag!!.prediktion = prediction.value
+            try {
+                val predictions = predictionModule.getInfo(persons)
+                predictions.forEach { prediction ->
+                    val underlag = response.bedomningsunderlag.find { it.personId == prediction.key.personId }
+                    underlag!!.prediktion = prediction.value
+                }
+            } catch (e: Exception) {
+                log.error("Predictions could not be produced. Please check for errror.", e)
             }
         }
 
         if (request.utdatafilter.isAtgardsrekommendation) {
-            val measures = measureModule.getInfo(persons)
-            measures.forEach { measure ->
-                val underlag = response.bedomningsunderlag.find { it.personId == measure.key.personId }
-                underlag!!.atgardsrekommendationer = measure.value
+            try {
+                val measures = measureModule.getInfo(persons)
+                measures.forEach { measure ->
+                    val underlag = response.bedomningsunderlag.find { it.personId == measure.key.personId }
+                    underlag!!.atgardsrekommendationer = measure.value
+                }
+            } catch (e: Exception) {
+                log.error("Mesaures could not be produced. Please check for errror.", e)
             }
         }
 
@@ -53,7 +61,7 @@ class GetSRSInformationResponderImpl(@Autowired val measureModule: MeasureInform
                 val age = calulateAge(individ.personId)
                 val sex = calculateSex(individ.personId)
                 val extent = Extent.valueOf(individ.omfattning.value())
-                val diagnoses = individ.diagnos!!.map { diagnos -> Diagnose(diagnos.code) }
+                val diagnoses = individ.diagnos!!.map { diagnos -> Diagnosis(diagnos.code) }
                 Person(individ.personId, age, sex, extent, diagnoses)
             }
 
