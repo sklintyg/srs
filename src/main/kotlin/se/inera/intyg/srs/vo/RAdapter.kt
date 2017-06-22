@@ -66,39 +66,47 @@ class RAdapter() : PredictionAdapter {
 
     override fun getPrediction(person: Person, diagnosis: Diagnosis): Prediction {
 
-        val (model, status) = getModelForDiagnosis(diagnosis.code)
+        // Synchronizing here is an obvious performance bottle neck, but we have no choice since the R engine is
+        // single-threaded, and cannot cope with concurrent calls. Intygsprojektet has accepted that R be used
+        // for the execution of prediction models, and there is no reason to the believe that the number of calls
+        // to this service will be excessive during the pilot. However, if this is widely deploy once the pilot
+        // is over, we would need to consider porting the R models to some solution that scales better.
+        synchronized(RAdapter::class) {
+            val (model, status) = getModelForDiagnosis(diagnosis.code)
 
-        if (model == null) {
-            return Prediction(diagnosis.code, null, Diagnosprediktionstatus.PREDIKTIONSMODELL_SAKNAS)
+            if (model == null) {
+                return Prediction(diagnosis.code, null, Diagnosprediktionstatus.PREDIKTIONSMODELL_SAKNAS)
+            }
+
+            try {
+                loadModel(model.fileName)
+            } catch (e: Exception) {
+                log.error("Loading model file $model.fileName did not succeed: ", e)
+                return Prediction(diagnosis.code, null, Diagnosprediktionstatus.NOT_OK)
+            }
+
+            val rDataFrame = "data <- data.frame(" +
+                    "days = as.integer(" + DAYS + "), " +
+                    "age = as.integer(" + person.age + "), " +
+                    "sex = '" + person.sex.predictionString + "', " +
+                    "SA_syssStart = '" + EMPLOYMENT + "', " +
+                    "SA_ExtentFirst = '" + person.extent.predictionString + "', " +
+                    "SA_total_grossd_Yminus1 = '" + SICKDAYS_LASTYEAR + "')"
+
+            val cmdPrediction = "output <- round(predict(model,newdata = data)\$Surv, 2)"
+
+            rengine.eval(rDataFrame)
+            val rOutput = rengine.eval(cmdPrediction)
+
+            if (rOutput != null) {
+                log.info("Successful prediction, result: " + rOutput.asDouble())
+                return Prediction(model.diagnosis, rOutput.asDouble(), status)
+            } else {
+                log.error("An error occurred during execution of the prediction model: ")
+                return Prediction(diagnosis.code, null, Diagnosprediktionstatus.NOT_OK)
+            }
         }
 
-        try {
-            loadModel(model.fileName)
-        } catch (e: Exception) {
-            log.error("Loading model file $model.fileName did not succeed: ", e)
-            return Prediction(diagnosis.code, null, Diagnosprediktionstatus.NOT_OK)
-        }
-
-        val rDataFrame = "data <- data.frame(" +
-                "days = as.integer(" + DAYS + "), " +
-                "age = as.integer(" + person.age + "), " +
-                "sex = '" + person.sex.predictionString + "', " +
-                "SA_syssStart = '" + EMPLOYMENT + "', " +
-                "SA_ExtentFirst = '" + person.extent.predictionString + "', " +
-                "SA_total_grossd_Yminus1 = '" + SICKDAYS_LASTYEAR + "')"
-
-        val cmdPrediction = "output <- round(predict(model,newdata = data)\$Surv, 2)"
-
-        rengine.eval(rDataFrame)
-        val rOutput = rengine.eval(cmdPrediction)
-
-        if (rOutput != null) {
-            log.info("Successful prediction, result: " + rOutput.asDouble())
-            return Prediction(model.diagnosis, rOutput.asDouble(), status)
-        } else {
-            log.error("An error occurred during execution of the prediction model: ")
-            return Prediction(diagnosis.code, null, Diagnosprediktionstatus.NOT_OK)
-        }
     }
 
     fun loadModel(dataFilePath: String) {
