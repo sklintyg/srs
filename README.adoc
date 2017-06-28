@@ -2,6 +2,10 @@
 
 To run:
 
+- 
+
 . In schemas/intyg/clinicalprocess-healthcond-srs: ./gradlew clean build install
+
+R_HOME=/Library/Frameworks/R.framework/Resources java -Djava.library.path="/Library/Frameworks/R.framework/Resources/library/rJava/jri" -jar build/libs/*.war --spring.profiles.active=runtime
 
 . In this directory: ./gradlew clean build; java -jar build/libs/*.war
