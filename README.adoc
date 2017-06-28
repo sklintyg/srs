@@ -2,32 +2,78 @@
 
 == Runtime
 
-To get the application up and running, you have to do to things in preparation:
+To get the application up and running, you have to do two things in preparation:
 
 === Install R
 
 R is used for prediction modelling, and the 'rJava' package is used as the bridge between Java and R.
 
-Install a recent version of R, using your package manager of choice. R packages have been tried with Mac Homebrew, and Centos.
+Install a recent version of R, using your package manager of choice. R packages have been tried with Mac Homebrew, Arch Linux and CentOS.
 
-Install 'rJava' into the R environment. This is most easily done by logging in to R (i.e. start 'R' from the command line) and then run the
-line: 'install.packages("rJava")'
+Install 'rJava' and 'pch' into the R environment. This is most easily done by logging in to R (i.e. start 'R' from the command line) and then run the
+lines:
+----
+install.packages("rJava")
+install.packages("pch")
+----
+
+Now you need to figure out things: where your R environment has been installed, and where the rJava package has been installed.
+
+On Mac OS using Homebrew, it's probably:
+----
+R_HOME=/Library/Frameworks/R.framework/Resources
+java.library.path=/Library/Frameworks/R.framework/Resources/library/rJava/jri
+----
+
+On Arch Linux, it's probably:
+----
+R_HOME=/usr/lib64/R
+java.library.path="$HOME/R/x86_64-pc-linux-gnu-library/3.4/rJava/jri"
+----
+
+On CentOS, it's probably:
+----
+R_HOME=/usr/lib64/R
+java.library.path=/usr/lib64/R/library/rJava/jri
+----
+
+These values will be used when the srs application is started, but first:
+
 
 === Compile schemas
 
 Since we're still in quite rapid development, srs relies on a snapshot version of the intyg schemas, and therefore you need to build and
 install the latest version of these into your local maven repo:
 
-. In schemas/intyg/clinicalprocess-healthcond-srs: ./gradlew clean build install
+In schemas/intyg/clinicalprocess-healthcond-srs:
 
-ansible-playbook -i inventory/srs/demo site.yml -e "gitcrypt_key_file=/opt/key/git-crypt4.key gitcrypt_key_name=git-crypt4.key" -e "version=0.0.1-SNAPSHOT" -e "deploy_from_repo=false"
+ ./gradlew clean build install
 
-To run:
 
-- 
+=== Building and running the application
 
-. In schemas/intyg/clinicalprocess-healthcond-srs: ./gradlew clean build install
+Now that the dependencies are taken care of, we build the application as usual:
 
-R_HOME=/Library/Frameworks/R.framework/Resources java -Djava.library.path="/Library/Frameworks/R.framework/Resources/library/rJava/jri" -jar build/libs/*.war --spring.profiles.active=runtime
+ ./gradlew clean build
 
-. In this directory: ./gradlew clean build; java -jar build/libs/*.war
+To run the application run the following, substituting your values for R_HOME and java.library.path:
+
+ R_HOME=/Library/Frameworks/R.framework/Resources java -Djava.library.path="/Library/Frameworks/R.framework/Resources/library/rJava/jri" -jar build/libs/*.war --spring.profiles.active=runtime
+
+The 'runtime' profile is necessary to make sure that a real connection to the R engine is created.
+
+
+=== SoapUI
+
+There is a SoapUI in the project repository which can be used to fire test messages at the application once it's running. Import the file
+soapui/GetSRSInformation-soapui-project.xml into your SoapUI and try it.
+
+
+== Ansible
+
+The ansible provisioning is similar to all other intygsprojekt-services: the baseline provisioning is found in the 'tools' git repo. In the
+srs repo, the ansible provision/deploy is in the file site.yml.
+
+Here's an example of running the 'site.yml' for provisioning to test, using what you've built on your local machine:
+
+ ansible-playbook -i inventory/srs/test site.yml -e "gitcrypt_key_file=/opt/key/git-crypt4.key gitcrypt_key_name=git-crypt4.key" -e "version=0.0.1-SNAPSHOT" -e "deploy_from_repo=false"
