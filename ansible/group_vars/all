@@ -11,7 +11,7 @@ deploy_from_repo: true
 proxy_env: {}
 
 # Spring profiles
-profiles: runtime
+profiles: runtime,mysql
 
 # Configuration repository
 config_repository: https://github.com/sklintyg/webcert-konfiguration.git

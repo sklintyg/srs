@@ -1,5 +1,27 @@
 = SRS (Stöd för Rätt Sjukskrivning)
 
+== Runtime
+
+To get the application up and running, you have to do to things in preparation:
+
+=== Install R
+
+R is used for prediction modelling, and the 'rJava' package is used as the bridge between Java and R.
+
+Install a recent version of R, using your package manager of choice. R packages have been tried with Mac Homebrew, and Centos.
+
+Install 'rJava' into the R environment. This is most easily done by logging in to R (i.e. start 'R' from the command line) and then run the
+line: 'install.packages("rJava")'
+
+=== Compile schemas
+
+Since we're still in quite rapid development, srs relies on a snapshot version of the intyg schemas, and therefore you need to build and
+install the latest version of these into your local maven repo:
+
+. In schemas/intyg/clinicalprocess-healthcond-srs: ./gradlew clean build install
+
+ansible-playbook -i inventory/srs/demo site.yml -e "gitcrypt_key_file=/opt/key/git-crypt4.key gitcrypt_key_name=git-crypt4.key" -e "version=0.0.1-SNAPSHOT" -e "deploy_from_repo=false"
+
 To run:
 
 - 

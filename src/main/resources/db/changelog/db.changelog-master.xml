@@ -7,69 +7,69 @@
 
     <changeSet id="1" author="jh">
 
-        <createTable tableName="MEASURE">
-            <column name="ID" type="BIGINT" autoIncrement="true">
+        <createTable tableName="measure">
+            <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="DIAGNOSIS_ID" type="VARCHAR(255)">
+            <column name="diagnosis_id" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="DIAGNOSIS_TEXT" type="VARCHAR(255)">
+            <column name="diagnosis_text" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="VERSION" type="VARCHAR(255)">
+            <column name="version" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
         </createTable>
 
-        <createTable tableName="MEASURE_PRIORITIES">
-            <column name="MEASURE_ID" type="BIGINT">
+        <createTable tableName="measure_priorities">
+            <column name="measure_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="PRIORITIES_ID" type="BIGINT">
+            <column name="priorities_id" type="BIGINT">
                 <constraints nullable="false" unique="true"/>
             </column>
         </createTable>
 
-        <createTable tableName="PRIORITY">
-            <column name="ID" type="BIGINT" autoIncrement="true">
+        <createTable tableName="priority">
+            <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="PRIORITY" type="INTEGER">
+            <column name="priority" type="INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="RECOMMENDATION_ID" type="BIGINT">
+            <column name="recommendation_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
         </createTable>
 
-        <createTable tableName="RECOMMENDATION">
-            <column name="ID" type="BIGINT" autoIncrement="true">
+        <createTable tableName="recommendation">
+            <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="RECOMMENDATION_TEXT" type="VARCHAR(255)">
+            <column name="recommendation_text" type="VARCHAR(255)">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
         </createTable>
 
-        <addForeignKeyConstraint constraintName="MEASURE_PRIORITIES_FK"
-                                 baseTableName="MEASURE_PRIORITIES"
-                                 baseColumnNames="MEASURE_ID"
-                                 referencedTableName="MEASURE"
-                                 referencedColumnNames="ID"
+        <addForeignKeyConstraint constraintName="measure_priorities_fk"
+                                 baseTableName="measure_priorities"
+                                 baseColumnNames="measure_id"
+                                 referencedTableName="measure"
+                                 referencedColumnNames="id"
                                  onDelete="CASCADE"/>
 
-        <addForeignKeyConstraint constraintName="PRIORITIES_MEASURE_FK"
-                                 baseTableName="MEASURE_PRIORITIES"
-                                 baseColumnNames="PRIORITIES_ID"
-                                 referencedTableName="PRIORITY"
-                                 referencedColumnNames="ID"/>
+        <addForeignKeyConstraint constraintName="priorities_measure_fk"
+                                 baseTableName="measure_priorities"
+                                 baseColumnNames="priorities_id"
+                                 referencedTableName="priority"
+                                 referencedColumnNames="id"/>
 
-        <addForeignKeyConstraint constraintName="PRIORITY_RECOMMENDATION_FK"
-                                 baseTableName="PRIORITY"
-                                 baseColumnNames="RECOMMENDATION_ID"
-                                 referencedTableName="RECOMMENDATION"
-                                 referencedColumnNames="ID"/>
+        <addForeignKeyConstraint constraintName="priority_recommendation_fk"
+                                 baseTableName="priority"
+                                 baseColumnNames="recommendation_id"
+                                 referencedTableName="recommendation"
+                                 referencedColumnNames="id"/>
 
     </changeSet>
 
