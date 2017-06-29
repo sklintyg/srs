@@ -2,7 +2,7 @@
 
 == Runtime
 
-To get the application up and running, you have to do two things in preparation:
+To get the application up and running, you have to do three things in preparation:
 
 === Install R
 
@@ -48,6 +48,12 @@ install the latest version of these into your local maven repo:
 In schemas/intyg/clinicalprocess-healthcond-srs:
 
  ./gradlew clean build install
+
+
+=== Copy models to /opt
+
+For now, the model files used by R are hard-coded to be found in '/opt/models'. Therefore, copy the directory 'models' (in this repo) and its
+contents to '/opt'.
 
 
 === Building and running the application
