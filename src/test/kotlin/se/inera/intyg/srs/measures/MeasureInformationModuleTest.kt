@@ -47,7 +47,7 @@ class MeasureInformationModuleTest {
         val nonExisting = "Z123"
         val person: Person = Person("1212121212", 35, Sex.MAN, Extent.HELT_NEDSATT, listOf(Diagnosis(nonExisting)))
         val result = module.getInfo(listOf(person))
-        assertEquals(nonExisting, result.get(person)!!.rekommendation.get(0).diagnos.code)
+        assertEquals(nonExisting, result.get(person)!!.rekommendation.get(0).inkommandediagnos.code)
         assertEquals(INFORMATION_SAKNAS, result.get(person)!!.rekommendation.get(0).atgardsrekommendationstatus)
     }
 
@@ -56,6 +56,7 @@ class MeasureInformationModuleTest {
         val person: Person = Person("1212121212", 35, Sex.MAN, Extent.HELT_NEDSATT, listOf(Diagnosis(DIAGNOSIS_A1234)))
         val result = module.getInfo(listOf(person))
         assertEquals(DIAGNOSIS_A12, result.get(person)!!.rekommendation.get(0).diagnos.code)
+        assertEquals(DIAGNOSIS_A1234, result.get(person)!!.rekommendation.get(0).inkommandediagnos.code)
         assertEquals(DIAGNOSKOD_PA_HOGRE_NIVA, result.get(person)!!.rekommendation.get(0).atgardsrekommendationstatus)
     }
 
@@ -69,6 +70,5 @@ class MeasureInformationModuleTest {
         assertEquals(DIAGNOSIS_B12, result.get(person)!!.rekommendation.get(1).diagnos.code)
         assertEquals(OK, result.get(person)!!.rekommendation.get(1).atgardsrekommendationstatus)
     }
-
 
 }

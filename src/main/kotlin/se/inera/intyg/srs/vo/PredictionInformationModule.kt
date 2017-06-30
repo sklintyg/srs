@@ -31,19 +31,19 @@ class PredictionInformationModule : InformationModule<Prediktion> {
 
         person.diagnoses.forEach { incomingDiagnosis ->
             val diagnosPrediktion = Diagnosprediktion()
-            val outgoingDiagnosis = Diagnos()
-            outgoingDiagnosis.codeSystem = incomingDiagnosis.codeSystem
-            diagnosPrediktion.diagnos = outgoingDiagnosis
+            diagnosPrediktion.inkommandediagnos = originalDiagnosis(incomingDiagnosis)
 
             val calculatedPrediction = rAdapter.getPrediction(person, incomingDiagnosis)
             diagnosPrediktion.diagnosprediktionstatus = calculatedPrediction.status
 
-            if (calculatedPrediction.status == Diagnosprediktionstatus.NOT_OK ||
-                    calculatedPrediction.status == Diagnosprediktionstatus.PREDIKTIONSMODELL_SAKNAS) {
-                outgoingDiagnosis.code = incomingDiagnosis.code
-            } else {
+            if (calculatedPrediction.status == Diagnosprediktionstatus.OK ||
+                    calculatedPrediction.status == Diagnosprediktionstatus.DIAGNOSKOD_PA_HOGRE_NIVA) {
+                val outgoingDiagnosis = Diagnos()
+                outgoingDiagnosis.codeSystem = incomingDiagnosis.codeSystem
                 outgoingDiagnosis.code = calculatedPrediction.diagnosis
+
                 diagnosPrediktion.sannolikhetLangvarig = calculatedPrediction.prediction
+                diagnosPrediktion.diagnos = outgoingDiagnosis
             }
 
             outgoingPrediction.diagnosprediktion.add(diagnosPrediktion)
@@ -51,5 +51,11 @@ class PredictionInformationModule : InformationModule<Prediktion> {
 
         return outgoingPrediction
     }
+}
 
+fun originalDiagnosis(incoming: Diagnosis): Diagnos {
+    val original = Diagnos()
+    original.codeSystem = incoming.codeSystem
+    original.code = incoming.code
+    return original
 }

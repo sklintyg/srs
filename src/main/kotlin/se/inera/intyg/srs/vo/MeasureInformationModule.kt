@@ -33,16 +33,16 @@ class MeasureInformationModule(@Autowired val measureRepo: MeasureRepository) : 
         val recommendations = Atgardsrekommendationer()
         person.diagnoses.forEach { incomingDiagnosis ->
             val recommendation = Atgardsrekommendation()
+            recommendation.inkommandediagnos = originalDiagnosis(incomingDiagnosis)
+
             val (measure, status) = getMeasuresForDiagnosis(incomingDiagnosis.code)
 
-            val outgoingDiagnosis = Diagnos()
-            outgoingDiagnosis.codeSystem = incomingDiagnosis.codeSystem
-
-            if (measure == null) {
-                outgoingDiagnosis.code = incomingDiagnosis.code
-            } else {
+            if (measure != null) {
+                val outgoingDiagnosis = Diagnos()
+                outgoingDiagnosis.codeSystem = incomingDiagnosis.codeSystem
                 outgoingDiagnosis.code = measure.diagnosisId
                 outgoingDiagnosis.displayName = measure.diagnosisText
+                recommendation.diagnos = outgoingDiagnosis
 
                 measure.priorities.forEach {
                     val atgard = Atgard()
@@ -52,7 +52,6 @@ class MeasureInformationModule(@Autowired val measureRepo: MeasureRepository) : 
                 }
             }
 
-            recommendation.diagnos = outgoingDiagnosis
             recommendation.atgardsrekommendationstatus = status
             recommendations.rekommendation.add(recommendation)
         }
