@@ -44,7 +44,11 @@ war {
 group = 'se.inera.intyg.srs'
 version = System.properties['buildVersion'] ?: '0.0.1-SNAPSHOT'
 
-sourceCompatibility = 1.8
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
 
 task createVersionPropertyFile(type: VersionPropertyFileTask)
 
