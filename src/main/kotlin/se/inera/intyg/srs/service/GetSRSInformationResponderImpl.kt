@@ -9,12 +9,7 @@ import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.GetSRS
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.GetSRSInformationResponderInterface
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.GetSRSInformationResponseType
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Individ
-import se.inera.intyg.srs.vo.Diagnosis
-import se.inera.intyg.srs.vo.Extent
-import se.inera.intyg.srs.vo.MeasureInformationModule
-import se.inera.intyg.srs.vo.Person
-import se.inera.intyg.srs.vo.PredictionInformationModule
-import se.inera.intyg.srs.vo.Sex
+import se.inera.intyg.srs.vo.*
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.ResultCodeEnum
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
@@ -22,7 +17,9 @@ import java.time.temporal.ChronoUnit
 @Service
 @SchemaValidation(type = SchemaValidation.SchemaValidationType.BOTH)
 class GetSRSInformationResponderImpl(@Autowired val measureModule: MeasureInformationModule,
-                                     @Autowired val predictionModule: PredictionInformationModule) : GetSRSInformationResponderInterface {
+                                     @Autowired val predictionModule: PredictionInformationModule,
+                                     @Autowired val statistikModule: StatistikModule)
+    : GetSRSInformationResponderInterface {
 
     private val log = LogManager.getLogger()
 
@@ -46,7 +43,7 @@ class GetSRSInformationResponderImpl(@Autowired val measureModule: MeasureInform
                     underlag!!.prediktion = prediction.value
                 }
             } catch (e: Exception) {
-                log.error("Predictions could not be produced. Please check for errror.", e)
+                log.error("Predictions could not be produced. Please check for error.", e)
             }
         }
 
@@ -58,7 +55,19 @@ class GetSRSInformationResponderImpl(@Autowired val measureModule: MeasureInform
                     underlag!!.atgardsrekommendationer = measure.value
                 }
             } catch (e: Exception) {
-                log.error("Mesaures could not be produced. Please check for errror.", e)
+                log.error("Mesaures could not be produced. Please check for error.", e)
+            }
+        }
+
+        if (request.utdatafilter.isStatistik) {
+            try {
+                val statistics = statistikModule.getInfo(persons)
+                statistics.forEach { statistic ->
+                    val underlag = response.bedomningsunderlag.find { it.personId == statistic.key.personId }
+                    underlag!!.statistik = statistic.value
+                }
+            } catch (e: Exception) {
+                log.error("Statistic could not be produced. Please check for error.", e)
             }
         }
 

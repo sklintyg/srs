@@ -3,6 +3,7 @@ package se.inera.intyg.srs
 import org.apache.cxf.Bus
 import org.apache.cxf.jaxws.EndpointImpl
 import org.apache.logging.log4j.LogManager
+
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.SpringApplication
@@ -10,14 +11,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.builder.SpringApplicationBuilder
 import org.springframework.boot.web.support.SpringBootServletInitializer
 import org.springframework.context.annotation.Bean
+
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.GetSRSInformationResponderInterface
-import se.inera.intyg.srs.persistence.Measure
-import se.inera.intyg.srs.persistence.MeasureRepository
-import se.inera.intyg.srs.persistence.Priority
-import se.inera.intyg.srs.persistence.PriorityRepository
-import se.inera.intyg.srs.persistence.Recommendation
-import se.inera.intyg.srs.persistence.RecommendationRepository
+import se.inera.intyg.srs.persistence.*
+
 import se.riv.itintegration.monitoring.rivtabp21.v1.PingForConfigurationResponderInterface
+
 import javax.xml.ws.Endpoint
 
 @SpringBootApplication
@@ -54,7 +53,8 @@ class Application : SpringBootServletInitializer() {
     }
 
     @Bean
-    fun init(measureRepo: MeasureRepository, recommendationRepo: RecommendationRepository, prioRepo: PriorityRepository) = CommandLineRunner {
+    fun init(measureRepo: MeasureRepository, recommendationRepo: RecommendationRepository,
+             prioRepo: PriorityRepository, statistikRepo: StatistikRepository) = CommandLineRunner {
 
         val recommendation01 = recommendationRepo.save(Recommendation("patienten bör överväga att kontakta företagshälsovård och arbetsgivare för att avgränsa eller byta arbetsuppgifter, eller t.o.m. byta yrke eller arbetsplats"))
         val recommendation02 = recommendationRepo.save(Recommendation("remiss till behandling med psykoterapeutiska metoder"))
