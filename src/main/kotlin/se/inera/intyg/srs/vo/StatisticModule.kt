@@ -7,8 +7,9 @@ import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.*
 import se.inera.intyg.srs.persistence.InternalStatistic
 import se.inera.intyg.srs.persistence.StatisticRepository
 import java.util.*
+
 @Service
-class StatisticModule(@Autowired val statistikRepo: StatisticRepository): InformationModule<Statistik> {
+class StatisticModule(@Autowired val statisticRepo: StatisticRepository): InformationModule<Statistik> {
 
     private val MIN_ID_POSITIONS = 3
 
@@ -32,12 +33,13 @@ class StatisticModule(@Autowired val statistikRepo: StatisticRepository): Inform
 
     private fun getStatistikbildForDiagnosis(diagnosisId: String): Statistikbild? {
         var currentId = cleanDiagnosisCode(diagnosisId)
-        val possibleStatistics = statistikRepo.findByDiagnosisId(currentId.substring(0, MIN_ID_POSITIONS))
+        val possibleStatistics = statisticRepo.findByDiagnosisId(currentId.substring(0, MIN_ID_POSITIONS))
 
         var status: Statistikstatus = Statistikstatus.OK
 
         while (currentId.length >= MIN_ID_POSITIONS) {
             val statistikbild = measureForCode(possibleStatistics, currentId)
+            statistikbild.inkommandediagnos = buildDiagnosis(diagnosisId)
             if (statistikbild.andringstidpunkt != null && statistikbild.bildadress != null) {
                 statistikbild.statistikstatus = status
 
@@ -49,6 +51,7 @@ class StatisticModule(@Autowired val statistikRepo: StatisticRepository): Inform
         }
 
         val nothingFound = Statistikbild()
+        nothingFound.inkommandediagnos = buildDiagnosis(diagnosisId)
         nothingFound.statistikstatus = Statistikstatus.STATISTIK_SAKNAS
         nothingFound.diagnos = buildDiagnosis(diagnosisId)
         return nothingFound

@@ -1,6 +1,5 @@
 package se.inera.intyg.srs.service
 
-import com.sun.org.glassfish.external.statistics.Statistic
 import org.apache.cxf.annotations.SchemaValidation
 import org.apache.logging.log4j.LogManager
 import org.springframework.beans.factory.annotation.Autowired

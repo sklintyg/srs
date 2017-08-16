@@ -13,7 +13,14 @@ import org.springframework.boot.web.support.SpringBootServletInitializer
 import org.springframework.context.annotation.Bean
 
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.GetSRSInformationResponderInterface
-import se.inera.intyg.srs.persistence.*
+import se.inera.intyg.srs.persistence.MeasureRepository
+import se.inera.intyg.srs.persistence.PriorityRepository
+import se.inera.intyg.srs.persistence.RecommendationRepository
+import se.inera.intyg.srs.persistence.StatisticRepository
+import se.inera.intyg.srs.persistence.Recommendation
+import se.inera.intyg.srs.persistence.Measure
+import se.inera.intyg.srs.persistence.Priority
+
 
 import se.riv.itintegration.monitoring.rivtabp21.v1.PingForConfigurationResponderInterface
 
@@ -54,7 +61,7 @@ class Application : SpringBootServletInitializer() {
 
     @Bean
     fun init(measureRepo: MeasureRepository, recommendationRepo: RecommendationRepository,
-             prioRepo: PriorityRepository) = CommandLineRunner {
+             prioRepo: PriorityRepository, statisticRepo: StatisticRepository) = CommandLineRunner {
 
         val recommendation01 = recommendationRepo.save(Recommendation("patienten bör överväga att kontakta företagshälsovård och arbetsgivare för att avgränsa eller byta arbetsuppgifter, eller t.o.m. byta yrke eller arbetsplats"))
         val recommendation02 = recommendationRepo.save(Recommendation("remiss till behandling med psykoterapeutiska metoder"))

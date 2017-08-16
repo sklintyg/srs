@@ -11,13 +11,14 @@
         <urn:individ>
           <urn:person-id>197308051234</urn:person-id>
           <urn:diagnos>
-            <urn1:code>Z74</urn1:code>
+            <urn1:code>F43.8A</urn1:code>
             <urn1:codeSystem>1.2.752.116.1.1.1.1.3</urn1:codeSystem>
           </urn:diagnos>
           <urn:diagnos>
-            <urn1:code>A24</urn1:code>
+            <urn1:code>M751</urn1:code>
             <urn1:codeSystem>1.2.752.116.1.1.1.1.3</urn1:codeSystem>
           </urn:diagnos>
+          <urn:omfattning>HELT_NEDSATT</urn:omfattning>
         </urn:individ>
         <urn:individ>
           <urn:person-id>195408151244</urn:person-id>
@@ -25,11 +26,13 @@
             <urn1:code>B45</urn1:code>
             <urn1:codeSystem>1.2.752.116.1.1.1.1.3</urn1:codeSystem>
           </urn:diagnos>
+          <urn:omfattning>HELT_NEDSATT</urn:omfattning>
         </urn:individ>
       </urn:individer>
       <urn:utdatafilter>
-        <urn:prediktion>true</urn:prediktion>
-        <urn:fmbinformation>true</urn:fmbinformation>
+        <urn:prediktion>false</urn:prediktion>
+        <urn:atgardsrekommendation>true</urn:atgardsrekommendation>
+        <urn:fmbinformation>false</urn:fmbinformation>
       </urn:utdatafilter>
     </urn:GetSRSInformationRequest>
   </soapenv:Body>
