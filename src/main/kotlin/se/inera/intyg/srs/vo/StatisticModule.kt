@@ -4,16 +4,15 @@ import org.apache.logging.log4j.LogManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.*
-import se.inera.intyg.srs.persistence.InternalStatistik
-import se.inera.intyg.srs.persistence.StatistikRepository
+import se.inera.intyg.srs.persistence.InternalStatistic
+import se.inera.intyg.srs.persistence.StatisticRepository
 import java.util.*
 @Service
-class StatistikModule(@Autowired val statistikRepo: StatistikRepository): InformationModule<Statistik> {
+class StatisticModule(@Autowired val statistikRepo: StatisticRepository): InformationModule<Statistik> {
 
     private val MIN_ID_POSITIONS = 3
 
     override fun getInfo(persons: List<Person>): Map<Person, Statistik> {
-        log.info(persons)
         val statistics: HashMap<Person, Statistik> = HashMap<Person, Statistik>()
         persons.forEach { person ->
             statistics.put(person, createInfo(person))
@@ -33,7 +32,6 @@ class StatistikModule(@Autowired val statistikRepo: StatistikRepository): Inform
 
     private fun getStatistikbildForDiagnosis(diagnosisId: String): Statistikbild? {
         var currentId = cleanDiagnosisCode(diagnosisId)
-        log.info(currentId)
         val possibleStatistics = statistikRepo.findByDiagnosisId(currentId.substring(0, MIN_ID_POSITIONS))
 
         var status: Statistikstatus = Statistikstatus.OK
@@ -56,8 +54,8 @@ class StatistikModule(@Autowired val statistikRepo: StatistikRepository): Inform
         return nothingFound
     }
 
-    private fun measureForCode(statistics: List<InternalStatistik>, diagnosisId: String): Statistikbild {
-        val internal: InternalStatistik? = statistics.find { cleanDiagnosisCode(it.diagnosisId) == diagnosisId }
+    private fun measureForCode(statistics: List<InternalStatistic>, diagnosisId: String): Statistikbild {
+        val internal: InternalStatistic? = statistics.find { cleanDiagnosisCode(it.diagnosisId) == diagnosisId }
         val ret = Statistikbild()
         ret.diagnos = buildDiagnosis(diagnosisId)
         if (internal != null) {

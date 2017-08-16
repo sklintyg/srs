@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
-import se.inera.intyg.srs.persistence.InternalStatistik
-import se.inera.intyg.srs.persistence.StatistikRepository
+import se.inera.intyg.srs.persistence.InternalStatistic
+import se.inera.intyg.srs.persistence.StatisticRepository
 import java.nio.file.*
 import java.nio.file.attribute.BasicFileAttributes
 import java.time.LocalDateTime
@@ -19,7 +19,7 @@ import java.util.*
 @EnableScheduling
 class StatisticsFileUpdateService(@Value("\${statistics.image.dir}") val imageDir: String,
                                   @Value("\${base.url}") val baseUrl: String,
-                                  @Autowired val repo: StatistikRepository) {
+                                  @Autowired val repo: StatisticRepository) {
     private val log = LogManager.getLogger()
     private val imageFileExtension: String = "jpg"
     private val urlExtension: String = "/image/"
@@ -31,7 +31,7 @@ class StatisticsFileUpdateService(@Value("\${statistics.image.dir}") val imageDi
         log.info("Performing scheduled image update...")
 
         @Suppress("UNCHECKED_CAST")
-        val dbEntries = repo.findAll() as List<InternalStatistik>
+        val dbEntries = repo.findAll() as List<InternalStatistic>
         val diskEntries = ArrayList<String>()
 
         Files.walk(Paths.get(imageDir))
@@ -43,7 +43,7 @@ class StatisticsFileUpdateService(@Value("\${statistics.image.dir}") val imageDi
 
                     if (existingImage == null) {
                         log.info("New file found, saving as: $fileName")
-                        repo.save(InternalStatistik(fileName, buildUrl(fileName), fileModifiedTime))
+                        repo.save(InternalStatistic(fileName, buildUrl(fileName), fileModifiedTime))
                     } else if (!existingImage.timestamp.equals(fileModifiedTime)) {
                         println("Existing: ${existingImage.timestamp} Modified: $fileModifiedTime")
                         log.info("Existing but modified file found, updating $fileName")
@@ -61,7 +61,6 @@ class StatisticsFileUpdateService(@Value("\${statistics.image.dir}") val imageDi
                 repo.delete(it.id)
             }
         }
-
     }
 
     private fun fixFileName(file: Path): String = file.fileName.toString().dropLast(4)

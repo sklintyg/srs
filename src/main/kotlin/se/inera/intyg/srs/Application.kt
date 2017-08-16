@@ -54,7 +54,7 @@ class Application : SpringBootServletInitializer() {
 
     @Bean
     fun init(measureRepo: MeasureRepository, recommendationRepo: RecommendationRepository,
-             prioRepo: PriorityRepository, statistikRepo: StatistikRepository) = CommandLineRunner {
+             prioRepo: PriorityRepository) = CommandLineRunner {
 
         val recommendation01 = recommendationRepo.save(Recommendation("patienten bör överväga att kontakta företagshälsovård och arbetsgivare för att avgränsa eller byta arbetsuppgifter, eller t.o.m. byta yrke eller arbetsplats"))
         val recommendation02 = recommendationRepo.save(Recommendation("remiss till behandling med psykoterapeutiska metoder"))

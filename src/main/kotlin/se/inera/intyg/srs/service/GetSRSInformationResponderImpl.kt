@@ -1,5 +1,6 @@
 package se.inera.intyg.srs.service
 
+import com.sun.org.glassfish.external.statistics.Statistic
 import org.apache.cxf.annotations.SchemaValidation
 import org.apache.logging.log4j.LogManager
 import org.springframework.beans.factory.annotation.Autowired
@@ -18,7 +19,7 @@ import java.time.temporal.ChronoUnit
 @SchemaValidation(type = SchemaValidation.SchemaValidationType.BOTH)
 class GetSRSInformationResponderImpl(@Autowired val measureModule: MeasureInformationModule,
                                      @Autowired val predictionModule: PredictionInformationModule,
-                                     @Autowired val statistikModule: StatistikModule)
+                                     @Autowired val statisticModule: StatisticModule)
     : GetSRSInformationResponderInterface {
 
     private val log = LogManager.getLogger()
@@ -61,7 +62,7 @@ class GetSRSInformationResponderImpl(@Autowired val measureModule: MeasureInform
 
         if (request.utdatafilter.isStatistik) {
             try {
-                val statistics = statistikModule.getInfo(persons)
+                val statistics = statisticModule.getInfo(persons)
                 statistics.forEach { statistic ->
                     val underlag = response.bedomningsunderlag.find { it.personId == statistic.key.personId }
                     underlag!!.statistik = statistic.value

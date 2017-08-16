@@ -75,7 +75,7 @@
 
     <changeSet id="2" author="ef">
 
-        <createTable tableName="internal_statistik">
+        <createTable tableName="internal_statistic">
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>

@@ -5,7 +5,7 @@ import org.hibernate.annotations.Type
 import javax.persistence.*
 
 @Entity
-class InternalStatistik(val diagnosisId: String,
+class InternalStatistic(val diagnosisId: String,
                         @Column(columnDefinition = "clob")
                         var pictureUrl: String,
                         @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
