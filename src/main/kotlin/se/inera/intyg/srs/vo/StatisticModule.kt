@@ -36,13 +36,14 @@ class StatisticModule(@Autowired val statisticRepo: StatisticRepository): Inform
         val possibleStatistics = statisticRepo.findByDiagnosisId(currentId.substring(0, MIN_ID_POSITIONS))
 
         var status: Statistikstatus = Statistikstatus.OK
+        var statistikbild = Statistikbild()
 
         while (currentId.length >= MIN_ID_POSITIONS) {
-            val statistikbild = measureForCode(possibleStatistics, currentId)
             statistikbild.inkommandediagnos = buildDiagnosis(diagnosisId)
+            statistikbild = measureForCode(statistikbild, possibleStatistics, currentId)
+
             if (statistikbild.andringstidpunkt != null && statistikbild.bildadress != null) {
                 statistikbild.statistikstatus = status
-
                 return statistikbild
             }
             currentId = currentId.substring(0, currentId.length - 1)
@@ -50,18 +51,15 @@ class StatisticModule(@Autowired val statisticRepo: StatisticRepository): Inform
             status = Statistikstatus.DIAGNOSKOD_PA_HOGRE_NIVA
         }
 
-        val nothingFound = Statistikbild()
-        nothingFound.inkommandediagnos = buildDiagnosis(diagnosisId)
-        nothingFound.statistikstatus = Statistikstatus.STATISTIK_SAKNAS
-        nothingFound.diagnos = buildDiagnosis(diagnosisId)
-        return nothingFound
+        statistikbild.inkommandediagnos = buildDiagnosis(diagnosisId)
+        statistikbild.statistikstatus = Statistikstatus.STATISTIK_SAKNAS
+        return statistikbild
     }
 
-    private fun measureForCode(statistics: List<InternalStatistic>, diagnosisId: String): Statistikbild {
+    private fun measureForCode(ret: Statistikbild, statistics: List<InternalStatistic>, diagnosisId: String): Statistikbild {
         val internal: InternalStatistic? = statistics.find { cleanDiagnosisCode(it.diagnosisId) == diagnosisId }
-        val ret = Statistikbild()
-        ret.diagnos = buildDiagnosis(diagnosisId)
         if (internal != null) {
+            ret.diagnos = buildDiagnosis(diagnosisId)
             ret.andringstidpunkt = internal.timestamp
             ret.bildadress = internal.pictureUrl
         }
