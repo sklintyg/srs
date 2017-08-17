@@ -16,6 +16,10 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader
 import se.inera.intyg.srs.vo.PredictionAdapter
 import se.inera.intyg.srs.vo.TestPredictionAdapter
 
+/**
+ * This class contains no real tests, but it still has a purpose: if anything is wrong with the Spring wiring of beans, or if the
+ * JPA database inserts are inconsistent, this class will raise errors at build time.
+ */
 @RunWith(SpringRunner::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource(locations = arrayOf("classpath:test.properties"))

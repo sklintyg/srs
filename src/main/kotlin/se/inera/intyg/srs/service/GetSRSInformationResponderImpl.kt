@@ -55,7 +55,7 @@ class GetSRSInformationResponderImpl(@Autowired val measureModule: MeasureInform
                     underlag!!.atgardsrekommendationer = measure.value
                 }
             } catch (e: Exception) {
-                log.error("Mesaures could not be produced. Please check for error.", e)
+                log.error("Measures could not be produced. Please check for error.", e)
             }
         }
 
@@ -67,7 +67,7 @@ class GetSRSInformationResponderImpl(@Autowired val measureModule: MeasureInform
                     underlag!!.statistik = statistic.value
                 }
             } catch (e: Exception) {
-                log.error("Statistic could not be produced. Please check for error.", e)
+                log.error("Statistics could not be produced. Please check for error.", e)
             }
         }
 
@@ -77,14 +77,14 @@ class GetSRSInformationResponderImpl(@Autowired val measureModule: MeasureInform
 
     private fun transform(individer: List<Individ>): List<Person> =
             individer.map { individ ->
-                val age = calulateAge(individ.personId)
+                val age = calculateAge(individ.personId)
                 val sex = calculateSex(individ.personId)
                 val extent = Extent.valueOf(individ.omfattning.value())
                 val diagnoses = individ.diagnos!!.map { diagnos -> Diagnosis(diagnos.code) }
                 Person(individ.personId, age, sex, extent, diagnoses)
             }
 
-    private fun calulateAge(personId: String): Int {
+    private fun calculateAge(personId: String): Int {
         val year = personId.substring(0..3).toInt()
         val month = personId.substring(4..5).toInt()
         val day = personId.substring(6..7).toInt()
