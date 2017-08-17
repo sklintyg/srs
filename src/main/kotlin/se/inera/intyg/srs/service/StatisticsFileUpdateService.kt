@@ -15,6 +15,10 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.*
 
+/**
+ * Scheduled service for checking for new statistics images in the dir specified with statistics.image.dir,
+ * the update interval is also configurable via image.update.cron, both in application.properties.
+ */
 @Component
 @EnableScheduling
 class StatisticsFileUpdateService(@Value("\${statistics.image.dir}") val imageDir: String,
@@ -23,6 +27,8 @@ class StatisticsFileUpdateService(@Value("\${statistics.image.dir}") val imageDi
     private val log = LogManager.getLogger()
     private val imageFileExtension: String = "jpg"
     private val urlExtension: String = "/image/"
+
+    // For now, only codes with three positions are allowed.
     private val fileNameRegex = Regex("""\w\d{2}""")
 
     @Transactional
@@ -30,8 +36,8 @@ class StatisticsFileUpdateService(@Value("\${statistics.image.dir}") val imageDi
     fun update() {
         log.info("Performing scheduled image update...")
 
-        @Suppress("UNCHECKED_CAST")
-        val dbEntries = repo.findAll() as List<InternalStatistic>
+
+        val dbEntries: List<InternalStatistic> = repo.findAll().toList()
         val diskEntries = ArrayList<String>()
 
         Files.walk(Paths.get(imageDir))
