@@ -36,7 +36,6 @@ class StatisticsFileUpdateService(@Value("\${statistics.image.dir}") val imageDi
     fun update() {
         log.info("Performing scheduled image update...")
 
-
         val dbEntries: List<InternalStatistic> = repo.findAll().toList()
         val diskEntries = ArrayList<String>()
 
@@ -69,7 +68,7 @@ class StatisticsFileUpdateService(@Value("\${statistics.image.dir}") val imageDi
         }
     }
 
-    private fun fixFileName(file: Path): String = file.fileName.toString().dropLast(4)
+    private fun fixFileName(file: Path?): String = file?.fileName.toString().dropLast(4)
 
     private fun isVaildFileName(file: Path): Boolean = fileNameRegex.matches(fixFileName(file))
 
