@@ -497,11 +497,20 @@
                </urn:diagnos>
                <urn:omfattning>HELT_NEDSATT</urn:omfattning>
             </urn:individ>
+            <urn:individ>
+               <urn:person-id>195408151244</urn:person-id>
+               <urn:diagnos>
+                  <urn1:code>M188</urn1:code>
+                  <urn1:codeSystem>1.2.752.116.1.1.1.1.3</urn1:codeSystem>
+               </urn:diagnos>
+               <urn:omfattning>HELT_NEDSATT</urn:omfattning>
+            </urn:individ>
          </urn:individer>
          <urn:utdatafilter>
             <urn:prediktion>false</urn:prediktion>
             <urn:atgardsrekommendation>true</urn:atgardsrekommendation>
             <urn:fmbinformation>false</urn:fmbinformation>
+            <urn:statistik>true</urn:statistik>
          </urn:utdatafilter>
       </urn:GetSRSInformationRequest>
    </soapenv:Body>
