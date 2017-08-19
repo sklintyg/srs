@@ -69,7 +69,7 @@ class RAdapter() : PredictionAdapter {
         // Synchronizing here is an obvious performance bottle neck, but we have no choice since the R engine is
         // single-threaded, and cannot cope with concurrent calls. Intygsprojektet has accepted that R be used
         // for the execution of prediction models, and there is no reason to the believe that the number of calls
-        // to this service will be excessive during the pilot. However, if this is widely deploy once the pilot
+        // to this service will be excessive during the pilot. However, if this is more widely deployed once the pilot
         // is over, we would need to consider porting the R models to some solution that scales better.
         synchronized(RAdapter::class) {
             val (model, status) = getModelForDiagnosis(diagnosis.code)

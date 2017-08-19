@@ -35,7 +35,6 @@ class ApplicationTests {
         }
     }
 
-
     @Autowired
     lateinit var restTemplate: TestRestTemplate
 
