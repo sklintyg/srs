@@ -1,10 +1,6 @@
-import se.inera.intyg.VersionPropertyFileTask
-import se.inera.intyg.TagReleaseTask
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     war
-    maven
+    `maven-publish`
 
     id("se.inera.intyg.plugin.common") version "1.0.45"
     id("org.jetbrains.kotlin.jvm") version "1.1.4-2"
@@ -17,32 +13,36 @@ plugins {
 group = "se.inera.intyg.srs"
 version = System.getProperty("buildVersion") ?: "0.0.1-SNAPSHOT"
 
-tasks.withType<KotlinCompile> {
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions { jvmTarget = "1.8" }
 }
 
-war {
-    //baseName = "srs"
-}
+val versionTask = task<se.inera.intyg.VersionPropertyFileTask>("createVersionPropertyFile")
+tasks.getByName("war").dependsOn(versionTask)
 
-task<VersionPropertyFileTask>("createVersionPropertyFile")
-tasks.getByName("war").dependsOn("createVersionPropertyFile")
+task<se.inera.intyg.TagReleaseTask>("tagRelease")
 
-// uploadArchives.repositories.mavenDeployer {
-//     repository(url: "https://build-inera.nordicmedtest.se/nexus/repository/releases/") {
-//         authentication(userName: System.properties['nexusUsername'], password: System.properties['nexusPassword'])
-//     }
-// }
-
-task<TagReleaseTask>("tagRelease") 
-
-tasks.withType<Test> {    
-     exclude("**/*IT*")
+tasks.withType<Test> {
+    exclude("**/*IT*")
 }
 
 task<Test>("restAssuredTest") {
     outputs.upToDateWhen { false }
     include("**/*IT*")
+}
+
+publishing {
+    repositories {
+        maven {
+            url = uri("https://build-inera.nordicmedtest.se/nexus/repository/releases/")
+            authentication {
+                credentials {
+                    username = System.getProperty("nexusUsername")
+                    password = System.getProperty("nexusPassword")
+                }
+            }
+        }
+    }
 }
 
 repositories {
@@ -54,7 +54,7 @@ repositories {
 dependencies {
     val kotlinVersion = "1.1.4"
     val schemasVersion = System.getProperty("schemasVersion") ?: "0-SNAPSHOT"
-    
+
     compile("se.inera.intyg.clinicalprocess.healthcond.srs:intyg-clinicalprocess-healthcond-srs-schemas:$schemasVersion")
     compile("se.riv.itintegration.monitoring:itintegration-monitoring-schemas:1.0.0.4")
 
