@@ -17,18 +17,8 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
     kotlinOptions { jvmTarget = "1.8" }
 }
 
-war {
-    baseName = 'srs'
-}
-
 task createVersionPropertyFile(type: VersionPropertyFileTask)
 war.dependsOn createVersionPropertyFile
-
-uploadArchives.repositories.mavenDeployer {
-    repository(url: "https://build-inera.nordicmedtest.se/nexus/repository/releases/") {
-        authentication(userName: System.properties['nexusUsername'], password: System.properties['nexusPassword'])
-    }
-}
 
 task tagRelease(type: TagReleaseTask)
 
@@ -41,6 +31,12 @@ task restAssuredTest(type: Test) {
     include '**/*IT*'
 }
 
+uploadArchives.repositories.mavenDeployer {
+    repository(url: "https://build-inera.nordicmedtest.se/nexus/repository/releases/") {
+        authentication(userName: System.properties['nexusUsername'], password: System.properties['nexusPassword'])
+    }
+}
+
 repositories {
     mavenLocal()
     maven { url "https://build-inera.nordicmedtest.se/nexus/repository/releases/" }
@@ -48,7 +44,7 @@ repositories {
 }
 
 dependencies {
-    def kotlinVersion = '1.1.4'
+    def kotlinVersion = '1.1.4-2'
     def schemasVersion = System.properties['schemasVersion'] ?: '0-SNAPSHOT'
 
     compile "se.inera.intyg.clinicalprocess.healthcond.srs:intyg-clinicalprocess-healthcond-srs-schemas:${schemasVersion}"
@@ -78,6 +74,5 @@ dependencies {
 
     testCompile "org.springframework.boot:spring-boot-starter-test"
     testCompile "com.jayway.restassured:rest-assured:2.8.0"
-    testCompile "com.nhaarman:mockito-kotlin:1.4.0"
-    testCompile "org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}" // Needed to explicitly set mockito-kotlin to use Kotlin 1.1.X
+    testCompile "com.nhaarman:mockito-kotlin-kt1.1:1.5.0"
 }
