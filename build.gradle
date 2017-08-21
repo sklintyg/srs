@@ -1,6 +1,6 @@
 plugins {
     id 'war'
-    id 'maven'
+    id 'maven-publish'
 
     id "se.inera.intyg.plugin.common" version "1.0.45"
     id "org.jetbrains.kotlin.jvm" version "1.1.4-2"
@@ -31,9 +31,20 @@ task restAssuredTest(type: Test) {
     include '**/*IT*'
 }
 
-uploadArchives.repositories.mavenDeployer {
-    repository(url: "https://build-inera.nordicmedtest.se/nexus/repository/releases/") {
-        authentication(userName: System.properties['nexusUsername'], password: System.properties['nexusPassword'])
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.web
+        }
+    }
+    repositories {
+        maven {
+            url "https://build-inera.nordicmedtest.se/nexus/repository/releases/"
+            credentials {
+                username System.properties['nexusUsername']
+                password System.properties['nexusPassword']
+            }
+        }
     }
 }
 
