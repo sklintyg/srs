@@ -2,10 +2,11 @@ plugins {
     war
     `maven-publish`
 
+    kotlin("jvm", "1.1.4-2")
+    kotlin("plugin.spring", "1.1.4-2")
+    kotlin("plugin.jpa", "1.1.4-2")
+
     id("se.inera.intyg.plugin.common") version "1.0.45"
-    id("org.jetbrains.kotlin.jvm") version "1.1.4-2"
-    id("org.jetbrains.kotlin.plugin.spring") version "1.1.4-2"
-    id("org.jetbrains.kotlin.plugin.jpa") version "1.1.4-2"
     id("org.springframework.boot") version "1.5.6.RELEASE"
     id("org.ajoberstar.grgit") version "2.0.0"
 }
@@ -55,12 +56,14 @@ repositories {
 }
 
 dependencies {
-    val kotlinVersion = "1.1.4-2"
     val schemasVersion = System.getProperty("schemasVersion") ?: "0-SNAPSHOT"
+    val kotlinVersion = "1.1.4-2"
+
+    compile(kotlin("stdlib", kotlinVersion))
+    compile(kotlin("reflect", kotlinVersion))
 
     compile("se.inera.intyg.clinicalprocess.healthcond.srs:intyg-clinicalprocess-healthcond-srs-schemas:$schemasVersion")
     compile("se.riv.itintegration.monitoring:itintegration-monitoring-schemas:1.0.0.4")
-
     compile("org.springframework.boot:spring-boot-starter-web")
     compile("org.springframework.boot:spring-boot-starter-jdbc:")
     compile("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -71,8 +74,6 @@ dependencies {
     compile("org.liquibase:liquibase-core:3.5.3")
     compile("org.apache.logging.log4j:log4j-api:2.7")
     compile("org.apache.logging.log4j:log4j-core:2.7")
-    compile("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
-    compile("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
     compile("com.fasterxml.jackson.module:jackson-module-kotlin:2.8.4")
     compile("org.nuiton.thirdparty:JRI:0.9-9")
     compile("org.jadira.usertype:usertype.extended:5.0.0.GA")
