@@ -1,5 +1,4 @@
 def buildVersion = "1.0.${BUILD_NUMBER}"
-def schemasVersion = "0.0.+"
 
 stage('checkout') {
     node {
@@ -11,7 +10,7 @@ stage('checkout') {
 stage('build') {
     node {
         try {
-            shgradle "--refresh-dependencies clean build -DbuildVersion=${buildVersion} -DschemasVersion=${schemasVersion}"
+            shgradle "--refresh-dependencies clean build -DbuildVersion=${buildVersion}"
         } finally {
             publishHTML allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'build/reports/allTests', \
                 reportFiles: 'index.html', reportName: 'JUnit results'
@@ -44,7 +43,7 @@ stage('build') {
 
 stage('tag and upload') {
     node {
-        shgradle "publish tagRelease -DbuildVersion=${buildVersion} -DschemasVersion=${schemasVersion}"
+        shgradle "publish tagRelease -DbuildVersion=${buildVersion}"
     }
 }
 

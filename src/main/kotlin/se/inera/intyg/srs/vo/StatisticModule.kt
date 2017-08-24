@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.*
 import se.inera.intyg.srs.persistence.InternalStatistic
 import se.inera.intyg.srs.persistence.StatisticRepository
+import se.riv.clinicalprocess.healthcond.certificate.types.v2.Diagnos
 import java.util.*
 
 @Service

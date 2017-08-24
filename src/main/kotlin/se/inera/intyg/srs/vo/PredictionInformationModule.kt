@@ -3,10 +3,10 @@ package se.inera.intyg.srs.vo
 import org.apache.logging.log4j.LogManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Diagnos
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Diagnosprediktion
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Diagnosprediktionstatus
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Prediktion
+import se.riv.clinicalprocess.healthcond.certificate.types.v2.Diagnos
 import java.util.*
 
 @Service
@@ -42,7 +42,7 @@ class PredictionInformationModule : InformationModule<Prediktion> {
                 outgoingDiagnosis.codeSystem = incomingDiagnosis.codeSystem
                 outgoingDiagnosis.code = calculatedPrediction.diagnosis
 
-                diagnosPrediktion.sannolikhetLangvarig = calculatedPrediction.prediction
+                diagnosPrediktion.sannolikhetOvergransvarde = calculatedPrediction.prediction
                 diagnosPrediktion.diagnos = outgoingDiagnosis
             }
 
