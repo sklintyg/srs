@@ -10,7 +10,10 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.*
+import java.util.concurrent.locks.Lock
+import java.util.concurrent.locks.ReentrantLock
 import javax.annotation.PreDestroy
+import kotlin.concurrent.withLock
 
 @Configuration
 @Profile("runtime")
@@ -71,7 +74,8 @@ class RAdapter() : PredictionAdapter {
         // for the execution of prediction models, and there is no reason to the believe that the number of calls
         // to this service will be excessive during the pilot. However, if this is more widely deployed once the pilot
         // is over, we would need to consider porting the R models to some solution that scales better.
-        synchronized(RAdapter::class) {
+        val lock: Lock = ReentrantLock()
+        lock.withLock {
             val (model, status) = getModelForDiagnosis(diagnosis.code)
 
             if (model == null) {
@@ -106,7 +110,6 @@ class RAdapter() : PredictionAdapter {
                 return Prediction(diagnosis.code, null, Diagnosprediktionstatus.NOT_OK)
             }
         }
-
     }
 
     fun loadModel(dataFilePath: String) {
