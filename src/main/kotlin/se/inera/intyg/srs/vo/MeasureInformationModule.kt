@@ -44,10 +44,11 @@ class MeasureInformationModule(@Autowired val measureRepo: MeasureRepository) : 
                 measure.priorities.forEach {
                     val atgard = Atgard()
                     atgard.atgardId = BigInteger.ONE
-                    // Temporary!
+                    // Temporary atgardstyp
                     atgard.atgardstyp = Atgardstyp.REK
                     atgard.atgardsforslag = it.recommendation.recommendationText
                     atgard.prioritet = BigInteger.valueOf(it.priority.toLong())
+                    // Temp version
                     atgard.version = "1.1"
                     recommendation.atgard.add(atgard)
                 }

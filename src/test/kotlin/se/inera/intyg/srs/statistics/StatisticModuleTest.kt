@@ -20,7 +20,6 @@ class StatisticModuleTest {
     private val A12_URL = "http://test.se/A12"
     private val B12_URL = "http://test.se/B12"
     private val DIAGNOSIS_B12 = "B12"
-    private val DIAGNOSIS_NOT_FOUND = "No diagnosis found"
     private val aDate = LocalDateTime.of(2017, 1, 1, 1, 1)
 
     lateinit var repo: StatisticRepository
