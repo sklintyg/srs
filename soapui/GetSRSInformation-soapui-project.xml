@@ -383,12 +383,20 @@
         </xs:sequence>
       </xs:complexType>
       <xs:complexType name="atgard">
-        <xs:sequence>
-          <xs:element name="atgardsforslag" type="xs:string"/>
-          <xs:element name="prioritet" type="xs:positiveInteger"/>
-          <xs:element name="version" type="tns:version"/>
-        </xs:sequence>
+          <xs:sequence>
+            <xs:element name="atgard-id" type="xs:positiveInteger"/>
+            <xs:element name="atgardstyp" type="tns:atgardstyp"/>
+            <xs:element name="atgardsforslag" type="xs:string"/>
+            <xs:element name="prioritet" type="xs:positiveInteger"/>
+            <xs:element name="version" type="tns:version"/>
+          </xs:sequence>
       </xs:complexType>
+      <xs:simpleType name="atgardstyp">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="OBS"/>
+            <xs:enumeration value="REK"/>
+        </xs:restriction>
+      </xs:simpleType>
       <xs:simpleType name="version">
         <xs:restriction base="xs:string">
           <xs:pattern value="[0-9]+(\.[0-9]+){1,2}"/>
@@ -451,6 +459,10 @@
                   <urn1:codeSystem>1.2.752.116.1.1.1.1.3</urn1:codeSystem>
                </urn:diagnos>
                <urn:omfattning>HELT_NEDSATT</urn:omfattning>
+               <urn:intyg-id>
+                  <urn1:root>root</urn1:root>
+                  <urn1:extension>abc</urn1:extension>
+               </urn:intyg-id>
             </urn:individ>
             <urn:individ>
                <urn:person-id>195408151244</urn:person-id>
@@ -459,6 +471,10 @@
                   <urn1:codeSystem>1.2.752.116.1.1.1.1.3</urn1:codeSystem>
                </urn:diagnos>
                <urn:omfattning>HELT_NEDSATT</urn:omfattning>
+               <urn:intyg-id>
+                  <urn1:root>root</urn1:root>
+                  <urn1:extension>def</urn1:extension>
+               </urn:intyg-id>
             </urn:individ>
          </urn:individer>
          <urn:utdatafilter>
@@ -488,6 +504,10 @@
                   <urn1:codeSystem>1.2.752.116.1.1.1.1.3</urn1:codeSystem>
                </urn:diagnos>
                <urn:omfattning>HELT_NEDSATT</urn:omfattning>
+               <urn:intyg-id>
+                  <urn1:root>root</urn1:root>
+                  <urn1:extension>abc</urn1:extension>
+               </urn:intyg-id>
             </urn:individ>
             <urn:individ>
                <urn:person-id>195408151244</urn:person-id>
@@ -496,6 +516,10 @@
                   <urn1:codeSystem>1.2.752.116.1.1.1.1.3</urn1:codeSystem>
                </urn:diagnos>
                <urn:omfattning>HELT_NEDSATT</urn:omfattning>
+               <urn:intyg-id>
+                  <urn1:root>root</urn1:root>
+                  <urn1:extension>def</urn1:extension>
+               </urn:intyg-id>
             </urn:individ>
             <urn:individ>
                <urn:person-id>195408151244</urn:person-id>
@@ -504,6 +528,10 @@
                   <urn1:codeSystem>1.2.752.116.1.1.1.1.3</urn1:codeSystem>
                </urn:diagnos>
                <urn:omfattning>HELT_NEDSATT</urn:omfattning>
+               <urn:intyg-id>
+                  <urn1:root>root</urn1:root>
+                  <urn1:extension>gih</urn1:extension>
+               </urn:intyg-id>
             </urn:individ>
          </urn:individer>
          <urn:utdatafilter>

@@ -6,7 +6,9 @@ import org.springframework.stereotype.Service
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Diagnosprediktion
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Diagnosprediktionstatus
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Prediktion
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Risksignal
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.Diagnos
+import java.math.BigInteger
 import java.util.*
 
 @Service
@@ -35,6 +37,11 @@ class PredictionInformationModule : InformationModule<Prediktion> {
 
             val calculatedPrediction = rAdapter.getPrediction(person, incomingDiagnosis)
             diagnosPrediktion.diagnosprediktionstatus = calculatedPrediction.status
+
+            val riskSignal = Risksignal()
+            riskSignal.beskrivning = "Beskrivning"
+            riskSignal.riskkategori = BigInteger.ONE
+            diagnosPrediktion.risksignal =  riskSignal
 
             if (calculatedPrediction.status == Diagnosprediktionstatus.OK ||
                     calculatedPrediction.status == Diagnosprediktionstatus.DIAGNOSKOD_PA_HOGRE_NIVA) {

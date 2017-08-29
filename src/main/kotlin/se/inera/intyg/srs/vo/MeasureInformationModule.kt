@@ -46,6 +46,7 @@ class MeasureInformationModule(@Autowired val measureRepo: MeasureRepository) : 
 
                 measure.priorities.forEach {
                     val atgard = Atgard()
+                    atgard.atgardId = BigInteger.ONE
                     atgard.atgardsforslag = it.recommendation.recommendationText
                     atgard.prioritet = BigInteger.valueOf(it.priority.toLong())
                     recommendation.atgard.add(atgard)
