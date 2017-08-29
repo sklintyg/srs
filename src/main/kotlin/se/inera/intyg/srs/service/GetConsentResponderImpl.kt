@@ -7,10 +7,8 @@ import se.inera.intyg.clinicalprocess.healthcond.srs.getconsent.v1.GetConsentReq
 import se.inera.intyg.clinicalprocess.healthcond.srs.getconsent.v1.GetConsentResponderInterface
 import se.inera.intyg.clinicalprocess.healthcond.srs.getconsent.v1.GetConsentResponseType
 import se.inera.intyg.clinicalprocess.healthcond.srs.getconsent.v1.Samtyckesstatus
-import se.inera.intyg.srs.persistence.Consent
 
 import se.inera.intyg.srs.vo.ConsentModule
-import java.time.LocalDateTime
 
 @Service
 class GetConsentResponderImpl(@Autowired val consentModule : ConsentModule) : GetConsentResponderInterface{
@@ -24,13 +22,12 @@ class GetConsentResponderImpl(@Autowired val consentModule : ConsentModule) : Ge
 
         if (consent == null) {
             log.info("No consent found, setting status INGET")
-            consent = Consent(request.personId, false, request.vardgivareId.extension, LocalDateTime.now())
             response.samtyckesstatus = Samtyckesstatus.INGET
         } else {
             response.samtyckesstatus = if (consent.samtycke) Samtyckesstatus.JA else Samtyckesstatus.NEJ
+            response.isSamtycke = consent.samtycke
+            response.sparattidpunkt = consent.skapatTid
         }
-        response.isSamtycke = consent.samtycke
-        response.sparattidpunkt = consent.skapatTid
 
         return response
     }
