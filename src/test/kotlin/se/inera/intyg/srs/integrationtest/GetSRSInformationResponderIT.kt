@@ -1,10 +1,8 @@
 package se.inera.intyg.srs.integrationtest
 
-import com.jayway.restassured.RestAssured
 import com.jayway.restassured.RestAssured.given
 import com.jayway.restassured.http.ContentType
 import org.hamcrest.Matchers
-import org.junit.Before
 
 import org.junit.Test
 import org.springframework.core.io.ClassPathResource
@@ -13,14 +11,7 @@ import se.inera.intyg.srs.integrationtest.util.whenever
 
 const val SOAP_ROOT = "Envelope.Body.GetSRSInformationResponse"
 
-class GetSRSInformationResponderIT {
-
-    @Before
-    fun setup() {
-        RestAssured.baseURI = "http://localhost"
-        RestAssured.port = 8080
-        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails()
-    }
+class GetSRSInformationResponderIT : BaseIntegrationTest() {
 
     @Test
     fun testServicePageIsReachable() {
