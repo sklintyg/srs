@@ -18,7 +18,7 @@ class GetConsentResponderImpl(@Autowired val consentModule : ConsentModule) : Ge
     override fun getConsent(request: GetConsentRequestType): GetConsentResponseType {
         log.info("Get consent request received for hsaId: ${request.vardgivareId.extension}")
         val response = GetConsentResponseType()
-        var consent = consentModule.getConsent(request.personId, request.vardgivareId.extension)
+        val consent = consentModule.getConsent(request.personId, request.vardgivareId.extension)
 
         if (consent == null) {
             log.info("No consent found, setting status INGET")

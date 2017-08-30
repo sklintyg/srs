@@ -93,7 +93,6 @@
     </changeSet>
 
     <changeSet id="3" author="ef">
-
         <createTable tableName="consent">
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
@@ -104,13 +103,19 @@
             <column name="samtycke" type="BOOLEAN">
                 <constraints nullable="false"/>
             </column>
-            <column name="vardenhet" type="VARCHAR(255)">
+            <column name="vardgivare_id" type="VARCHAR(255)">
                 <constraints nullable="false"/>q
             </column>
             <column name="skapat_tid" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
         </createTable>
+    </changeSet>
 
+    <changeSet id="4" author="ef">
+        <createIndex tableName="consent" indexName="idx_consent_personnummer_vardgivare_id">
+            <column name="personnummer"/>
+            <column name="vardgivare_id"/>
+        </createIndex>
     </changeSet>
 </databaseChangeLog>

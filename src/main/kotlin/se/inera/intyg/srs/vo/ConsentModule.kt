@@ -9,8 +9,8 @@ import java.time.LocalDateTime
 
 @Service
 class ConsentModule(@Autowired private val consentRepo: ConsentRepository) {
-    fun getConsent(personnummer: String, hsaId: String) : Consent {
-        return consentRepo.findConsentByPersonnummerAndVardenhet(personnummer, hsaId)
+    fun getConsent(personnummer: String, hsaId: String) : Consent? {
+        return consentRepo.findConsentByPersonnummerAndVardgivareId(personnummer, hsaId)
     }
 
     fun setConsent(personnummer: String, samtycke: Boolean, vardenhetId: String): ResultCodeEnum {
