@@ -5,10 +5,7 @@ import org.rosuda.JRI.Rengine
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Diagnosprediktionstatus
-import java.io.IOException
-import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.Paths
+import se.inera.intyg.srs.service.ModelFileUpdateService
 import java.util.*
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
@@ -17,18 +14,12 @@ import kotlin.concurrent.withLock
 
 @Configuration
 @Profile("runtime")
-class RAdapter() : PredictionAdapter {
+class RAdapter(val modelService: ModelFileUpdateService) : PredictionAdapter {
     private val MIN_ID_POSITIONS = 3
-
-    private val DATA_FILE_EXTENSION = ".rdata"
 
     private val log = LogManager.getLogger()
 
     lateinit var rengine: Rengine
-
-    val dirPath = "/opt/models"  // TODO: should be configurable
-
-    private val models = mutableMapOf<String, Model>()
 
     // These are hard coded for now, but will later be configurable.
     val DAYS = "90"
@@ -36,30 +27,8 @@ class RAdapter() : PredictionAdapter {
     val SICKDAYS_LASTYEAR = "0"
 
     init {
-        try {
-            Files.walk(Paths.get(dirPath)).filter {
-                Files.isRegularFile(it) && it.getName(it.getNameCount() - 1).toString().toLowerCase().endsWith(DATA_FILE_EXTENSION)
-            }.forEach { file ->
-                addFile(file)
-            }
-
-            rengine = Rengine(arrayOf("--vanilla"), false, null)
-            rengine.eval("library(pch)")
-        } catch (e: IOException) {
-            log.error("Error while reading from directory $dirPath: ", e)
-        } catch (e: Exception) {
-            log.error("Error while initializing R engine: ", e)
-        }
-    }
-
-    private fun addFile(file: Path) {
-        val fileName = file.fileName.toString()
-        val dStartPos = fileName.indexOf('_')
-        val dEndPos = fileName.lastIndexOf('_')
-        val vEndPos = fileName.indexOf('.')
-        val diagnosis = fileName.substring(dStartPos + 1, dEndPos)
-        val version = fileName.substring(dEndPos + 1, vEndPos)
-        models.put(diagnosis, Model(diagnosis, version, file.toAbsolutePath().toString()))
+        rengine = Rengine(arrayOf("--vanilla"), false, null)
+        rengine.eval("library(pch)")
     }
 
     @PreDestroy
@@ -68,7 +37,6 @@ class RAdapter() : PredictionAdapter {
     }
 
     override fun getPrediction(person: Person, diagnosis: Diagnosis): Prediction {
-
         // Synchronizing here is an obvious performance bottle neck, but we have no choice since the R engine is
         // single-threaded, and cannot cope with concurrent calls. Intygsprojektet has accepted that R be used
         // for the execution of prediction models, and there is no reason to the believe that the number of calls
@@ -112,18 +80,18 @@ class RAdapter() : PredictionAdapter {
         }
     }
 
-    fun loadModel(dataFilePath: String) {
+    private fun loadModel(dataFilePath: String) {
         val loadmodel_result = rengine.eval("load('$dataFilePath')  ", false)
         if (loadmodel_result == null) {
             throw RuntimeException("The prediction model does not exist!")
         }
     }
 
-    private fun getModelForDiagnosis(diagnosisId: String): Pair<Model?, Diagnosprediktionstatus> {
+    private fun getModelForDiagnosis(diagnosisId: String): Pair<ModelFileUpdateService.Model?, Diagnosprediktionstatus> {
         var currentId = cleanDiagnosisCode(diagnosisId)
         var status: Diagnosprediktionstatus = Diagnosprediktionstatus.OK
         while (currentId.length >= MIN_ID_POSITIONS) {
-            val model = modelForCode(currentId)
+            val model = modelService.modelForCode(currentId)
             if (model != null) {
                 return Pair(model, status)
             }
@@ -134,11 +102,6 @@ class RAdapter() : PredictionAdapter {
         return Pair(null, Diagnosprediktionstatus.PREDIKTIONSMODELL_SAKNAS)
     }
 
-    private fun modelForCode(currentId: String): Model? {
-        return models.get(currentId)
-    }
-
     private fun cleanDiagnosisCode(diagnosisId: String): String = diagnosisId.toUpperCase(Locale.ENGLISH).replace(".", "")
 
-    private class Model(val diagnosis: String, val version: String, val fileName: String)
 }
