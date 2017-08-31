@@ -144,9 +144,7 @@
             <column name="priority" type="INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="question_id" type="BIGINT">
-                <constraints nullable="false"/>
-            </column>
+            <column name="question_id" type="BIGINT"/>
         </createTable>
 
         <createTable tableName="prediction_priority">

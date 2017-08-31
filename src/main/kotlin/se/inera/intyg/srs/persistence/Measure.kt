@@ -14,7 +14,7 @@ class Measure(@Id
               val version: String,
               @OneToMany(fetch = FetchType.EAGER)
               @JoinColumn(name="measure_id")
-              val priorities: MutableCollection<MeasurePriority>) {
+              val priorities: Collection<MeasurePriority>) {
 
     override fun toString() =
             "Measure(id=$id, diagnosisId='$diagnosisId', diagnosisText='$diagnosisText', version='$version', priorities='$priorities')"

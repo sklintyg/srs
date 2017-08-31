@@ -12,6 +12,6 @@ class PredictionDiagnosis(@Id
                           val diagnosisId: String,
                           @OneToMany(fetch = FetchType.EAGER)
                           @JoinColumn(name="diagnosis_id")
-                          val questions: MutableCollection<PredictionPriority>) {
+                          val questions: Collection<PredictionPriority>) {
 
 }

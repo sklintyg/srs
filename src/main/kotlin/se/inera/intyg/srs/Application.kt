@@ -1,6 +1,5 @@
 package se.inera.intyg.srs
 
-
 import org.apache.cxf.Bus
 import org.apache.cxf.jaxws.EndpointImpl
 import org.apache.logging.log4j.LogManager
@@ -119,34 +118,32 @@ class Application : SpringBootServletInitializer() {
         val recommendation12 = recommendationRepo.save(Recommendation(12, "FaR med regelbunden styrketräning för att förebygger nya besvär"))
 
         measureRepo.save(Measure(1, "F43.8A", "Utmattningssyndrom", "1.0",
-                mutableListOf(prioRepo.save(MeasurePriority(1, recommendation01)),
+                listOf(prioRepo.save(MeasurePriority(1, recommendation01)),
                         prioRepo.save(MeasurePriority(2, recommendation02)),
                         prioRepo.save(MeasurePriority(3, recommendation03)))))
 
         measureRepo.save(Measure(2, "M75", "Sjukdomstillstånd i skulderled", "1.0",
-                mutableListOf(prioRepo.save(MeasurePriority(1, recommendation04)),
+                listOf(prioRepo.save(MeasurePriority(1, recommendation04)),
                         prioRepo.save(MeasurePriority(2, recommendation05)))))
 
         measureRepo.save(Measure(3, "F32", "Depressiv episod", "1.0",
-                mutableListOf(prioRepo.save(MeasurePriority(1, recommendation06)),
+                listOf(prioRepo.save(MeasurePriority(1, recommendation06)),
                         prioRepo.save(MeasurePriority(2, recommendation07)),
                         prioRepo.save(MeasurePriority(3, recommendation08)))))
 
         measureRepo.save(Measure(4, "F41", "Andra ångestsyndrom", "1.0",
-                mutableListOf(prioRepo.save(MeasurePriority(1, recommendation07)),
+                listOf(prioRepo.save(MeasurePriority(1, recommendation07)),
                         prioRepo.save(MeasurePriority(2, recommendation09)),
                         prioRepo.save(MeasurePriority(3, recommendation10)))))
 
         measureRepo.save(Measure(5, "M54", "Ryggvärk", "1.0",
-                mutableListOf(prioRepo.save(MeasurePriority(1, recommendation11)),
+                listOf(prioRepo.save(MeasurePriority(1, recommendation11)),
                         prioRepo.save(MeasurePriority(2, recommendation12)))))
 
-        val question01 = questionRepo.save(PredictionQuestion(1, "Sysselsättningsstatus", "Vilken är din nuvarande sysselsättning?", "SA_SyssStart_fct", mutableListOf()))
+        val question01 = questionRepo.save(PredictionQuestion(1, "Sysselsättningsstatus", "Vilken är din nuvarande sysselsättning?", "SA_SyssStart_fct",
+                listOf(responseRepo.save(PredictionResponse(1, "Yrkesarbetar", "work", true, 1)), responseRepo.save(PredictionResponse(2, "Studerar", "study", false, 2)))))
 
-        responseRepo.save(PredictionResponse(1, "Yrkesarbetar", "work", true, 1, question01))
-        responseRepo.save(PredictionResponse(2, "Studerar", "study", false, 2, question01))
-
-        val diagnosis01 = diagnosisRepo.save(PredictionDiagnosis(1, "F23", mutableListOf(predictPrioRepo.save(PredictionPriority(1, question01)))))
+        diagnosisRepo.save(PredictionDiagnosis(1, "F23", listOf(predictPrioRepo.save(PredictionPriority(1, question01)))))
     }
 }
 
