@@ -9,11 +9,9 @@ import javax.persistence.ManyToOne
 @Entity
 class MeasurePriority(val priority: Int,
                       @ManyToOne()
-               val recommendation: Recommendation,
-                      @ManyToOne()
-               val measure: Measure,
+                      val recommendation: Recommendation,
                       @Id @GeneratedValue(strategy = GenerationType.AUTO)
-               val id: Long = -1) {
+                      val id: Long = -1) {
 
     override fun toString() = "MeasurePriority(id=$id, priority='$priority', recommendation='$recommendation')"
 

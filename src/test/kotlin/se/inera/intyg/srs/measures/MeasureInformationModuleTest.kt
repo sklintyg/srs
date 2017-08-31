@@ -36,14 +36,10 @@ class MeasureInformationModuleTest {
     }
 
     fun insertMeasureData() {
-        val measure01 = Measure(1, DIAGNOSIS_A12, "Depression", "1.0", mutableListOf())
-        val priority01 = MeasurePriority(1, Recommendation(1, "Softa"), measure01)
-        measure01.priorities.add(priority01)
-        whenever(measureRepo.findByDiagnosisIdStartingWith(DIAGNOSIS_A12)).thenReturn(listOf(measure01))
-        val measure02 = Measure(2, DIAGNOSIS_B12, "Benbrott", "1.0", mutableListOf())
-        val priority02 = MeasurePriority(1, Recommendation(2, "Hoppa på ett ben"), measure01)
-        measure02.priorities.add(priority02)
-        whenever(measureRepo.findByDiagnosisIdStartingWith(DIAGNOSIS_B12)).thenReturn(listOf(measure02))
+        whenever(measureRepo.findByDiagnosisIdStartingWith(DIAGNOSIS_A12)).thenReturn(listOf(Measure(1, DIAGNOSIS_A12, "Depression", "1.0",
+                mutableListOf(MeasurePriority(1, Recommendation(1, "Softa"))))))
+        whenever(measureRepo.findByDiagnosisIdStartingWith(DIAGNOSIS_B12)).thenReturn(listOf(Measure(2, DIAGNOSIS_B12, "Benbrott", "1.0",
+                mutableListOf(MeasurePriority(1, Recommendation(2, "Hoppa på ett ben"))))))
     }
 
     @Test

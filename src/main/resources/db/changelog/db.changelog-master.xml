@@ -38,12 +38,8 @@
             <column name="priority" type="INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="measure_id" type="BIGINT">
-                <constraints nullable="false"/>
-            </column>
-            <column name="recommendation_id" type="BIGINT">
-                <constraints nullable="false"/>
-            </column>
+            <column name="measure_id" type="BIGINT"/>
+            <column name="recommendation_id" type="BIGINT"/>
         </createTable>
 
         <addForeignKeyConstraint constraintName="priority_recommendation_fk"
