@@ -9,8 +9,6 @@ import javax.persistence.ManyToOne
 @Entity
 class PredictionPriority(val priority: Int,
                          @ManyToOne
-                         val diagnosis: PredictionDiagnosis,
-                         @ManyToOne
                          val question: PredictionQuestion,
                          @Id @GeneratedValue(strategy = GenerationType.AUTO)
                          val id: Long = -1) {

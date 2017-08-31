@@ -45,7 +45,7 @@ class MeasureInformationModuleTest {
     @Test
     fun nonExistingDiagnosisIsReportedAndTheInputDiagnosisIsReusedInOutput() {
         val nonExisting = "Z123"
-        val person: Person = Person("1212121212", 35, Sex.MAN, Extent.HELT_NEDSATT, listOf(Diagnosis(nonExisting)))
+        val person = Person("1212121212", 35, Sex.MAN, Extent.HELT_NEDSATT, listOf(Diagnosis(nonExisting)))
         val result = module.getInfo(listOf(person))
         assertEquals(nonExisting, result.get(person)!!.rekommendation.get(0).inkommandediagnos.code)
         assertEquals(INFORMATION_SAKNAS, result.get(person)!!.rekommendation.get(0).atgardsrekommendationstatus)
@@ -53,7 +53,7 @@ class MeasureInformationModuleTest {
 
     @Test
     fun diagnosisCodeIsShortenedUntilItMatches() {
-        val person: Person = Person("1212121212", 35, Sex.MAN, Extent.HELT_NEDSATT, listOf(Diagnosis(DIAGNOSIS_A1234)))
+        val person = Person("1212121212", 35, Sex.MAN, Extent.HELT_NEDSATT, listOf(Diagnosis(DIAGNOSIS_A1234)))
         val result = module.getInfo(listOf(person))
         assertEquals(DIAGNOSIS_A12, result.get(person)!!.rekommendation.get(0).diagnos.code)
         assertEquals(DIAGNOSIS_A1234, result.get(person)!!.rekommendation.get(0).inkommandediagnos.code)
@@ -62,7 +62,7 @@ class MeasureInformationModuleTest {
 
     @Test
     fun measureShouldBeReturnedForEachMatchingDiagnosis() {
-        val person: Person = Person("1212121212", 35, Sex.MAN, Extent.HELT_NEDSATT, listOf(Diagnosis(DIAGNOSIS_A12), Diagnosis(DIAGNOSIS_B12)))
+        val person = Person("1212121212", 35, Sex.MAN, Extent.HELT_NEDSATT, listOf(Diagnosis(DIAGNOSIS_A12), Diagnosis(DIAGNOSIS_B12)))
         val result = module.getInfo(listOf(person))
         assertEquals(2, result.get(person)!!.rekommendation.size)
         assertEquals(DIAGNOSIS_A12, result.get(person)!!.rekommendation.get(0).diagnos.code)

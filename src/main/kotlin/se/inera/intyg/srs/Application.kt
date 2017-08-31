@@ -146,9 +146,7 @@ class Application : SpringBootServletInitializer() {
         responseRepo.save(PredictionResponse(1, "Yrkesarbetar", "work", true, 1, question01))
         responseRepo.save(PredictionResponse(2, "Studerar", "study", false, 2, question01))
 
-        val diagnosis01 = diagnosisRepo.save(PredictionDiagnosis(1, "F23", mutableListOf()))
-
-        predictPrioRepo.save(PredictionPriority(1, diagnosis01, question01))
+        val diagnosis01 = diagnosisRepo.save(PredictionDiagnosis(1, "F23", mutableListOf(predictPrioRepo.save(PredictionPriority(1, question01)))))
     }
 }
 
