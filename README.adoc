@@ -94,3 +94,12 @@ srs repo, the ansible provision/deploy is in the file site.yml.
 Here's an example of running the 'site.yml' for provisioning to test, using what you've built on your local machine:
 
  ansible-playbook -i inventory/srs/test site.yml -e "gitcrypt_key_file=/opt/key/git-crypt4.key gitcrypt_key_name=git-crypt4.key" -e "version=0.0.1-SNAPSHOT" -e "deploy_from_repo=false"
+
+
+== GNU Awk
+
+  ssconvert -S ~/Downloads/SRS_PM_FrågorOchSvar.xlsx /tmp/fragor.csv
+
+  cat /tmp/fragor.csv.0 | sed '1d' | awk 'BEGIN { FPAT = "([^,]+)|(\"[^\"]+\")" } { print "val question"NR" = questionRepo.save(PredictionQuestion("NR", "$1", "$2", \""$3"\", listOf()))" }'
+  cat /tmp/fragor.csv.1 | sed '1d' | awk 'BEGIN { FPAT = "([^,]+)|(\"[^\"]+\")" } { print "responseRepo.save(PredictionResponse("NR", \""$2"\", \""$3"\", "tolower($4)", "$5")) // "$1 }'
+  cat /tmp/fragor.csv.2 | sed '1d' | awk -F, 'BEGIN { countD = 0 } { if ($1 != lastD) { countD += 1; countP = 1; printf ")))\ndiagnosisRepo.save(PredictionDiagnosis("countD", \""$1"\", listOf(predictPrioRepo.save(PredictionPriority("countP", "$2"))" } else { countP += 1; printf ", predictPrioRepo.save(PredictionPriority("countP", "$2"))" }; lastD = $1 } END { print ")))" }'
