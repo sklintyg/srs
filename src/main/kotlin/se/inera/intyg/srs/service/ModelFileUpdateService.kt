@@ -1,6 +1,7 @@
 package se.inera.intyg.srs.service
 
 import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.scheduling.annotation.Scheduled
@@ -19,11 +20,12 @@ import java.nio.file.Paths
 @EnableScheduling
 class ModelFileUpdateService(@Value("\${model.dir}") val modelDir: String) {
 
+    private val log : Logger
+
     init {
+        log = LogManager.getLogger()
         update()
     }
-
-    private val log = LogManager.getLogger()
 
     private val DATA_FILE_EXTENSION = ".rdata"
 

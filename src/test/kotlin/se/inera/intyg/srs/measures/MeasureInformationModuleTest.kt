@@ -10,7 +10,7 @@ import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Atgard
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Atgardsrekommendationstatus.OK
 import se.inera.intyg.srs.persistence.Measure
 import se.inera.intyg.srs.persistence.MeasureRepository
-import se.inera.intyg.srs.persistence.Priority
+import se.inera.intyg.srs.persistence.MeasurePriority
 import se.inera.intyg.srs.persistence.Recommendation
 import se.inera.intyg.srs.vo.Diagnosis
 import se.inera.intyg.srs.vo.Extent
@@ -36,10 +36,14 @@ class MeasureInformationModuleTest {
     }
 
     fun insertMeasureData() {
-        whenever(measureRepo.findByDiagnosisIdStartingWith(DIAGNOSIS_A12)).thenReturn(listOf(Measure(DIAGNOSIS_A12, "Depression", "1.0",
-                listOf((Priority(1, Recommendation("Softa")))))))
-        whenever(measureRepo.findByDiagnosisIdStartingWith(DIAGNOSIS_B12)).thenReturn(listOf(Measure(DIAGNOSIS_B12, "Benbrott", "1.0",
-                listOf((Priority(1, Recommendation("Hoppa på ett ben")))))))
+        val measure01 = Measure(1, DIAGNOSIS_A12, "Depression", "1.0", mutableListOf())
+        val priority01 = MeasurePriority(1, Recommendation(1, "Softa"), measure01)
+        measure01.priorities.add(priority01)
+        whenever(measureRepo.findByDiagnosisIdStartingWith(DIAGNOSIS_A12)).thenReturn(listOf(measure01))
+        val measure02 = Measure(2, DIAGNOSIS_B12, "Benbrott", "1.0", mutableListOf())
+        val priority02 = MeasurePriority(1, Recommendation(2, "Hoppa på ett ben"), measure01)
+        measure02.priorities.add(priority02)
+        whenever(measureRepo.findByDiagnosisIdStartingWith(DIAGNOSIS_B12)).thenReturn(listOf(measure02))
     }
 
     @Test

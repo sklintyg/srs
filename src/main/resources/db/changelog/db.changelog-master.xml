@@ -8,13 +8,13 @@
     <changeSet id="1" author="jh">
 
         <createTable tableName="measure">
-            <column name="id" type="BIGINT" autoIncrement="true">
+            <column name="id" type="BIGINT">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="diagnosis_id" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="diagnosis_text" type="VARCHAR(255)">
+            <column name="diagnosis_text" type="VARCHAR(4096)">
                 <constraints nullable="false"/>
             </column>
             <column name="version" type="VARCHAR(255)">
@@ -22,20 +22,23 @@
             </column>
         </createTable>
 
-        <createTable tableName="measure_priorities">
-            <column name="measure_id" type="BIGINT">
-                <constraints nullable="false"/>
+        <createTable tableName="recommendation">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="priorities_id" type="BIGINT">
-                <constraints nullable="false" unique="true"/>
+            <column name="recommendation_text" type="VARCHAR(4096)">
+                <constraints primaryKey="true" nullable="false"/>
             </column>
         </createTable>
 
-        <createTable tableName="priority">
+        <createTable tableName="measure_priority">
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="priority" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="measure_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
             <column name="recommendation_id" type="BIGINT">
@@ -43,32 +46,16 @@
             </column>
         </createTable>
 
-        <createTable tableName="recommendation">
-            <column name="id" type="BIGINT" autoIncrement="true">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="recommendation_text" type="VARCHAR(255)">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-        </createTable>
-
-        <addForeignKeyConstraint constraintName="measure_priorities_fk"
-                                 baseTableName="measure_priorities"
-                                 baseColumnNames="measure_id"
-                                 referencedTableName="measure"
-                                 referencedColumnNames="id"
-                                 onDelete="CASCADE"/>
-
-        <addForeignKeyConstraint constraintName="priorities_measure_fk"
-                                 baseTableName="measure_priorities"
-                                 baseColumnNames="priorities_id"
-                                 referencedTableName="priority"
-                                 referencedColumnNames="id"/>
-
         <addForeignKeyConstraint constraintName="priority_recommendation_fk"
-                                 baseTableName="priority"
+                                 baseTableName="measure_priority"
                                  baseColumnNames="recommendation_id"
                                  referencedTableName="recommendation"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint constraintName="priority_measure_fk"
+                                 baseTableName="measure_priority"
+                                 baseColumnNames="measure_id"
+                                 referencedTableName="measure"
                                  referencedColumnNames="id"/>
 
     </changeSet>
@@ -118,4 +105,89 @@
             <column name="vardgivare_id"/>
         </createIndex>
     </changeSet>
+
+    <changeSet id="4" author="jh">
+
+        <createTable tableName="prediction_diagnosis">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="diagnosis_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="prediction_question">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="question" type="VARCHAR(4096)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="help_text" type="VARCHAR(4096)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="prediction_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="prediction_response">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="answer" type="VARCHAR(4096)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="prediction_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="default" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="priority" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="question_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="prediction_priority">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="priority" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="diagnosis_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="question_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint constraintName="priority_diagnosis_fk"
+                                 baseTableName="prediction_priority"
+                                 baseColumnNames="diagnosis_id"
+                                 referencedTableName="prediction_diagnosis"
+                                 referencedColumnNames="id"/>
+
+
+        <addForeignKeyConstraint constraintName="priority_question_fk"
+                                 baseTableName="prediction_priority"
+                                 baseColumnNames="question_id"
+                                 referencedTableName="prediction_question"
+                                 referencedColumnNames="id"/>
+
+
+        <addForeignKeyConstraint constraintName="response_question_fk"
+                                 baseTableName="prediction_response"
+                                 baseColumnNames="question_id"
+                                 referencedTableName="prediction_question"
+                                 referencedColumnNames="id"/>
+
+    </changeSet>
+
 </databaseChangeLog>
