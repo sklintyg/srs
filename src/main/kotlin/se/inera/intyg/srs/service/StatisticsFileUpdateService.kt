@@ -24,16 +24,27 @@ import java.util.*
 class StatisticsFileUpdateService(@Value("\${statistics.image.dir}") val imageDir: String,
                                   @Value("\${base.url}") val baseUrl: String,
                                   @Autowired val repo: StatisticRepository) {
+
     private val log = LogManager.getLogger()
+
     private val imageFileExtension: String = "jpg"
+
     private val urlExtension: String = "/image/"
 
     // For now, only codes with three positions are allowed.
     private val fileNameRegex = Regex("""\w\d{2}""")
 
+    init {
+        doUpdate()
+    }
+
     @Transactional
     @Scheduled(cron = "\${image.update.cron}")
     fun update() {
+        doUpdate()
+    }
+
+    private fun doUpdate() {
         log.info("Performing scheduled image update...")
 
         val dbEntries: List<InternalStatistic> = repo.findAll().toList()
