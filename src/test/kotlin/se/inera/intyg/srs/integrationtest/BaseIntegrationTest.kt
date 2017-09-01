@@ -11,10 +11,13 @@ import se.inera.intyg.srs.persistence.Measure
 
 open class BaseIntegrationTest {
 
+    data class StatisticsResponse(val diagnosisId: String, val bildUrl: String)
+
     @Before
     fun clearAllTables() {
         restTemplate.delete("/measures")
         restTemplate.delete("/consents")
+        restTemplate.delete("/statistics")
     }
 
     protected fun addConsent(personnummer: String, samtycke: Boolean, vardenhet: String): String =
@@ -34,6 +37,13 @@ open class BaseIntegrationTest {
         restTemplate.getForObject(
             "/consents?personnummer=$personnummer&vardenhet=$vardenhet",
             Consent::class.java
+        )
+
+    protected fun addStatistics(diagnosId: String, bildUrl: String): String =
+        restTemplate.postForObject(
+            "/statistics",
+            TestController.StatisticsRequest(diagnosId, bildUrl),
+            String::class.java
         )
 
     protected fun getClasspathResourceAsString(fileName: String): String {

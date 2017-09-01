@@ -12,9 +12,10 @@ class AtgardsforslagIT : BaseIntegrationTest() {
     private val ATGARD_ROOT = "$SOAP_ROOT.bedomningsunderlag.atgardsrekommendationer"
 
     @Test
-    fun testRequestingAtgardsforslagForExistingDiagnosisShouldWork() {
+    fun testRequestAtgardsforslag() {
         // En request som frågar efter åtgärdsförslag för en diagnos
-        // som har åtgärdsförslag ska returnera dessa.
+        // som har åtgärdsförslag ska returnera dessa. Diagnos som inte
+        // har åtgärdsförslag ska indikera detta.
         addMeasure("M75", "Riktigt stressad", listOf("Ta det lugnt", "Hetsa inte upp dig"))
 
         RestAssured.given()

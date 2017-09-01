@@ -20,6 +20,8 @@ class TestController(@Autowired val consentModule: ConsentModule,
 
     data class MeasureRequest(val diagnosId: String, val diagnosText: String, val rekommendationer: List<String>)
 
+    data class StatisticsRequest(val diagnosId: String, val bildUrl: String)
+
     @GetMapping("/consents")
     fun getConsent(@RequestParam(value = "personnummer") personnummer: String,
                    @RequestParam(value = "vardenhet") vardenhet: String) =
@@ -50,4 +52,12 @@ class TestController(@Autowired val consentModule: ConsentModule,
         testModule.deleteAllRecommendations()
         testModule.deleteAllMeasures()
     }
+
+    @DeleteMapping("/statistics")
+    fun deleteAllStatistics() =
+            testModule.deleteAllStatistics()
+
+    @PostMapping("/statistics")
+    fun createStatistics(@RequestBody statistics: StatisticsRequest) =
+            testModule.createStatistic(statistics.diagnosId, statistics.bildUrl)
 }
