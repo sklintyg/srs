@@ -14,26 +14,30 @@ class TestModule(@Autowired private val consentRepo: ConsentRepository,
                  @Autowired private val recommendationRepo: RecommendationRepository
                  ) {
 
-    private val count = AtomicLong()
-
-    fun deleteAllConsents() = consentRepo.deleteAll()
+    private val currentMeasureId = AtomicLong()
 
     fun createMeasure(diagnosisId: String, diagnosisText: String, recommendations: List<String>): Measure =
             measureRepo.save(mapToMeasure(diagnosisId, diagnosisText, recommendations))
 
     private fun mapToMeasure(diagnosisId: String, diagnosisText: String, recommendations: List<String>) =
-            Measure(count.incrementAndGet(), diagnosisId, diagnosisText, "1.0", mapToMeasurePriorities(recommendations))
+            Measure(currentMeasureId.incrementAndGet(), diagnosisId, diagnosisText, "1.0", mapToMeasurePriorities(recommendations))
 
     private fun mapToMeasurePriorities(recommendations: List<String>) =
             recommendations
                     .mapIndexed({ i, recText -> Recommendation(i.toLong(), recText) })
                     .map({ rec -> recommendationRepo.save(rec) })
-                    .mapIndexed({ i, rec -> MeasurePriority(i, rec) })
+                    .mapIndexed({ i, rec -> MeasurePriority(i + 1, rec) })
                     .map({ priority -> priorityRepo.save(priority) })
                     .toMutableList()
 
     fun deleteMeasure(diagnosisId: String) = measureRepo.delete(measureRepo.findByDiagnosisIdStartingWith(diagnosisId))
 
+    fun deleteAllConsents() = consentRepo.deleteAll()
+
     fun deleteAllMeasures() = measureRepo.deleteAll()
+
+    fun deleteAllRecommendations() = recommendationRepo.deleteAll()
+
+    fun deleteAllPriorities() = priorityRepo.deleteAll()
 
 }

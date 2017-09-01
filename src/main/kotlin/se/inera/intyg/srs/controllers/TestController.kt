@@ -45,5 +45,9 @@ class TestController(@Autowired val consentModule: ConsentModule,
             measureModule.measureRepo.findByDiagnosisIdStartingWith(diagnosisId)
 
     @DeleteMapping("/measures")
-    fun deleteAllMeasures() = testModule.deleteAllMeasures()
+    fun deleteAllMeasures() {
+        testModule.deleteAllPriorities()
+        testModule.deleteAllRecommendations()
+        testModule.deleteAllMeasures()
+    }
 }

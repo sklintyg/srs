@@ -1,0 +1,13 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:riv:clinicalprocess:healthcond:srs:SetConsentResponder:1" xmlns:urn1="urn:riv:clinicalprocess:healthcond:certificate:types:2">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <urn:SetConsentRequest>
+         <urn:vardgivare-id>
+            <urn1:root>1.2.752.129.2.1.4.1</urn1:root>
+            <urn1:extension>abc</urn1:extension>
+         </urn:vardgivare-id>
+         <urn:person-id>191212121212</urn:person-id>
+         <urn:samtycke>true</urn:samtycke>
+      </urn:SetConsentRequest>
+   </soapenv:Body>
+</soapenv:Envelope>
