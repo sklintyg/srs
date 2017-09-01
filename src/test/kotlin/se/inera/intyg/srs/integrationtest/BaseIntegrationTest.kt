@@ -2,13 +2,42 @@ package se.inera.intyg.srs.integrationtest
 
 import com.jayway.restassured.RestAssured
 import org.junit.Before
+import org.junit.BeforeClass
+import org.springframework.boot.web.client.RestTemplateBuilder
+import org.springframework.core.io.ClassPathResource
+import se.inera.intyg.srs.controllers.TestController
 
 open class BaseIntegrationTest {
+
     @Before
-    fun setup() {
-        // TODO: Bör vara paremetriserat så vi kan välja miljö
-        RestAssured.baseURI = "http://localhost"
-        RestAssured.port = 8080
-        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails()
+    fun clearAllTables() {
+        restTemplate.delete("/measures")
+        restTemplate.delete("/consents")
     }
+
+    fun addConsent(personnummer: String, samtycke: Boolean, vardenhet: String): String =
+        restTemplate.postForObject(
+            "/consents",
+            TestController.ConsentRequest(personnummer, samtycke, vardenhet),
+            String::class.java)
+
+    protected fun getClasspathResourceAsString(fileName: String): String {
+        return ClassPathResource("integrationtest/$fileName").file.readText()
+    }
+    companion object SetUp {
+
+        private val baseURI = "http://localhost"
+        private val basePort = 8080
+        private val restTemplate = RestTemplateBuilder().rootUri(baseURI + ":" + basePort).build()
+
+        @BeforeClass
+        @JvmStatic
+        fun setupRestAssured() {
+            // TODO: Bör vara paremetriserat så vi kan välja miljö
+            RestAssured.baseURI = baseURI
+            RestAssured.port = basePort
+            RestAssured.enableLoggingOfRequestAndResponseIfValidationFails()
+        }
+    }
+
 }

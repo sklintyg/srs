@@ -37,8 +37,11 @@ class GetSRSInformationResponderIT : BaseIntegrationTest() {
                 .body("$SOAP_ROOT.resultCode", Matchers.equalTo("OK"))
     }
 
-    private fun getClasspathResourceAsString(fileName: String): String {
-        return ClassPathResource("integrationtest/$fileName").file.readText()
+    @Test
+    fun testWhenAllFilterFlagsAreDisabledNothingShouldBeReturned() {
+        // Kontrollera att varken åtgärdsförslag, statistik eller prediktion returneras
+        // om flaggorna är satta till false i requestet.
     }
+
 }
 
