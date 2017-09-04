@@ -13,8 +13,17 @@ class ConsentModule(@Autowired private val consentRepo: ConsentRepository) {
         return consentRepo.findConsentByPersonnummerAndVardgivareId(personnummer, hsaId)
     }
 
-    fun setConsent(personnummer: String, samtycke: Boolean, vardenhetId: String): ResultCodeEnum {
-        val consent = Consent(personnummer, samtycke, vardenhetId, LocalDateTime.now())
+    fun setConsent(personnummer: String, samtycke: Boolean, vardgivarId: String): ResultCodeEnum {
+        var consent = consentRepo.findConsentByPersonnummerAndVardgivareId(personnummer, vardgivarId)
+
+        if (consent == null) {
+            consent = Consent(personnummer, samtycke, vardgivarId, LocalDateTime.now())
+        } else {
+            // Update consent
+            consent.skapatTid = LocalDateTime.now()
+            consent.samtycke = samtycke
+        }
+
         if (consentRepo.save(consent) == null) {
             return ResultCodeEnum.ERROR
         }

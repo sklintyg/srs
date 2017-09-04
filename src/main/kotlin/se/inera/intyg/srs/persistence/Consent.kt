@@ -9,10 +9,10 @@ import javax.persistence.Id
 
 @Entity
 class Consent(val personnummer: String,
-              val samtycke: Boolean,
+              var samtycke: Boolean,
               val vardgivareId: String,
               @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
-              val skapatTid: LocalDateTime,
+              var skapatTid: LocalDateTime,
               @Id @GeneratedValue(strategy = GenerationType.AUTO)
               val id: Long = -1) {
 
