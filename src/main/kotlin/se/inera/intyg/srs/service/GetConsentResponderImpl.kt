@@ -11,7 +11,7 @@ import se.inera.intyg.clinicalprocess.healthcond.srs.getconsent.v1.Samtyckesstat
 import se.inera.intyg.srs.vo.ConsentModule
 
 @Service
-class GetConsentResponderImpl(@Autowired val consentModule : ConsentModule) : GetConsentResponderInterface{
+class GetConsentResponderImpl(val consentModule: ConsentModule) : GetConsentResponderInterface {
 
     private val log = LogManager.getLogger()
 

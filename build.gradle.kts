@@ -2,9 +2,9 @@ plugins {
     war
     `maven-publish`
 
-    kotlin("jvm", "1.1.4-2")
-    kotlin("plugin.spring", "1.1.4-2")
-    kotlin("plugin.jpa", "1.1.4-2")
+    kotlin("jvm", "1.1.4-3")
+    kotlin("plugin.spring", "1.1.4-3")
+    kotlin("plugin.jpa", "1.1.4-3")
 
     id("se.inera.intyg.plugin.common") version "1.0.45"
     id("org.springframework.boot") version "1.5.6.RELEASE"
@@ -56,7 +56,7 @@ repositories {
 }
 
 dependencies {
-    val kotlinVersion = "1.1.4-2"
+    val kotlinVersion = "1.1.4-3"
 
     compile(kotlin("stdlib", kotlinVersion))
     compile(kotlin("reflect", kotlinVersion))

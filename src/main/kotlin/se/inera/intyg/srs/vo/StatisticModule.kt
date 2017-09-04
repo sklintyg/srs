@@ -1,16 +1,17 @@
 package se.inera.intyg.srs.vo
 
 import org.apache.logging.log4j.LogManager
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.*
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Statistik
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Statistikbild
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Statistikstatus
 import se.inera.intyg.srs.persistence.InternalStatistic
 import se.inera.intyg.srs.persistence.StatisticRepository
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.Diagnos
 import java.util.*
 
 @Service
-class StatisticModule(@Autowired val statisticRepo: StatisticRepository): InformationModule<Statistik> {
+class StatisticModule(val statisticRepo: StatisticRepository): InformationModule<Statistik> {
 
     private val MIN_ID_POSITIONS = 3
 
