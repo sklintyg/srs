@@ -35,7 +35,7 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
 
         if (request.utdatafilter.isPrediktion) {
             try {
-                predictionModule.getInfo(persons).forEach { (person, prediction) ->
+                predictionModule.getInfo(persons, mapOf()).forEach { (person, prediction) ->
                     val underlag = response.bedomningsunderlag.find { it.personId == person.personId } ?: createUnderlag(person.personId, response)
                     underlag.prediktion = prediction
                 }
@@ -46,7 +46,7 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
 
         if (request.utdatafilter.isAtgardsrekommendation) {
             try {
-                measureModule.getInfo(persons).forEach { (person, measure) ->
+                measureModule.getInfo(persons, mapOf()).forEach { (person, measure) ->
                     val underlag = response.bedomningsunderlag.find { it.personId == person.personId } ?: createUnderlag(person.personId, response)
                     underlag.atgardsrekommendationer = measure
                 }
@@ -57,7 +57,7 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
 
         if (request.utdatafilter.isStatistik) {
             try {
-                statisticModule.getInfo(persons).forEach { (person, statistic) ->
+                statisticModule.getInfo(persons, mapOf()).forEach { (person, statistic) ->
                     val underlag = response.bedomningsunderlag.find { it.personId == person.personId } ?: createUnderlag(person.personId, response)
                     underlag.statistik = statistic
                 }

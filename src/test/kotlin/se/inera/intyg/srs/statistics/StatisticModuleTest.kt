@@ -77,7 +77,7 @@ class StatisticModuleTest {
     private fun doGetInfo(diagnoses: List<String>): List<Statistikbild> {
         val diagnosesList = diagnoses.stream().map { Diagnosis(it) }.collect(Collectors.toList())
         val person = Person("1212121212", 35, Sex.MAN, Extent.HELT_NEDSATT, diagnosesList)
-        return module.getInfo(listOf(person)).get(person)!!.statistikbild
+        return module.getInfo(listOf(person), mapOf()).get(person)!!.statistikbild
     }
 
 }

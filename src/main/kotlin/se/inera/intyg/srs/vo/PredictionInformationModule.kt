@@ -19,7 +19,7 @@ class PredictionInformationModule : InformationModule<Prediktion> {
 
     private val log = LogManager.getLogger()
 
-    override fun getInfo(persons: List<Person>): Map<Person, Prediktion> {
+    override fun getInfo(persons: List<Person>, extraParams: Map<String, String>): Map<Person, Prediktion> {
         log.info(persons)
         val predictions = HashMap<Person, Prediktion>()
         persons.forEach { person ->
