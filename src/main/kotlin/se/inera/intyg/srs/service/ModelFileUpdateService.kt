@@ -21,13 +21,13 @@ class ModelFileUpdateService(@Value("\${model.dir}") val modelDir: String) {
 
     private val log = LogManager.getLogger()
 
-    init {
-        doUpdate()
-    }
-
     private val DATA_FILE_EXTENSION = ".rdata"
 
     private val models = mutableMapOf<String, Model>()
+
+    init {
+        doUpdate()
+    }
 
     fun modelForCode(currentId: String): Model? {
         return models.get(currentId)
@@ -39,7 +39,7 @@ class ModelFileUpdateService(@Value("\${model.dir}") val modelDir: String) {
         doUpdate()
     }
 
-    private fun doUpdate() {
+    private final fun doUpdate() {
         log.info("Performing scheduled model file update...")
 
         try {

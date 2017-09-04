@@ -44,7 +44,7 @@ class StatisticsFileUpdateService(@Value("\${statistics.image.dir}") val imageDi
         doUpdate()
     }
 
-    private fun doUpdate() {
+    private final fun doUpdate() {
         log.info("Performing scheduled image update...")
 
         val dbEntries: List<InternalStatistic> = repo.findAll().toList()
@@ -55,7 +55,7 @@ class StatisticsFileUpdateService(@Value("\${statistics.image.dir}") val imageDi
                 .forEach { file ->
                     val fileName = fixFileName(file)
                     val fileModifiedTime = getModifiedTime(file)
-                    var existingImage = dbEntries.find { cleanDiagnosisCode(it.diagnosisId) == fileName }
+                    val existingImage = dbEntries.find { cleanDiagnosisCode(it.diagnosisId) == fileName }
 
                     if (existingImage == null) {
                         log.info("New file found, saving as: $fileName")
