@@ -22,10 +22,7 @@ class ConsentModule(private val consentRepo: ConsentRepository) {
             consent.skapatTid = LocalDateTime.now()
             consent.samtycke = samtycke
         }
-
-        if (consentRepo.save(consent) == null) {
-            return ResultCodeEnum.ERROR
-        }
+        consentRepo.save(consent) ?: return ResultCodeEnum.ERROR
         return ResultCodeEnum.OK
     }
 }
