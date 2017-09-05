@@ -9,6 +9,7 @@ import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Statis
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Statistikstatus
 import se.inera.intyg.srs.persistence.InternalStatistic
 import se.inera.intyg.srs.persistence.StatisticRepository
+import se.inera.intyg.srs.service.YOUTHS
 import se.inera.intyg.srs.vo.Diagnosis
 import se.inera.intyg.srs.vo.Person
 import se.inera.intyg.srs.vo.Sex
@@ -78,7 +79,7 @@ class StatisticModuleTest {
 
     private fun doGetInfo(diagnoses: List<String>): List<Statistikbild> {
         val diagnosesList = diagnoses.stream().map { Diagnosis(it) }.collect(Collectors.toList())
-        val person = Person("1212121212", 35, Sex.MAN, diagnosesList)
+        val person = Person("1212121212", YOUTHS, Sex.MAN, diagnosesList)
         return module.getInfo(listOf(person), mapOf()).get(person)!!.statistikbild
     }
 

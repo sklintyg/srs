@@ -20,12 +20,14 @@ class GetPredictionQuestionsResponderImpl(val diagnosisRepo: DiagnosisRepository
             diagnosis.questions.forEach { savedQuestion ->
                 val outboundQuestion = Prediktionsfraga()
                 outboundQuestion.frageid = BigInteger.valueOf(savedQuestion.id)
+                outboundQuestion.frageidSrs = savedQuestion.question.predictionId
                 outboundQuestion.fragetext = savedQuestion.question.question
                 outboundQuestion.hjalptext = savedQuestion.question.helpText
                 outboundQuestion.prioritet = BigInteger.valueOf(savedQuestion.priority.toLong())
                 savedQuestion.question.answers.forEach { savedResponse ->
                     val outboundResponse = Svarsalternativ()
-                    outboundResponse.svarsalternativId = BigInteger.valueOf(savedResponse.id)
+                    outboundResponse.svarsid = BigInteger.valueOf(savedResponse.id)
+                    outboundResponse.svarsidSrs = savedResponse.predictionId
                     outboundResponse.isDefault = savedResponse.default
                     outboundResponse.prioritet = BigInteger.valueOf(savedResponse.priority.toLong())
                     outboundResponse.svarstext = savedResponse.answer

@@ -19,6 +19,19 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v2.ResultCodeEnum
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
+val REGION = "Region"
+val STHLM = "Stockholm"
+val NORD = "Nord"
+val VAST = "Vast"
+val MITT = "Mitt"
+val SYD = "Syd"
+
+val TODDLERS = "17-29"
+val KIDS = "30-39"
+val YOUTHS = "40-49"
+val ADULTS = "50-56"
+val AT_DEATHS_DOOR = "57-63"
+
 @Service
 @SchemaValidation(type = SchemaValidation.SchemaValidationType.BOTH)
 class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule,
@@ -41,7 +54,7 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
 
         if (request.utdatafilter.isPrediktion) {
             try {
-                predictionModule.getInfo(persons, mapOf()).forEach { (person, prediction) ->
+                predictionModule.getInfo(persons, extraInfo).forEach { (person, prediction) ->
                     val underlag = response.bedomningsunderlag.find { it.personId == person.personId } ?: createUnderlag(person.personId, response)
                     underlag.prediktion = prediction
                 }
@@ -52,7 +65,7 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
 
         if (request.utdatafilter.isAtgardsrekommendation) {
             try {
-                measureModule.getInfo(persons, mapOf()).forEach { (person, measure) ->
+                measureModule.getInfo(persons).forEach { (person, measure) ->
                     val underlag = response.bedomningsunderlag.find { it.personId == person.personId } ?: createUnderlag(person.personId, response)
                     underlag.atgardsrekommendationer = measure
                 }
@@ -63,7 +76,7 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
 
         if (request.utdatafilter.isStatistik) {
             try {
-                statisticModule.getInfo(persons, mapOf()).forEach { (person, statistic) ->
+                statisticModule.getInfo(persons).forEach { (person, statistic) ->
                     val underlag = response.bedomningsunderlag.find { it.personId == person.personId } ?: createUnderlag(person.personId, response)
                     underlag.statistik = statistic
                 }
@@ -74,10 +87,6 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
 
         response.resultCode = ResultCodeEnum.OK
         return response
-    }
-
-    fun transformPredictionFactors(prediktionsfaktorer: Prediktionsfaktorer): Map<String, String> {
-        return mapOf()
     }
 
     private fun createUnderlag(personId: String, response: GetSRSInformationResponseType): Bedomningsunderlag {
@@ -95,15 +104,55 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
                 Person(individ.personId, age, sex, diagnoses)
             }
 
-    private fun calculateAge(personId: String): Int {
+    private fun calculateAge(personId: String): String {
         val year = personId.substring(0..3).toInt()
         val month = personId.substring(4..5).toInt()
         val day = personId.substring(6..7).toInt()
         val birthDate = LocalDate.of(year, month, day)
         val today = LocalDate.now()
-        return ChronoUnit.YEARS.between(birthDate, today).toInt()
+        return calculateAgeCategory(ChronoUnit.YEARS.between(birthDate, today).toInt())
     }
 
+    private fun calculateAgeCategory(age: Int) =
+            when (age) {
+                in 0..29 -> TODDLERS
+                in 30..39 -> KIDS
+                in 40..49 -> YOUTHS
+                in 50..56 -> ADULTS
+                else -> AT_DEATHS_DOOR
+            }
+
     private fun calculateSex(personId: String) = if (personId[10].toInt() % 2 == 0) Sex.WOMAN else Sex.MAN
+
+    private fun transformPredictionFactors(factors: Prediktionsfaktorer): Map<String, String> {
+        val returnMap: MutableMap<String, String> = mutableMapOf()
+        returnMap[REGION] = calculateRegion(factors.postnummer)
+        factors.fragasvar.forEach { returnMap[it.frageidSrs] = it.svarsidSrs }
+        return returnMap
+    }
+
+    private fun calculateRegion(zipCode: String?) =
+            if (zipCode != null && zipCode.length >= 2 && zipCode.substring(0, 1).matches(Regex("\\d\\d"))) {
+                when (zipCode.substring(0, 1).toInt()) {
+                    in 80..98 -> NORD
+                    in 30..31 -> VAST
+                    in 40..47 -> VAST
+                    in 50..54 -> VAST
+                    in 65..71 -> VAST
+                    in 77..79 -> VAST
+                    in 19..19 -> MITT
+                    in 58..61 -> MITT
+                    in 63..64 -> MITT
+                    in 72..75 -> MITT
+                    in 10..19 -> STHLM
+                    in 62..76 -> STHLM
+                    in 20..29 -> SYD
+                    in 33..39 -> SYD
+                    in 55..57 -> SYD
+                    else -> ""
+                }
+            } else {
+                ""
+            }
 
 }

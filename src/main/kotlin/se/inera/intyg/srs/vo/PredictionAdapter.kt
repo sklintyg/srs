@@ -4,7 +4,7 @@ import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Diagno
 
 interface PredictionAdapter {
 
-    fun getPrediction(person: Person, diagnosis: Diagnosis): Prediction
+    fun getPrediction(person: Person, diagnosis: Diagnosis, extraParams: Map<String, String>): Prediction
 }
 
 class Prediction(val diagnosis: String, val prediction: Double?, val status: Diagnosprediktionstatus)

@@ -102,7 +102,7 @@
         </createIndex>
     </changeSet>
 
-    <changeSet id="4" author="jh">
+    <changeSet id="5" author="jh">
 
         <createTable tableName="prediction_diagnosis">
             <column name="id" type="BIGINT">
@@ -111,6 +111,7 @@
             <column name="diagnosis_id" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
+            <column name="prevalence" type="DOUBLE"/>
         </createTable>
 
         <createTable tableName="prediction_question">

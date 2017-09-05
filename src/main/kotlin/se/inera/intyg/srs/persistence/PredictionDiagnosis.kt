@@ -10,6 +10,7 @@ import javax.persistence.OneToMany
 class PredictionDiagnosis(@Id
                           val id: Long,
                           val diagnosisId: String,
+                          val prevalence: Double?,
                           @OneToMany(fetch = FetchType.EAGER)
                           @JoinColumn(name="diagnosis_id")
                           val questions: Collection<PredictionPriority>) {

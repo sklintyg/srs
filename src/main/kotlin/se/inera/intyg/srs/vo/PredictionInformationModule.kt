@@ -12,10 +12,7 @@ import java.math.BigInteger
 import java.util.*
 
 @Service
-class PredictionInformationModule : InformationModule<Prediktion> {
-
-    @Autowired
-    lateinit var rAdapter: PredictionAdapter
+class PredictionInformationModule(val rAdapter: PredictionAdapter) : InformationModule<Prediktion> {
 
     private val log = LogManager.getLogger()
 
@@ -23,19 +20,19 @@ class PredictionInformationModule : InformationModule<Prediktion> {
         log.info(persons)
         val predictions = HashMap<Person, Prediktion>()
         persons.forEach { person ->
-            predictions.put(person, createInfo(person))
+            predictions.put(person, createInfo(person, extraParams))
         }
         return predictions
     }
 
-    private fun createInfo(person: Person): Prediktion {
+    private fun createInfo(person: Person, extraParams: Map<String, String>): Prediktion {
         val outgoingPrediction = Prediktion()
 
         person.diagnoses.forEach { incomingDiagnosis ->
             val diagnosPrediktion = Diagnosprediktion()
             diagnosPrediktion.inkommandediagnos = originalDiagnosis(incomingDiagnosis)
 
-            val calculatedPrediction = rAdapter.getPrediction(person, incomingDiagnosis)
+            val calculatedPrediction = rAdapter.getPrediction(person, incomingDiagnosis, extraParams)
             diagnosPrediktion.diagnosprediktionstatus = calculatedPrediction.status
 
             val riskSignal = Risksignal()

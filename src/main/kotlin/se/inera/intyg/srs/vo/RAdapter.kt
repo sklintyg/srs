@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Diagnosprediktionstatus
 import se.inera.intyg.srs.service.ModelFileUpdateService
+import se.inera.intyg.srs.service.REGION
 import java.util.*
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
@@ -19,12 +20,7 @@ class RAdapter(val modelService: ModelFileUpdateService) : PredictionAdapter {
 
     private val log = LogManager.getLogger()
 
-    lateinit var rengine: Rengine
-
-    // These are hard coded for now, but will later be configurable.
-    val DAYS = "90"
-    val EMPLOYMENT = "emp."
-    val SICKDAYS_LASTYEAR = "0"
+    private val rengine: Rengine
 
     init {
         rengine = Rengine(arrayOf("--vanilla"), false, null)
@@ -36,7 +32,7 @@ class RAdapter(val modelService: ModelFileUpdateService) : PredictionAdapter {
         rengine.end()
     }
 
-    override fun getPrediction(person: Person, diagnosis: Diagnosis): Prediction {
+    override fun getPrediction(person: Person, diagnosis: Diagnosis, extraParams: Map<String, String>): Prediction {
         // Synchronizing here is an obvious performance bottle neck, but we have no choice since the R engine is
         // single-threaded, and cannot cope with concurrent calls. Intygsprojektet has accepted that R be used
         // for the execution of prediction models, and there is no reason to the believe that the number of calls
@@ -57,12 +53,15 @@ class RAdapter(val modelService: ModelFileUpdateService) : PredictionAdapter {
                 return Prediction(diagnosis.code, null, Diagnosprediktionstatus.NOT_OK)
             }
 
-            val rDataFrame = "data <- data.frame(" +
-                    "days = as.integer(" + DAYS + "), " +
-                    "age = as.integer(" + person.age + "), " +
-                    "sex = '" + person.sex.predictionString + "', " +
-                    "SA_syssStart = '" + EMPLOYMENT + "', " +
-                    "SA_total_grossd_Yminus1 = '" + SICKDAYS_LASTYEAR + "')"
+            val rDataFrame = StringBuilder("data <- data.frame(").apply {
+                append("SA_Days_tot_modified = as.integer(90), ")
+                append("Sex = '" + person.sex.predictionString + "', ")
+                append("age_cat_fct = '" + person.ageCategory + "', ")
+                extraParams.forEach { (key, value) ->
+                    append(key + " = '" + value + "', ")
+                }
+                append("')")
+            }.toString()
 
             val cmdPrediction = "output <- round(predict(model,newdata = data)\$Surv, 2)"
 
