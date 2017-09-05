@@ -2,7 +2,15 @@ package se.inera.intyg.srs.vo
 
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
-import se.inera.intyg.srs.persistence.*
+import se.inera.intyg.srs.persistence.ConsentRepository
+import se.inera.intyg.srs.persistence.InternalStatistic
+import se.inera.intyg.srs.persistence.Measure
+import se.inera.intyg.srs.persistence.MeasurePriority
+import se.inera.intyg.srs.persistence.MeasurePriorityRepository
+import se.inera.intyg.srs.persistence.MeasureRepository
+import se.inera.intyg.srs.persistence.Recommendation
+import se.inera.intyg.srs.persistence.RecommendationRepository
+import se.inera.intyg.srs.persistence.StatisticRepository
 import java.time.LocalDateTime
 import java.util.concurrent.atomic.AtomicLong
 
@@ -31,7 +39,7 @@ class TestModule(private val consentRepo: ConsentRepository,
                     .map({ priority -> priorityRepo.save(priority) })
                     .toMutableList()
 
-    fun createStatistic(diagnosisId: String, pictureUrl: String) =
+    fun createStatistic(diagnosisId: String, pictureUrl: String): InternalStatistic =
             statisticsRepo.save(InternalStatistic(diagnosisId, pictureUrl, LocalDateTime.now(), currentStatisticId.incrementAndGet()))
 
     fun deleteMeasure(diagnosisId: String) = measureRepo.delete(measureRepo.findByDiagnosisIdStartingWith(diagnosisId))

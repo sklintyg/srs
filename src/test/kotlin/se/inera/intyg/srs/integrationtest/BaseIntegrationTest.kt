@@ -14,8 +14,6 @@ import java.time.Month
 
 open class BaseIntegrationTest {
 
-    data class StatisticsResponse(val diagnosisId: String, val bildUrl: String)
-
     @Before
     fun clearAllTables() {
         restTemplate.delete("/measures")
@@ -64,9 +62,9 @@ open class BaseIntegrationTest {
             String::class.java
         )
 
-    protected fun getClasspathResourceAsString(fileName: String): String {
-        return ClassPathResource("integrationtest/$fileName").file.readText()
-    }
+    protected fun getClasspathResourceAsString(fileName: String): String =
+        ClassPathResource("integrationtest/$fileName").file.readText()
+
     companion object SetUp {
 
         private val baseURI = System.getProperty("integration.tests.baseUrl") ?: "http://localhost:8080"
@@ -76,7 +74,6 @@ open class BaseIntegrationTest {
         @BeforeClass
         @JvmStatic
         fun setupRestAssured() {
-            // TODO: Bör vara paremetriserat så vi kan välja miljö
             RestAssured.baseURI = baseURI
             RestAssured.enableLoggingOfRequestAndResponseIfValidationFails()
         }

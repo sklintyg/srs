@@ -87,4 +87,5 @@ dependencies {
     testCompile("org.springframework.boot:spring-boot-starter-test")
     testCompile("com.jayway.restassured:rest-assured:2.8.0")
     testCompile("com.nhaarman:mockito-kotlin-kt1.1:1.5.0")
+    testCompile("org.exparity:hamcrest-date:2.0.1")
 }

@@ -1,18 +1,23 @@
 package se.inera.intyg.srs.controllers
 
 
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
 import se.inera.intyg.srs.vo.ConsentModule
 import se.inera.intyg.srs.vo.MeasureInformationModule
 import se.inera.intyg.srs.vo.TestModule
 
 @RestController
 @Profile("it")
-class TestController(@Autowired val consentModule: ConsentModule,
-                     @Autowired val measureModule: MeasureInformationModule,
-                     @Autowired val testModule: TestModule) {
+class TestController(val consentModule: ConsentModule,
+                     val measureModule: MeasureInformationModule,
+                     val testModule: TestModule) {
 
     data class ConsentRequest(val personnummer: String,
                        val samtycke: Boolean,

@@ -7,7 +7,7 @@
             <urn1:extension>abc</urn1:extension>
          </urn:vardgivare-id>
          <urn:person-id>191212121212</urn:person-id>
-         <urn:samtycke>true</urn:samtycke>
+         <urn:samtycke>samtycke_placeholder</urn:samtycke>
       </urn:SetConsentRequest>
    </soapenv:Body>
 </soapenv:Envelope>
