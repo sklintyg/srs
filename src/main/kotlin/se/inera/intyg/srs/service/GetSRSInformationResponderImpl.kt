@@ -8,8 +8,8 @@ import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.GetSRS
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.GetSRSInformationResponderInterface
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.GetSRSInformationResponseType
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Individ
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Prediktionsfaktorer
 import se.inera.intyg.srs.vo.Diagnosis
-import se.inera.intyg.srs.vo.Extent
 import se.inera.intyg.srs.vo.MeasureInformationModule
 import se.inera.intyg.srs.vo.Person
 import se.inera.intyg.srs.vo.PredictionInformationModule
@@ -30,7 +30,13 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
     override fun getSRSInformation(request: GetSRSInformationRequestType): GetSRSInformationResponseType {
         log.info("Received request from ${request.konsumentId.extension}")
 
-        val persons = transform(request.individer.individ)
+        val persons = transformIndividuals(request.individer.individ)
+        val extraInfo: Map<String, String> = if (request.prediktionsfaktorer != null) {
+            transformPredictionFactors(request.prediktionsfaktorer)
+        } else {
+            mapOf()
+        }
+
         val response = GetSRSInformationResponseType()
 
         if (request.utdatafilter.isPrediktion) {
@@ -70,6 +76,10 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
         return response
     }
 
+    fun transformPredictionFactors(prediktionsfaktorer: Prediktionsfaktorer): Map<String, String> {
+        return mapOf()
+    }
+
     private fun createUnderlag(personId: String, response: GetSRSInformationResponseType): Bedomningsunderlag {
         val underlag = Bedomningsunderlag()
         underlag.personId = personId
@@ -77,13 +87,12 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
         return underlag
     }
 
-    private fun transform(individer: List<Individ>): List<Person> =
+    private fun transformIndividuals(individer: List<Individ>): List<Person> =
             individer.map { individ ->
                 val age = calculateAge(individ.personId)
                 val sex = calculateSex(individ.personId)
-                val extent = Extent.valueOf(individ.omfattning.value())
                 val diagnoses = individ.diagnos.map { diagnos -> Diagnosis(diagnos.code) }
-                Person(individ.personId, age, sex, extent, diagnoses)
+                Person(individ.personId, age, sex, diagnoses)
             }
 
     private fun calculateAge(personId: String): Int {

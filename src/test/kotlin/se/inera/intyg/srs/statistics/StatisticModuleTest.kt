@@ -2,15 +2,18 @@ package se.inera.intyg.srs.statistics
 
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
-import se.inera.intyg.srs.persistence.InternalStatistic
-import se.inera.intyg.srs.persistence.StatisticRepository
-import se.inera.intyg.srs.vo.*
-import java.time.LocalDateTime
-import org.junit.Assert.assertEquals
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Statistikbild
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Statistikstatus
+import se.inera.intyg.srs.persistence.InternalStatistic
+import se.inera.intyg.srs.persistence.StatisticRepository
+import se.inera.intyg.srs.vo.Diagnosis
+import se.inera.intyg.srs.vo.Person
+import se.inera.intyg.srs.vo.Sex
+import se.inera.intyg.srs.vo.StatisticModule
+import java.time.LocalDateTime
 import java.util.stream.Collectors
 
 class StatisticModuleTest {
@@ -38,7 +41,6 @@ class StatisticModuleTest {
         whenever(repo.findByDiagnosisId(DIAGNOSIS_B12))
                 .thenReturn(listOf(InternalStatistic("B12", B12_URL, aDate)))
     }
-
 
     @Test
     fun longerDiagnoseYieldsShortenedVersion() {
@@ -76,7 +78,7 @@ class StatisticModuleTest {
 
     private fun doGetInfo(diagnoses: List<String>): List<Statistikbild> {
         val diagnosesList = diagnoses.stream().map { Diagnosis(it) }.collect(Collectors.toList())
-        val person = Person("1212121212", 35, Sex.MAN, Extent.HELT_NEDSATT, diagnosesList)
+        val person = Person("1212121212", 35, Sex.MAN, diagnosesList)
         return module.getInfo(listOf(person), mapOf()).get(person)!!.statistikbild
     }
 

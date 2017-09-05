@@ -62,7 +62,6 @@ class RAdapter(val modelService: ModelFileUpdateService) : PredictionAdapter {
                     "age = as.integer(" + person.age + "), " +
                     "sex = '" + person.sex.predictionString + "', " +
                     "SA_syssStart = '" + EMPLOYMENT + "', " +
-                    "SA_ExtentFirst = '" + person.extent.predictionString + "', " +
                     "SA_total_grossd_Yminus1 = '" + SICKDAYS_LASTYEAR + "')"
 
             val cmdPrediction = "output <- round(predict(model,newdata = data)\$Surv, 2)"
