@@ -1,6 +1,7 @@
 package se.inera.intyg.srs.integrationtest
 
 import com.jayway.restassured.RestAssured
+import org.json.JSONObject
 import org.junit.Before
 import org.junit.BeforeClass
 import org.springframework.boot.web.client.RestTemplateBuilder
@@ -8,6 +9,8 @@ import org.springframework.core.io.ClassPathResource
 import se.inera.intyg.srs.controllers.TestController
 import se.inera.intyg.srs.persistence.Consent
 import se.inera.intyg.srs.persistence.Measure
+import java.time.LocalDateTime
+import java.time.Month
 
 open class BaseIntegrationTest {
 
@@ -33,11 +36,26 @@ open class BaseIntegrationTest {
             Measure::class.java
         )
 
-    protected fun getConsent(personnummer: String, vardenhet: String): Consent =
-        restTemplate.getForObject(
-            "/consents?personnummer=$personnummer&vardenhet=$vardenhet",
-            Consent::class.java
+    protected fun getConsent(personnummer: String, vardenhet: String): Consent {
+        val jsonString = restTemplate.getForObject(
+                "/consents?personnummer=$personnummer&vardenhet=$vardenhet",
+                String::class.java
         )
+        val jsonObject = JSONObject(jsonString)
+        val timeObject = jsonObject.getJSONObject("skapatTid")
+
+        return Consent(
+                jsonObject.getString("personnummer"),
+                jsonObject.getBoolean("samtycke"),
+                jsonObject.getString("vardgivareId"),
+                LocalDateTime.of(timeObject.getInt("year"),
+                        Month.of(timeObject.getInt("monthValue")),
+                        timeObject.getInt("dayOfMonth"),
+                        timeObject.getInt("hour"),
+                        timeObject.getInt("minute"))
+        )
+    }
+
 
     protected fun addStatistics(diagnosId: String, bildUrl: String): String =
         restTemplate.postForObject(
@@ -51,16 +69,15 @@ open class BaseIntegrationTest {
     }
     companion object SetUp {
 
-        private val baseURI = "http://localhost"
-        private val basePort = 8080
-        private val restTemplate = RestTemplateBuilder().rootUri(baseURI + ":" + basePort).build()
+        private val baseURI = System.getProperty("integration.tests.baseUrl") ?: "http://localhost:8080"
+
+        private val restTemplate = RestTemplateBuilder().rootUri(baseURI).build()
 
         @BeforeClass
         @JvmStatic
         fun setupRestAssured() {
             // TODO: Bör vara paremetriserat så vi kan välja miljö
             RestAssured.baseURI = baseURI
-            RestAssured.port = basePort
             RestAssured.enableLoggingOfRequestAndResponseIfValidationFails()
         }
     }
