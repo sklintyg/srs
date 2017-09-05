@@ -65,7 +65,7 @@
             <column name="diagnosis_id" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="picture_url" type="TEXT">
+            <column name="picture_url" type="VARCHAR(400)">
                 <constraints nullable="false"/>
             </column>
             <column name="timestamp" type="DATETIME">
