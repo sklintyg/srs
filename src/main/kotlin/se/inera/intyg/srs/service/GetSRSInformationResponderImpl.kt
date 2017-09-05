@@ -132,8 +132,8 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
     }
 
     private fun calculateRegion(zipCode: String?) =
-            if (zipCode != null && zipCode.length >= 2 && zipCode.substring(0, 1).matches(Regex("\\d\\d"))) {
-                when (zipCode.substring(0, 1).toInt()) {
+            if (zipCode != null && zipCode.length >= 2 && zipCode.substring(0, 2).matches(Regex("\\d\\d"))) {
+                when (zipCode.substring(0, 2).toInt()) {
                     in 80..98 -> NORD
                     in 30..31 -> VAST
                     in 40..47 -> VAST

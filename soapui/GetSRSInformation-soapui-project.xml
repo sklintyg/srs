@@ -464,18 +464,6 @@
                   <urn1:extension>abc</urn1:extension>
                </urn:intyg-id>
             </urn:individ>
-            <urn:individ>
-               <urn:person-id>195408151244</urn:person-id>
-               <urn:diagnos>
-                  <urn1:code>B45</urn1:code>
-                  <urn1:codeSystem>1.2.752.116.1.1.1.1.3</urn1:codeSystem>
-               </urn:diagnos>
-               <urn:omfattning>HELT_NEDSATT</urn:omfattning>
-               <urn:intyg-id>
-                  <urn1:root>root</urn1:root>
-                  <urn1:extension>def</urn1:extension>
-               </urn:intyg-id>
-            </urn:individ>
          </urn:individer>
          <urn:utdatafilter>
             <urn:prediktion>true</urn:prediktion>
@@ -542,4 +530,237 @@
          </urn:utdatafilter>
       </urn:GetSRSInformationRequest>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:riv:clinicalprocess:healthcond:srs:GetSRSInformationResponder:1:GetSRSInformation"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/><con:oAuth1ProfileContainer/></con:soapui-project>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:riv:clinicalprocess:healthcond:srs:GetSRSInformationResponder:1:GetSRSInformation"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:interface xsi:type="con:WsdlInterface" id="56ea645f-e69a-4ffd-9768-9d541a75dd70" wsaVersion="NONE" name="GetPredictionQuestionsResponderImplServiceSoapBinding" type="wsdl" bindingName="{http://service.srs.intyg.inera.se/}GetPredictionQuestionsResponderImplServiceSoapBinding" soapVersion="1_1" anonymous="optional" definition="http://localhost:8080/services/predictionquestions?WSDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="http://localhost:8080/services/predictionquestions?WSDL"><con:part><con:url>http://localhost:8080/services/predictionquestions?WSDL</con:url><con:content><![CDATA[<wsdl:definitions name="GetPredictionQuestionsResponderImplService" targetNamespace="http://service.srs.intyg.inera.se/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://service.srs.intyg.inera.se/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns3="http://schemas.xmlsoap.org/soap/http" xmlns:ns1="urn:riv:clinicalprocess:healthcond:srs:GetPredictionQuestions:1:rivtabp21">
+  <wsdl:import location="http://localhost:8080/services/predictionquestions?wsdl=GetPredictionQuestionsResponderInterface.wsdl" namespace="urn:riv:clinicalprocess:healthcond:srs:GetPredictionQuestions:1:rivtabp21"></wsdl:import>
+  <wsdl:binding name="GetPredictionQuestionsResponderImplServiceSoapBinding" type="ns1:GetPredictionQuestionsResponderInterface">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="GetPredictionQuestions">
+      <soap:operation soapAction="urn:riv:clinicalprocess:healthcond:srs:GetPredictionQuestionsResponder:1:GetPredictionQuestions" style="document"/>
+      <wsdl:input name="GetPredictionQuestions">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="GetPredictionQuestionsResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="GetPredictionQuestionsResponderImplService">
+    <wsdl:port binding="tns:GetPredictionQuestionsResponderImplServiceSoapBinding" name="GetPredictionQuestionsResponderImplPort">
+      <soap:address location="http://localhost:8080/services/predictionquestions"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part><con:part><con:url>http://localhost:8080/services/predictionquestions?wsdl=GetPredictionQuestionsResponderInterface.wsdl</con:url><con:content><![CDATA[<wsdl:definitions name="GetPredictionQuestionsResponderInterface" targetNamespace="urn:riv:clinicalprocess:healthcond:srs:GetPredictionQuestions:1:rivtabp21" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns2="urn:riv:clinicalprocess:healthcond:srs:GetPredictionQuestionsResponder:1" xmlns:ns1="urn:riv:clinicalprocess:healthcond:srs:GetPredictionQuestions:1:rivtabp21">
+  <wsdl:types>
+    <xs:schema elementFormDefault="qualified" targetNamespace="urn:riv:clinicalprocess:healthcond:srs:GetPredictionQuestionsResponder:1" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="urn:riv:clinicalprocess:healthcond:srs:GetPredictionQuestionsResponder:1" xmlns:ns1="urn:riv:clinicalprocess:healthcond:certificate:types:2">
+      <xs:import namespace="urn:riv:clinicalprocess:healthcond:certificate:types:2"/>
+      <xs:element name="GetPredictionQuestionsRequest" type="tns:GetPredictionQuestionsRequestType"/>
+      <xs:element name="GetPredictionQuestionsResponse" type="tns:GetPredictionQuestionsResponseType"/>
+      <xs:complexType name="GetPredictionQuestionsRequestType">
+        <xs:sequence>
+          <xs:element name="diagnos" type="ns1:diagnos"/>
+          <xs:any maxOccurs="unbounded" minOccurs="0" namespace="##other" processContents="lax"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="svarsalternativ">
+        <xs:sequence>
+          <xs:element name="svarsalternativ-id" type="xs:positiveInteger"/>
+          <xs:element name="svarstext" type="xs:string"/>
+          <xs:element name="default" type="xs:boolean"/>
+          <xs:element name="prioritet" type="xs:positiveInteger"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="prediktionsfraga">
+        <xs:sequence>
+          <xs:element name="frageid" type="xs:positiveInteger"/>
+          <xs:element name="fragetext" type="xs:string"/>
+          <xs:element name="hjalptext" type="xs:string"/>
+          <xs:element name="prioritet" type="xs:positiveInteger"/>
+          <xs:element maxOccurs="unbounded" name="svarsalternativ" type="tns:svarsalternativ"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="GetPredictionQuestionsResponseType">
+        <xs:sequence>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="prediktionsfraga" nillable="true" type="tns:prediktionsfraga"/>
+          <xs:any maxOccurs="unbounded" minOccurs="0" namespace="##other" processContents="lax"/>
+        </xs:sequence>
+      </xs:complexType>
+    </xs:schema>
+    <xs:schema elementFormDefault="qualified" targetNamespace="urn:riv:clinicalprocess:healthcond:certificate:types:2" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="urn:riv:clinicalprocess:healthcond:certificate:types:2">
+      <xs:element name="cv" type="tns:CVType"/>
+      <xs:element name="date" type="xs:string"/>
+      <xs:element name="datePeriod" type="tns:DatePeriodType"/>
+      <xs:element name="ii" type="tns:IIType"/>
+      <xs:element name="partialDate" type="tns:PartialDateType"/>
+      <xs:element name="pq" type="tns:PQType"/>
+      <xs:element name="pqInterval" type="tns:PQIntervalType"/>
+      <xs:element name="timePeriod" type="tns:TimePeriodType"/>
+      <xs:element name="timestamp" type="xs:string"/>
+      <xs:complexType name="diagnos">
+        <xs:complexContent>
+          <xs:extension base="tns:CVType">
+            <xs:sequence/>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="CVType">
+        <xs:sequence>
+          <xs:element name="code" type="xs:string"/>
+          <xs:element name="codeSystem" type="xs:string"/>
+          <xs:element minOccurs="0" name="codeSystemName" type="xs:string"/>
+          <xs:element minOccurs="0" name="codeSystemVersion" type="xs:string"/>
+          <xs:element minOccurs="0" name="displayName" type="xs:string"/>
+          <xs:element minOccurs="0" name="originalText" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="TypAvIntyg">
+        <xs:complexContent>
+          <xs:extension base="tns:CVType">
+            <xs:sequence/>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="Befattning">
+        <xs:complexContent>
+          <xs:extension base="tns:CVType">
+            <xs:sequence/>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="Handelsekod">
+        <xs:complexContent>
+          <xs:extension base="tns:CVType">
+            <xs:sequence/>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="Statuskod">
+        <xs:complexContent>
+          <xs:extension base="tns:CVType">
+            <xs:sequence/>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="Part">
+        <xs:complexContent>
+          <xs:extension base="tns:CVType">
+            <xs:sequence/>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="TypAvRelation">
+        <xs:complexContent>
+          <xs:extension base="tns:CVType">
+            <xs:sequence/>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="Amneskod">
+        <xs:complexContent>
+          <xs:extension base="tns:CVType">
+            <xs:sequence/>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="PartialDateType">
+        <xs:sequence>
+          <xs:element name="format" type="xs:string"/>
+          <xs:element name="value" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="PQType">
+        <xs:sequence>
+          <xs:element name="value" type="xs:double"/>
+          <xs:element name="unit" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="PQIntervalType">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="low" type="xs:double"/>
+          <xs:element minOccurs="0" name="high" type="xs:double"/>
+          <xs:element name="unit" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="IIType">
+        <xs:sequence>
+          <xs:element name="root" type="xs:string"/>
+          <xs:element minOccurs="0" name="extension" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="IntygId">
+        <xs:complexContent>
+          <xs:extension base="tns:IIType">
+            <xs:sequence/>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="PersonId">
+        <xs:complexContent>
+          <xs:extension base="tns:IIType">
+            <xs:sequence/>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="HsaId">
+        <xs:complexContent>
+          <xs:extension base="tns:IIType">
+            <xs:sequence/>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="ArbetsplatsKod">
+        <xs:complexContent>
+          <xs:extension base="tns:IIType">
+            <xs:sequence/>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="DatePeriodType">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="start" type="xs:date"/>
+          <xs:element minOccurs="0" name="end" type="xs:date"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="TimePeriodType">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="start" type="xs:dateTime"/>
+          <xs:element minOccurs="0" name="end" type="xs:dateTime"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="Specialistkompetens">
+        <xs:sequence>
+          <xs:element name="code" type="xs:string"/>
+          <xs:element minOccurs="0" name="displayName" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:simpleType name="PartialDateTypeFormatEnum">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="YYYY-MM-DD"/>
+          <xs:enumeration value="YYYY-MM"/>
+          <xs:enumeration value="YYYY"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:schema>
+  </wsdl:types>
+  <wsdl:message name="GetPredictionQuestions">
+    <wsdl:part element="ns2:GetPredictionQuestionsRequest" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetPredictionQuestionsResponse">
+    <wsdl:part element="ns2:GetPredictionQuestionsResponse" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="GetPredictionQuestionsResponderInterface">
+    <wsdl:operation name="GetPredictionQuestions">
+      <wsdl:input message="ns1:GetPredictionQuestions" name="GetPredictionQuestions"></wsdl:input>
+      <wsdl:output message="ns1:GetPredictionQuestionsResponse" name="GetPredictionQuestionsResponse"></wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://localhost:8080/services/predictionquestions</con:endpoint></con:endpoints><con:operation id="63aa6862-7c0e-41e9-a0b2-7c38d05deff4" isOneWay="false" action="urn:riv:clinicalprocess:healthcond:srs:GetPredictionQuestionsResponder:1:GetPredictionQuestions" name="GetPredictionQuestions" bindingOperationName="GetPredictionQuestions" type="Request-Response" outputName="GetPredictionQuestionsResponse" inputName="GetPredictionQuestions" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="093f32f2-3bb4-4540-8404-b43812d6a39b" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/services/predictionquestions</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:riv:clinicalprocess:healthcond:srs:GetPredictionQuestionsResponder:1" xmlns:urn1="urn:riv:clinicalprocess:healthcond:certificate:types:2">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <urn:GetPredictionQuestionsRequest>
+         <urn:diagnos>
+            <urn1:code>M79</urn1:code>
+            <urn1:codeSystem>1.2.752.116.1.1.1.1.3</urn1:codeSystem>
+         </urn:diagnos>
+      </urn:GetPredictionQuestionsRequest>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:riv:clinicalprocess:healthcond:srs:GetPredictionQuestionsResponder:1:GetPredictionQuestions"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/><con:oAuth1ProfileContainer/><con:sensitiveInformation/></con:soapui-project>

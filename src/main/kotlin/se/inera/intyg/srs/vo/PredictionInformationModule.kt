@@ -1,20 +1,24 @@
 package se.inera.intyg.srs.vo
 
 import org.apache.logging.log4j.LogManager
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Diagnosprediktion
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Diagnosprediktionstatus
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Prediktion
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Risksignal
+import se.inera.intyg.srs.persistence.DiagnosisRepository
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.Diagnos
 import java.math.BigInteger
-import java.util.*
 
 @Service
-class PredictionInformationModule(val rAdapter: PredictionAdapter) : InformationModule<Prediktion> {
+class PredictionInformationModule(val rAdapter: PredictionAdapter, val diagnosisRepo: DiagnosisRepository) : InformationModule<Prediktion> {
 
     private val log = LogManager.getLogger()
+
+    private val categoryDescriptions = mapOf(BigInteger.ONE to "Prediktion saknas.",
+            BigInteger.valueOf(2) to "Ingen förhöjd risk detekterad.",
+            BigInteger.valueOf(3) to "Förhöjd risk detekterad.",
+            BigInteger.valueOf(4) to "Starkt förhöjd risk detekterad.")
 
     override fun getInfo(persons: List<Person>, extraParams: Map<String, String>): Map<Person, Prediktion> {
         log.info(persons)
@@ -36,9 +40,8 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter) : Information
             diagnosPrediktion.diagnosprediktionstatus = calculatedPrediction.status
 
             val riskSignal = Risksignal()
-            riskSignal.beskrivning = "Beskrivning"
-            riskSignal.riskkategori = BigInteger.ONE
-            diagnosPrediktion.risksignal =  riskSignal
+
+            diagnosPrediktion.risksignal = riskSignal
 
             if (calculatedPrediction.status == Diagnosprediktionstatus.OK ||
                     calculatedPrediction.status == Diagnosprediktionstatus.DIAGNOSKOD_PA_HOGRE_NIVA) {
@@ -48,12 +51,29 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter) : Information
 
                 diagnosPrediktion.sannolikhetOvergransvarde = calculatedPrediction.prediction
                 diagnosPrediktion.diagnos = outgoingDiagnosis
+                riskSignal.riskkategori = calculateRisk(calculatedPrediction.diagnosis, calculatedPrediction.prediction!!)
+            } else {
+                riskSignal.riskkategori = BigInteger.ONE
             }
+            riskSignal.beskrivning = categoryDescriptions[riskSignal.riskkategori]
 
             outgoingPrediction.diagnosprediktion.add(diagnosPrediktion)
         }
 
         return outgoingPrediction
+    }
+
+    private fun calculateRisk(diagnosisId: String, prediction: Double): BigInteger {
+        val diagnosis = diagnosisRepo.findOneByDiagnosisId(diagnosisId)
+        return if (diagnosis != null) {
+            when {
+                prediction <= (2 * diagnosis.prevalence) / (1 * diagnosis.prevalence + 1) -> BigInteger.valueOf(2)
+                prediction <= (4 * diagnosis.prevalence) / (3 * diagnosis.prevalence + 1) -> BigInteger.valueOf(3)
+                else -> BigInteger.valueOf(4)
+            }
+        } else {
+            BigInteger.ONE
+        }
     }
 }
 

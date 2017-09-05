@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Diagnosprediktionstatus
 import se.inera.intyg.srs.service.ModelFileUpdateService
-import se.inera.intyg.srs.service.REGION
 import java.util.*
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
@@ -23,7 +22,12 @@ class RAdapter(val modelService: ModelFileUpdateService) : PredictionAdapter {
     private val rengine: Rengine
 
     init {
+        Rengine.DEBUG = 1
+        val filepath = "/tmp/r-log"
         rengine = Rengine(arrayOf("--vanilla"), false, null)
+        rengine.eval("log<-file('$filepath')")
+        rengine.eval("sink(log, append=TRUE)")
+        rengine.eval("sink(log, append=TRUE, type='message')")
         rengine.eval("library(pch)")
     }
 
@@ -53,14 +57,17 @@ class RAdapter(val modelService: ModelFileUpdateService) : PredictionAdapter {
                 return Prediction(diagnosis.code, null, Diagnosprediktionstatus.NOT_OK)
             }
 
+            var prefix = ""
             val rDataFrame = StringBuilder("data <- data.frame(").apply {
                 append("SA_Days_tot_modified = as.integer(90), ")
-                append("Sex = '" + person.sex.predictionString + "', ")
-                append("age_cat_fct = '" + person.ageCategory + "', ")
+                append("Sex = '${person.sex.predictionString}', ")
+                append("age_cat_fct = '${person.ageCategory}', ")
                 extraParams.forEach { (key, value) ->
-                    append(key + " = '" + value + "', ")
+                    append(prefix)
+                    prefix = ", "
+                    append("$key = '$value'")
                 }
-                append("')")
+                append(")")
             }.toString()
 
             val cmdPrediction = "output <- round(predict(model,newdata = data)\$Surv, 2)"
@@ -72,7 +79,7 @@ class RAdapter(val modelService: ModelFileUpdateService) : PredictionAdapter {
                 log.info("Successful prediction, result: " + rOutput.asDouble())
                 return Prediction(model.diagnosis, rOutput.asDouble(), status)
             } else {
-                log.error("An error occurred during execution of the prediction model: ")
+                log.error("An error occurred during execution of the prediction model.")
                 return Prediction(diagnosis.code, null, Diagnosprediktionstatus.NOT_OK)
             }
         }
