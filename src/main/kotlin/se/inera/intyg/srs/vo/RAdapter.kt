@@ -61,16 +61,11 @@ class RAdapter(val modelService: ModelFileUpdateService) : PredictionAdapter {
                 return Prediction(diagnosis.code, null, Diagnosprediktionstatus.NOT_OK)
             }
 
-            var prefix = ""
             val rDataFrame = StringBuilder("data <- data.frame(").apply {
                 append("SA_Days_tot_modified = as.integer(90), ")
                 append("Sex = '${person.sex.predictionString}', ")
                 append("age_cat_fct = '${person.ageCategory}', ")
-                extraParams.forEach { (key, value) ->
-                    append(prefix)
-                    prefix = ", "
-                    append("$key = '$value'")
-                }
+                append(extraParams.entries.joinToString(", ", transform = { (key, value) -> "$key = '$value'" }))
                 append(")")
             }.toString()
 
