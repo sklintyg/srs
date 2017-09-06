@@ -27,6 +27,16 @@ class TestController(val consentModule: ConsentModule,
 
     data class StatisticsRequest(val diagnosId: String, val bildUrl: String)
 
+    data class PredictionQuestion(val question: String, val predictionId: String, val helpText: String, val responses: Collection<PredictionResponse>)
+
+    data class PredictionResponse(val answer: String, val predictionId: String, val default: Boolean)
+
+    data class PredictionQuestionRequest(val diagnosisId: String, val prevalence: Double, val questions: List<PredictionQuestion>)
+
+    @PostMapping
+    fun createPredictionQuestion(@RequestBody request: PredictionQuestionRequest) =
+            testModule.createPredictionQuestion(request)
+
     @GetMapping("/consents")
     fun getConsent(@RequestParam(value = "personnummer") personnummer: String,
                    @RequestParam(value = "vardenhet") vardenhet: String) =
