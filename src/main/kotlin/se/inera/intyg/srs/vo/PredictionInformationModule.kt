@@ -65,15 +65,13 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter, val diagnosis
 
     private fun calculateRisk(diagnosisId: String, prediction: Double): BigInteger {
         val diagnosis = diagnosisRepo.findOneByDiagnosisId(diagnosisId)
-        return if (diagnosis != null) {
+        return if (diagnosis != null)
             when {
                 prediction <= (2 * diagnosis.prevalence) / (1 * diagnosis.prevalence + 1) -> BigInteger.valueOf(2)
                 prediction <= (4 * diagnosis.prevalence) / (3 * diagnosis.prevalence + 1) -> BigInteger.valueOf(3)
                 else -> BigInteger.valueOf(4)
             }
-        } else {
-            BigInteger.ONE
-        }
+        else BigInteger.ONE
     }
 }
 

@@ -44,11 +44,11 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
         log.info("Received request from ${request.konsumentId.extension}")
 
         val persons = transformIndividuals(request.individer.individ)
-        val extraInfo: Map<String, String> = if (request.prediktionsfaktorer != null) {
-            transformPredictionFactors(request.prediktionsfaktorer)
-        } else {
-            mapOf()
-        }
+        val extraInfo: Map<String, String> =
+                if (request.prediktionsfaktorer != null)
+                    transformPredictionFactors(request.prediktionsfaktorer)
+                else mapOf()
+
 
         val response = GetSRSInformationResponseType()
 
@@ -132,7 +132,7 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
     }
 
     private fun calculateRegion(zipCode: String?) =
-            if (zipCode != null && zipCode.length >= 2 && zipCode.substring(0, 2).matches(Regex("\\d\\d"))) {
+            if (zipCode != null && zipCode.length >= 2 && zipCode.substring(0, 2).matches(Regex("\\d\\d")))
                 when (zipCode.substring(0, 2).toInt()) {
                     in 80..98 -> NORD
                     in 30..31 -> VAST
@@ -151,8 +151,7 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
                     in 55..57 -> SYD
                     else -> ""
                 }
-            } else {
-                ""
-            }
+            else ""
+
 
 }

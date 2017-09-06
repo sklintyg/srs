@@ -25,9 +25,9 @@ class RAdapter(val modelService: ModelFileUpdateService) : PredictionAdapter {
         Rengine.DEBUG = 1
         val filepath = "/tmp/r-log"
         rengine = Rengine(arrayOf("--vanilla"), false, null)
-        rengine.eval("log<-file('$filepath')")
-        rengine.eval("sink(log, append=TRUE)")
-        rengine.eval("sink(log, append=TRUE, type='message')")
+        //rengine.eval("log<-file('$filepath')")
+        //rengine.eval("sink(log, append=TRUE)")
+        //rengine.eval("sink(log, append=TRUE, type='message')")
         rengine.eval("library(pch)")
     }
 
@@ -70,14 +70,13 @@ class RAdapter(val modelService: ModelFileUpdateService) : PredictionAdapter {
                 append(")")
             }.toString()
 
-            val cmdPrediction = "output <- round(predict(model,newdata = data)\$Surv, 2)"
-
             rengine.eval(rDataFrame)
-            val rOutput = rengine.eval(cmdPrediction)
+            val rOutput = rengine.eval("capture.output(round(predict(model,newdata = data)\$Surv, 2))")
 
             if (rOutput != null) {
-                log.info("Successful prediction, result: " + rOutput.asDouble())
-                return Prediction(model.diagnosis, rOutput.asDouble(), status)
+                rOutput.asStringArray().forEach { log.info("Successful prediction, result: " + it) }
+                //log.info("Successful prediction, result: " + rOutput.asDouble())
+                return Prediction(model.diagnosis, 0.0, status)
             } else {
                 log.error("An error occurred during execution of the prediction model.")
                 return Prediction(diagnosis.code, null, Diagnosprediktionstatus.NOT_OK)
