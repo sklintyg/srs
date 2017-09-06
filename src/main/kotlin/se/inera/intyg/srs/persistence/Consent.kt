@@ -9,13 +9,11 @@ import javax.persistence.Id
 
 @Entity
 class Consent(val personnummer: String,
-              var samtycke: Boolean,
               val vardgivareId: String,
               @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
               var skapatTid: LocalDateTime,
               @Id @GeneratedValue(strategy = GenerationType.AUTO)
               val id: Long = -1) {
 
-    override fun toString() = "Consent(personnummer: $personnummer, vardenhet: $vardgivareId, samtycke: $samtycke," +
-            " tidpunkt: $skapatTid)"
+    override fun toString() = "Consent(personnummer: $personnummer, vardenhet: $vardgivareId tidpunkt: $skapatTid)"
 }

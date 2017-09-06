@@ -14,15 +14,17 @@ class ConsentModule(private val consentRepo: ConsentRepository) {
 
     fun setConsent(personnummer: String, samtycke: Boolean, vardgivarId: String): ResultCodeEnum {
         var consent = consentRepo.findConsentByPersonnummerAndVardgivareId(personnummer, vardgivarId)
-
-        if (consent == null) {
-            consent = Consent(personnummer, samtycke, vardgivarId, LocalDateTime.now())
-        } else {
+        if (samtycke) {
+            if (consent == null) {
+                consent = Consent(personnummer, vardgivarId, LocalDateTime.now())
+            }
             // Update consent
             consent.skapatTid = LocalDateTime.now()
-            consent.samtycke = samtycke
+            consentRepo.save(consent) ?: return ResultCodeEnum.ERROR
+        } else if (consent != null) {
+            // If not consent, i.e patient does not consent, remove the db entry.
+            consentRepo.delete(consent)
         }
-        consentRepo.save(consent) ?: return ResultCodeEnum.ERROR
         return ResultCodeEnum.OK
     }
 }

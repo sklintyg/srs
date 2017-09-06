@@ -23,7 +23,7 @@ class ConsentModuleTest {
     private val PERSONNUMMER_WITH_CONSENT: String = "191212121212"
     private val PERSONNUMMER_WITHOUT_CONSENT: String = "191010101010"
     private val HSAID: String = "test"
-    private val consent = Consent("191111111111", true, HSAID, LocalDateTime.of(2017, 1, 1, 1, 1, 1), 3)
+    private val consent = Consent("191111111111", HSAID, LocalDateTime.of(2017, 1, 1, 1, 1, 1), 3)
 
     @Before
     fun setup() {
@@ -39,14 +39,13 @@ class ConsentModuleTest {
     }
 
     private fun createConsent(personnummer: String, samtycke: Boolean, hsaId: String): Consent {
-        return Consent(personnummer, samtycke, hsaId, LocalDateTime.of(2017, 1, 1, 1, 1), 1)
+        return Consent(personnummer, hsaId, LocalDateTime.of(2017, 1, 1, 1, 1), 1)
     }
 
     @Test
     fun testGetConsentExists() {
         val consent = consentModule.getConsent(PERSONNUMMER_WITH_CONSENT, HSAID)
         assertNotNull(consent)
-        assertTrue(consent!!.samtycke)
     }
 
     @Test

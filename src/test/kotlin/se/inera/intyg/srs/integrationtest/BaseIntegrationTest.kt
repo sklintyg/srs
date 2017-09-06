@@ -44,7 +44,6 @@ open class BaseIntegrationTest {
 
         return Consent(
                 jsonObject.getString("personnummer"),
-                jsonObject.getBoolean("samtycke"),
                 jsonObject.getString("vardgivareId"),
                 LocalDateTime.of(timeObject.getInt("year"),
                         Month.of(timeObject.getInt("monthValue")),

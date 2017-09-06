@@ -24,8 +24,8 @@ class GetConsentResponderImpl(val consentModule: ConsentModule) : GetConsentResp
             log.info("No consent found, setting status INGET")
             response.samtyckesstatus = Samtyckesstatus.INGET
         } else {
-            response.samtyckesstatus = if (consent.samtycke) Samtyckesstatus.JA else Samtyckesstatus.NEJ
-            response.isSamtycke = consent.samtycke
+            response.samtyckesstatus = Samtyckesstatus.JA
+            response.isSamtycke = true
             response.sparattidpunkt = consent.skapatTid
         }
 

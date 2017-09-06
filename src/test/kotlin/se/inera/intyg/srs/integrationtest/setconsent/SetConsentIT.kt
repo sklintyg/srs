@@ -2,6 +2,8 @@ package se.inera.intyg.srs.integrationtest.setconsent
 
 import com.jayway.restassured.RestAssured.given
 import com.jayway.restassured.http.ContentType
+import com.nhaarman.mockito_kotlin.isNull
+import com.nhaarman.mockito_kotlin.notNull
 import org.exparity.hamcrest.date.LocalDateTimeMatchers
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
@@ -17,7 +19,7 @@ class SetConsentIT : BaseIntegrationTest() {
         postStandardSetConsentRequest(false)
 
         val consent = getConsent("191212121212", "abc")
-        assertThat(consent.samtycke, equalTo(false))
+        assertThat(consent, isNull())
     }
 
     @Test
@@ -25,7 +27,7 @@ class SetConsentIT : BaseIntegrationTest() {
         postStandardSetConsentRequest(true)
 
         val consent = getConsent("191212121212", "abc")
-        assertThat(consent.samtycke, equalTo(true))
+        assertThat(consent, notNull())
     }
 
     @Test
@@ -36,7 +38,7 @@ class SetConsentIT : BaseIntegrationTest() {
         val consent = getConsent("191212121212", "abc")
         assertThat(consent.personnummer, equalTo("191212121212"))
         assertThat(consent.vardgivareId, equalTo("abc"))
-        assertThat(consent.samtycke, equalTo(true))
+        assertThat(consent, notNull())
     }
 
     @Test
