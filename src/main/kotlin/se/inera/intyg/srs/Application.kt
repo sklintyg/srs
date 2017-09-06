@@ -11,6 +11,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder
 import org.springframework.boot.web.support.SpringBootServletInitializer
 import org.springframework.context.annotation.Bean
 import se.inera.intyg.clinicalprocess.healthcond.srs.getconsent.v1.GetConsentResponderInterface
+import se.inera.intyg.clinicalprocess.healthcond.srs.getdiagnosiscodes.v1.GetDiagnosisCodesResponderInterface
 import se.inera.intyg.clinicalprocess.healthcond.srs.getpredictionquestions.v1.GetPredictionQuestionsResponderInterface
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.GetSRSInformationResponderInterface
 import se.inera.intyg.clinicalprocess.healthcond.srs.setconsent.v1.SetConsentResponderInterface
@@ -54,6 +55,9 @@ class Application : SpringBootServletInitializer() {
     @Autowired
     lateinit var predictionQuestionsResponder: GetPredictionQuestionsResponderInterface
 
+    @Autowired
+    lateinit var diagnosisCodesResponder: GetDiagnosisCodesResponderInterface
+
     override fun configure(application: SpringApplicationBuilder): SpringApplicationBuilder {
         return application.sources(Application::class.java)
     }
@@ -96,6 +100,13 @@ class Application : SpringBootServletInitializer() {
     fun predictionQuestionsEndpoint(): Endpoint {
         val endpoint = EndpointImpl(bus, predictionQuestionsResponder)
         endpoint.publish("/predictionquestions")
+        return endpoint
+    }
+
+    @Bean
+    fun diagnosisCodesEndpoint(): Endpoint {
+        val endpoint = EndpointImpl(bus, diagnosisCodesResponder)
+        endpoint.publish("/diagnosiscodes")
         return endpoint
     }
 

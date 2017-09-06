@@ -469,7 +469,7 @@
 </urn:fragasvar>
 <urn:fragasvar>
 <urn:frageid-srs>comorbidity</urn:frageid-srs>
-<urn:svarsid-srs>no</urn:svarsid-srs>
+<urn:svarsid-srs>yes</urn:svarsid-srs>
 </urn:fragasvar>
 <urn:fragasvar>
 <urn:frageid-srs>NoCareAtStart</urn:frageid-srs>
@@ -477,7 +477,7 @@
 </urn:fragasvar>
 <urn:fragasvar>
 <urn:frageid-srs>DP_atStart</urn:frageid-srs>
-<urn:svarsid-srs>0</urn:svarsid-srs>
+<urn:svarsid-srs>1</urn:svarsid-srs>
 </urn:fragasvar>
          </urn:prediktionsfaktorer>
          <urn:individer>
@@ -797,4 +797,221 @@
          </urn:diagnos>
       </urn:GetPredictionQuestionsRequest>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:riv:clinicalprocess:healthcond:srs:GetPredictionQuestionsResponder:1:GetPredictionQuestions"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/><con:oAuth1ProfileContainer/><con:sensitiveInformation/></con:soapui-project>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:riv:clinicalprocess:healthcond:srs:GetPredictionQuestionsResponder:1:GetPredictionQuestions"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:interface xsi:type="con:WsdlInterface" id="46859665-30a8-4f4c-9d28-5548765d473b" wsaVersion="NONE" name="GetDiagnosisCodesResponderImplServiceSoapBinding" type="wsdl" bindingName="{http://service.srs.intyg.inera.se/}GetDiagnosisCodesResponderImplServiceSoapBinding" soapVersion="1_1" anonymous="optional" definition="http://localhost:8080/services/diagnosiscodes?WSDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="http://localhost:8080/services/diagnosiscodes?WSDL"><con:part><con:url>http://localhost:8080/services/diagnosiscodes?WSDL</con:url><con:content><![CDATA[<wsdl:definitions name="GetDiagnosisCodesResponderImplService" targetNamespace="http://service.srs.intyg.inera.se/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://service.srs.intyg.inera.se/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns3="http://schemas.xmlsoap.org/soap/http" xmlns:ns1="urn:riv:clinicalprocess:healthcond:srs:GetDiagnosisCodes:1:rivtabp21">
+  <wsdl:import location="http://localhost:8080/services/diagnosiscodes?wsdl=GetDiagnosisCodesResponderInterface.wsdl" namespace="urn:riv:clinicalprocess:healthcond:srs:GetDiagnosisCodes:1:rivtabp21"></wsdl:import>
+  <wsdl:binding name="GetDiagnosisCodesResponderImplServiceSoapBinding" type="ns1:GetDiagnosisCodesResponderInterface">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="GetDiagnosisCodes">
+      <soap:operation soapAction="urn:riv:clinicalprocess:healthcond:srs:GetDiagnosisCodesResponder:1:GetDiagnosisCodes" style="document"/>
+      <wsdl:input name="GetDiagnosisCodes">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="GetDiagnosisCodesResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="GetDiagnosisCodesResponderImplService">
+    <wsdl:port binding="tns:GetDiagnosisCodesResponderImplServiceSoapBinding" name="GetDiagnosisCodesResponderImplPort">
+      <soap:address location="http://localhost:8080/services/diagnosiscodes"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part><con:part><con:url>http://localhost:8080/services/diagnosiscodes?wsdl=GetDiagnosisCodesResponderInterface.wsdl</con:url><con:content><![CDATA[<wsdl:definitions name="GetDiagnosisCodesResponderInterface" targetNamespace="urn:riv:clinicalprocess:healthcond:srs:GetDiagnosisCodes:1:rivtabp21" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns2="urn:riv:clinicalprocess:healthcond:srs:GetDiagnosisCodesResponder:1" xmlns:ns1="urn:riv:clinicalprocess:healthcond:srs:GetDiagnosisCodes:1:rivtabp21">
+  <wsdl:types>
+    <xs:schema elementFormDefault="qualified" targetNamespace="urn:riv:clinicalprocess:healthcond:srs:GetDiagnosisCodesResponder:1" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="urn:riv:clinicalprocess:healthcond:srs:GetDiagnosisCodesResponder:1" xmlns:ns1="urn:riv:clinicalprocess:healthcond:certificate:types:2">
+      <xs:import namespace="urn:riv:clinicalprocess:healthcond:certificate:types:2"/>
+      <xs:element name="GetDiagnosisCodesRequest" type="tns:GetDiagnosisCodesRequestType"/>
+      <xs:element name="GetDiagnosisCodesResponse" type="tns:GetDiagnosisCodesResponseType"/>
+      <xs:complexType name="GetDiagnosisCodesRequestType">
+        <xs:sequence>
+          <xs:any maxOccurs="unbounded" minOccurs="0" namespace="##other" processContents="lax"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="diagnos">
+        <xs:complexContent>
+          <xs:extension base="ns1:CVType">
+            <xs:sequence/>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="GetDiagnosisCodesResponseType">
+        <xs:sequence>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="diagnos" nillable="true" type="tns:diagnos"/>
+          <xs:any maxOccurs="unbounded" minOccurs="0" namespace="##other" processContents="lax"/>
+        </xs:sequence>
+      </xs:complexType>
+    </xs:schema>
+    <xs:schema elementFormDefault="qualified" targetNamespace="urn:riv:clinicalprocess:healthcond:certificate:types:2" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="urn:riv:clinicalprocess:healthcond:certificate:types:2">
+      <xs:element name="cv" type="tns:CVType"/>
+      <xs:element name="date" type="xs:string"/>
+      <xs:element name="datePeriod" type="tns:DatePeriodType"/>
+      <xs:element name="ii" type="tns:IIType"/>
+      <xs:element name="partialDate" type="tns:PartialDateType"/>
+      <xs:element name="pq" type="tns:PQType"/>
+      <xs:element name="pqInterval" type="tns:PQIntervalType"/>
+      <xs:element name="timePeriod" type="tns:TimePeriodType"/>
+      <xs:element name="timestamp" type="xs:string"/>
+      <xs:complexType name="CVType">
+        <xs:sequence>
+          <xs:element name="code" type="xs:string"/>
+          <xs:element name="codeSystem" type="xs:string"/>
+          <xs:element minOccurs="0" name="codeSystemName" type="xs:string"/>
+          <xs:element minOccurs="0" name="codeSystemVersion" type="xs:string"/>
+          <xs:element minOccurs="0" name="displayName" type="xs:string"/>
+          <xs:element minOccurs="0" name="originalText" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="TypAvIntyg">
+        <xs:complexContent>
+          <xs:extension base="tns:CVType">
+            <xs:sequence/>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="Befattning">
+        <xs:complexContent>
+          <xs:extension base="tns:CVType">
+            <xs:sequence/>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="Handelsekod">
+        <xs:complexContent>
+          <xs:extension base="tns:CVType">
+            <xs:sequence/>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="Statuskod">
+        <xs:complexContent>
+          <xs:extension base="tns:CVType">
+            <xs:sequence/>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="Part">
+        <xs:complexContent>
+          <xs:extension base="tns:CVType">
+            <xs:sequence/>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="TypAvRelation">
+        <xs:complexContent>
+          <xs:extension base="tns:CVType">
+            <xs:sequence/>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="Amneskod">
+        <xs:complexContent>
+          <xs:extension base="tns:CVType">
+            <xs:sequence/>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="diagnos">
+        <xs:complexContent>
+          <xs:extension base="tns:CVType">
+            <xs:sequence/>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="IIType">
+        <xs:sequence>
+          <xs:element name="root" type="xs:string"/>
+          <xs:element minOccurs="0" name="extension" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="IntygId">
+        <xs:complexContent>
+          <xs:extension base="tns:IIType">
+            <xs:sequence/>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="PersonId">
+        <xs:complexContent>
+          <xs:extension base="tns:IIType">
+            <xs:sequence/>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="HsaId">
+        <xs:complexContent>
+          <xs:extension base="tns:IIType">
+            <xs:sequence/>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="ArbetsplatsKod">
+        <xs:complexContent>
+          <xs:extension base="tns:IIType">
+            <xs:sequence/>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="TimePeriodType">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="start" type="xs:dateTime"/>
+          <xs:element minOccurs="0" name="end" type="xs:dateTime"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="DatePeriodType">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="start" type="xs:date"/>
+          <xs:element minOccurs="0" name="end" type="xs:date"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="PQType">
+        <xs:sequence>
+          <xs:element name="value" type="xs:double"/>
+          <xs:element name="unit" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="PQIntervalType">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="low" type="xs:double"/>
+          <xs:element minOccurs="0" name="high" type="xs:double"/>
+          <xs:element name="unit" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="PartialDateType">
+        <xs:sequence>
+          <xs:element name="format" type="xs:string"/>
+          <xs:element name="value" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="Specialistkompetens">
+        <xs:sequence>
+          <xs:element name="code" type="xs:string"/>
+          <xs:element minOccurs="0" name="displayName" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:simpleType name="PartialDateTypeFormatEnum">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="YYYY-MM-DD"/>
+          <xs:enumeration value="YYYY-MM"/>
+          <xs:enumeration value="YYYY"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:schema>
+  </wsdl:types>
+  <wsdl:message name="GetDiagnosisCodesResponse">
+    <wsdl:part element="ns2:GetDiagnosisCodesResponse" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="GetDiagnosisCodes">
+    <wsdl:part element="ns2:GetDiagnosisCodesRequest" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="GetDiagnosisCodesResponderInterface">
+    <wsdl:operation name="GetDiagnosisCodes">
+      <wsdl:input message="ns1:GetDiagnosisCodes" name="GetDiagnosisCodes"></wsdl:input>
+      <wsdl:output message="ns1:GetDiagnosisCodesResponse" name="GetDiagnosisCodesResponse"></wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://localhost:8080/services/diagnosiscodes</con:endpoint></con:endpoints><con:operation id="bb6ea3b5-eea6-4a1b-8a8d-084861cc3805" isOneWay="false" action="urn:riv:clinicalprocess:healthcond:srs:GetDiagnosisCodesResponder:1:GetDiagnosisCodes" name="GetDiagnosisCodes" bindingOperationName="GetDiagnosisCodes" type="Request-Response" outputName="GetDiagnosisCodesResponse" inputName="GetDiagnosisCodes" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="1c6cf46c-87fd-4b41-8234-ede54d8810ac" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/services/diagnosiscodes</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:riv:clinicalprocess:healthcond:srs:GetDiagnosisCodesResponder:1">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <urn:GetDiagnosisCodesRequest/>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:riv:clinicalprocess:healthcond:srs:GetDiagnosisCodesResponder:1:GetDiagnosisCodes"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/><con:oAuth1ProfileContainer/><con:sensitiveInformation/></con:soapui-project>
