@@ -19,10 +19,9 @@ class RAdapter(val modelService: ModelFileUpdateService) : PredictionAdapter {
 
     private val log = LogManager.getLogger()
 
-    private val rengine: Rengine
+    private val rengine: Rengine = Rengine(arrayOf("--vanilla"), false, null)
 
     init {
-        rengine = Rengine(arrayOf("--vanilla"), false, null)
 
         // Turn on logging from R
         Rengine.DEBUG = 1
@@ -72,21 +71,18 @@ class RAdapter(val modelService: ModelFileUpdateService) : PredictionAdapter {
             rengine.eval(rDataFrame)
             val rOutput = rengine.eval("output <- round(predict(model,newdata = data)\$Surv, 2)")
 
-            if (rOutput != null) {
+            return if (rOutput != null) {
                 log.info("Successful prediction, result: " + rOutput.asDouble())
-                return Prediction(model.diagnosis, rOutput.asDouble(), status)
+                Prediction(model.diagnosis, rOutput.asDouble(), status)
             } else {
                 log.error("An error occurred during execution of the prediction model.")
-                return Prediction(diagnosis.code, null, Diagnosprediktionstatus.NOT_OK)
+                Prediction(diagnosis.code, null, Diagnosprediktionstatus.NOT_OK)
             }
         }
     }
 
     private fun loadModel(dataFilePath: String) {
-        val loadmodel_result = rengine.eval("load('$dataFilePath')  ", false)
-        if (loadmodel_result == null) {
-            throw RuntimeException("The prediction model does not exist!")
-        }
+        rengine.eval("load('$dataFilePath')  ", false) ?: throw RuntimeException("The prediction model does not exist!")
     }
 
     private fun getModelForDiagnosis(diagnosisId: String): Pair<ModelFileUpdateService.Model?, Diagnosprediktionstatus> {

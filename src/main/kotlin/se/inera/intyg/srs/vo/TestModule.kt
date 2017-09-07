@@ -20,6 +20,7 @@ import se.inera.intyg.srs.persistence.Recommendation
 import se.inera.intyg.srs.persistence.RecommendationRepository
 import se.inera.intyg.srs.persistence.ResponseRepository
 import se.inera.intyg.srs.persistence.StatisticRepository
+import se.inera.intyg.srs.service.ModelFileUpdateService
 import java.time.LocalDateTime
 import java.util.concurrent.atomic.AtomicLong
 
@@ -33,19 +34,17 @@ class TestModule(private val consentRepo: ConsentRepository,
                  private val diagnosisRepo: DiagnosisRepository,
                  private val predictPrioRepo: PredictionPriorityRepository,
                  private val questionRepo: QuestionRepository,
-                 private val responseRepo: ResponseRepository) {
+                 private val responseRepo: ResponseRepository,
+                 private val modelService: ModelFileUpdateService) {
 
     private val uniqueId = AtomicLong(1000)
 
     fun createMeasure(diagnosisId: String, diagnosisText: String, recommendations: List<String>): Measure =
-            measureRepo.save(mapToMeasure(diagnosisId, diagnosisText, recommendations))
-
-    private fun mapToMeasure(diagnosisId: String, diagnosisText: String, recommendations: List<String>) =
-            Measure(uniqueId.incrementAndGet(), diagnosisId, diagnosisText, "1.0", mapToMeasurePriorities(recommendations))
+            measureRepo.save(Measure(uniqueId.incrementAndGet(), diagnosisId, diagnosisText, "1.0", mapToMeasurePriorities(recommendations)))
 
     private fun mapToMeasurePriorities(recommendations: List<String>) =
             recommendations
-                    .mapIndexed { i, recText -> Recommendation(i.toLong(), recText) }
+                    .mapIndexed { i, recText -> Recommendation(uniqueId.incrementAndGet(), recText) }
                     .map { rec -> recommendationRepo.save(rec) }
                     .mapIndexed { i, rec -> MeasurePriority(i + 1, rec) }
                     .map { priority -> priorityRepo.save(priority) }
@@ -54,7 +53,7 @@ class TestModule(private val consentRepo: ConsentRepository,
     fun createStatistic(diagnosisId: String, pictureUrl: String): InternalStatistic =
             statisticsRepo.save(InternalStatistic(diagnosisId, pictureUrl, LocalDateTime.now(), uniqueId.incrementAndGet()))
 
-    fun createPredictionQuestion(request: TestController.PredictionQuestionRequest): PredictionDiagnosis =
+    fun createPredictionQuestion(request: TestController.DiagnosisRequest): PredictionDiagnosis =
         diagnosisRepo.save(PredictionDiagnosis(uniqueId.incrementAndGet(),
                 request.diagnosisId, request.prevalence, mapToPredictions(request.questions)))
 
@@ -94,5 +93,7 @@ class TestModule(private val consentRepo: ConsentRepository,
         questionRepo.deleteAll()
         diagnosisRepo.deleteAll()
     }
+
+    fun forceModelUpdate() = modelService.update()
 
 }

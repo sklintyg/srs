@@ -30,7 +30,7 @@ class ModelFileUpdateService(@Value("\${model.dir}") val modelDir: String) {
     }
 
     fun modelForCode(currentId: String): Model? {
-        return models.get(currentId)
+        return models[currentId]
     }
 
     @Transactional
@@ -44,7 +44,7 @@ class ModelFileUpdateService(@Value("\${model.dir}") val modelDir: String) {
 
         try {
             Files.walk(Paths.get(modelDir)).filter {
-                Files.isRegularFile(it) && it.getName(it.getNameCount() - 1).toString().toLowerCase().endsWith(DATA_FILE_EXTENSION)
+                Files.isRegularFile(it) && it.getName(it.nameCount - 1).toString().toLowerCase().endsWith(DATA_FILE_EXTENSION)
             }.forEach { file ->
                 addFile(file)
             }

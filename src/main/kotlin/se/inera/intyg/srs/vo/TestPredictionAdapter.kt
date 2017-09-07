@@ -9,7 +9,7 @@ import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Diagno
 class TestPredictionAdapter: PredictionAdapter {
 
     override fun getPrediction(person: Person, diagnosis: Diagnosis, extraParams: Map<String, String>): Prediction {
-        return Prediction("F43", 0.0, Diagnosprediktionstatus.OK);
+        return Prediction("F43", 0.0, Diagnosprediktionstatus.OK)
     }
 
 }
