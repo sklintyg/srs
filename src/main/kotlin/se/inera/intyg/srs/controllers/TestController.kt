@@ -31,13 +31,13 @@ class TestController(val consentModule: ConsentModule,
 
     data class PredictionResponse(val answer: String, val predictionId: String, val default: Boolean)
 
-    data class PredictionQuestionRequest(val diagnosisId: String, val prevalence: Double, val questions: List<PredictionQuestion>)
+    data class DiagnosisRequest(val diagnosisId: String, val prevalence: Double, val questions: List<PredictionQuestion>)
 
-    @PostMapping
-    fun createPredictionQuestion(@RequestBody request: PredictionQuestionRequest) =
+    @PostMapping("/diagnosis")
+    fun createDiagnosis(@RequestBody request: DiagnosisRequest) =
             testModule.createPredictionQuestion(request)
 
-    @DeleteMapping("/predictionquestions")
+    @DeleteMapping("/diagnosis")
     fun deleteAllPredictionQuestions() = testModule.deleteAllPredictionQuestions()
 
     @GetMapping("/consents")
@@ -78,5 +78,9 @@ class TestController(val consentModule: ConsentModule,
     @PostMapping("/statistics")
     fun createStatistics(@RequestBody statistics: StatisticsRequest) =
             testModule.createStatistic(statistics.diagnosId, statistics.bildUrl)
+
+    @PostMapping("/force-model-update")
+    fun forceModelUpdate() =
+            testModule.forceModelUpdate()
 
 }

@@ -41,7 +41,11 @@ class SetConsentIT : BaseIntegrationTest() {
 
     @Test
     fun testRevokeConsent() {
+        postStandardSetConsentRequest(true)
+        postStandardSetConsentRequest(false)
 
+        val consent = getConsent("191212121212", "abc")
+        assertThat(consent, nullValue())
     }
 
     @Test
@@ -52,8 +56,6 @@ class SetConsentIT : BaseIntegrationTest() {
 
         assertThat(consent?.skapatTid, LocalDateTimeMatchers.within(5, ChronoUnit.MINUTES, LocalDateTime.now()))
     }
-
-
 
     private fun postStandardSetConsentRequest(samtycke: Boolean) =
         given()

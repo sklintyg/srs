@@ -1,0 +1,8 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:riv:clinicalprocess:healthcond:srs:GetDiagnosisCodesResponder:1">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <urn:GetDiagnosisCodesRequest>
+         <!--You may enter ANY elements at this point-->
+      </urn:GetDiagnosisCodesRequest>
+   </soapenv:Body>
+</soapenv:Envelope>

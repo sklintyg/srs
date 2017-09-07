@@ -20,7 +20,7 @@ open class BaseIntegrationTest {
         restTemplate.delete("/measures")
         restTemplate.delete("/consents")
         restTemplate.delete("/statistics")
-        restTemplate.delete("/predictionquestions")
+        restTemplate.delete("/diagnosis")
     }
 
     protected fun addConsent(personnummer: String, samtycke: Boolean, vardenhet: String): String =
@@ -59,9 +59,9 @@ open class BaseIntegrationTest {
             TestController.StatisticsRequest(diagnosId, bildUrl),
             String::class.java)
 
-    protected fun addPredictionQuestion(request: TestController.PredictionQuestionRequest): PredictionDiagnosis =
+    protected fun addDiagnosis(request: TestController.DiagnosisRequest): PredictionDiagnosis =
         restTemplate.postForObject(
-                "/predictionquestions",
+                "/diagnosis",
                 request,
                 PredictionDiagnosis::class.java)
 
