@@ -31,11 +31,11 @@ class TestModule(private val consentRepo: ConsentRepository,
                  private val recommendationRepo: RecommendationRepository,
                  private val statisticsRepo: StatisticRepository,
                  private val diagnosisRepo: DiagnosisRepository,
-                 private val predictionPriorityRepo: PredictionPriorityRepository,
+                 private val predictPrioRepo: PredictionPriorityRepository,
                  private val questionRepo: QuestionRepository,
                  private val responseRepo: ResponseRepository) {
 
-    private val uniqueId = AtomicLong()
+    private val uniqueId = AtomicLong(1000)
 
     fun createMeasure(diagnosisId: String, diagnosisText: String, recommendations: List<String>): Measure =
             measureRepo.save(mapToMeasure(diagnosisId, diagnosisText, recommendations))
@@ -59,15 +59,21 @@ class TestModule(private val consentRepo: ConsentRepository,
                 request.diagnosisId, request.prevalence, mapToPredictions(request.questions)))
 
 
-    private fun mapToPredictions(questions: List<TestController.PredictionQuestion>) =
+    private fun mapToPredictions(questions: List<TestController.PredictionQuestion>): List<PredictionPriority> =
         questions
-                .mapIndexed { i, (question, helpText, predictionId, responses) -> PredictionPriority(i + 1,
-                    questionRepo.save(PredictionQuestion(uniqueId.incrementAndGet(), question, helpText, predictionId, mapToResponses(responses)))) }
-                .map { predictionPriorityRepo.save(it) }
+                .mapIndexed { i, question ->
+                    PredictionPriority(i + 1, mapToQuestion(question), uniqueId.incrementAndGet()) }
+                .map { predictPrioRepo.save(it) }
+
+    private fun mapToQuestion(question: TestController.PredictionQuestion): PredictionQuestion =
+            questionRepo.save(PredictionQuestion(
+                    uniqueId.incrementAndGet(), question.question, question.helpText,
+                    question.predictionId, mapToResponses(question.responses)))
 
     private fun mapToResponses(responses: Collection<TestController.PredictionResponse>) =
         responses
-                .mapIndexed { i, (answer, predictionId, default) -> PredictionResponse(uniqueId.incrementAndGet(), answer, predictionId, default, i + 1) }
+                .mapIndexed { i, (answer, predictionId, default) ->
+                    PredictionResponse(uniqueId.incrementAndGet(), answer, predictionId, default, i + 1) }
                 .map { responseRepo.save(it) }
 
     fun deleteMeasure(diagnosisId: String) = measureRepo.delete(measureRepo.findByDiagnosisIdStartingWith(diagnosisId))
@@ -81,5 +87,12 @@ class TestModule(private val consentRepo: ConsentRepository,
     fun deleteAllPriorities() = priorityRepo.deleteAll()
 
     fun deleteAllStatistics() = statisticsRepo.deleteAll()
+
+    fun deleteAllPredictionQuestions() {
+        responseRepo.deleteAll()
+        predictPrioRepo.deleteAll()
+        questionRepo.deleteAll()
+        diagnosisRepo.deleteAll()
+    }
 
 }

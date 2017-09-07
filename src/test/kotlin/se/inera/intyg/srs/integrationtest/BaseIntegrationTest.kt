@@ -9,6 +9,7 @@ import org.springframework.core.io.ClassPathResource
 import se.inera.intyg.srs.controllers.TestController
 import se.inera.intyg.srs.persistence.Consent
 import se.inera.intyg.srs.persistence.Measure
+import se.inera.intyg.srs.persistence.PredictionDiagnosis
 import java.time.LocalDateTime
 import java.time.Month
 
@@ -19,6 +20,7 @@ open class BaseIntegrationTest {
         restTemplate.delete("/measures")
         restTemplate.delete("/consents")
         restTemplate.delete("/statistics")
+        restTemplate.delete("/predictionquestions")
     }
 
     protected fun addConsent(personnummer: String, samtycke: Boolean, vardenhet: String): String =
@@ -31,14 +33,12 @@ open class BaseIntegrationTest {
         restTemplate.postForObject(
             "/measures",
             TestController.MeasureRequest(diagnosId, diagnosText, rekommendationer),
-            Measure::class.java
-        )
+            Measure::class.java)
 
-    protected fun getConsent(personnummer: String, vardenhet: String): Consent {
+    protected fun getConsent(personnummer: String, vardenhet: String): Consent? {
         val jsonString = restTemplate.getForObject(
                 "/consents?personnummer=$personnummer&vardenhet=$vardenhet",
-                String::class.java
-        )
+                String::class.java) ?: return null
         val jsonObject = JSONObject(jsonString)
         val timeObject = jsonObject.getJSONObject("skapatTid")
 
@@ -49,8 +49,7 @@ open class BaseIntegrationTest {
                         Month.of(timeObject.getInt("monthValue")),
                         timeObject.getInt("dayOfMonth"),
                         timeObject.getInt("hour"),
-                        timeObject.getInt("minute"))
-        )
+                        timeObject.getInt("minute")))
     }
 
 
@@ -58,8 +57,13 @@ open class BaseIntegrationTest {
         restTemplate.postForObject(
             "/statistics",
             TestController.StatisticsRequest(diagnosId, bildUrl),
-            String::class.java
-        )
+            String::class.java)
+
+    protected fun addPredictionQuestion(request: TestController.PredictionQuestionRequest): PredictionDiagnosis =
+        restTemplate.postForObject(
+                "/predictionquestions",
+                request,
+                PredictionDiagnosis::class.java)
 
     protected fun getClasspathResourceAsString(fileName: String): String =
         ClassPathResource("integrationtest/$fileName").file.readText()

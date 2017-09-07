@@ -20,8 +20,8 @@ class TestController(val consentModule: ConsentModule,
                      val testModule: TestModule) {
 
     data class ConsentRequest(val personnummer: String,
-                       val samtycke: Boolean,
-                       val vardenhet: String)
+                              val samtycke: Boolean,
+                              val vardenhet: String)
 
     data class MeasureRequest(val diagnosId: String, val diagnosText: String, val rekommendationer: List<String>)
 
@@ -36,6 +36,9 @@ class TestController(val consentModule: ConsentModule,
     @PostMapping
     fun createPredictionQuestion(@RequestBody request: PredictionQuestionRequest) =
             testModule.createPredictionQuestion(request)
+
+    @DeleteMapping("/predictionquestions")
+    fun deleteAllPredictionQuestions() = testModule.deleteAllPredictionQuestions()
 
     @GetMapping("/consents")
     fun getConsent(@RequestParam(value = "personnummer") personnummer: String,
@@ -75,4 +78,5 @@ class TestController(val consentModule: ConsentModule,
     @PostMapping("/statistics")
     fun createStatistics(@RequestBody statistics: StatisticsRequest) =
             testModule.createStatistic(statistics.diagnosId, statistics.bildUrl)
+
 }
