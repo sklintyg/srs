@@ -83,9 +83,6 @@
             <column name="personnummer" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="samtycke" type="BOOLEAN">
-                <constraints nullable="false"/>
-            </column>
             <column name="vardgivare_id" type="VARCHAR(255)">
                 <constraints nullable="false"/>q
             </column>
