@@ -101,7 +101,8 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
                 val age = calculateAge(individ.personId)
                 val sex = calculateSex(individ.personId)
                 val diagnoses = individ.diagnos.map { diagnos -> Diagnosis(diagnos.code) }
-                Person(individ.personId, age, sex, diagnoses)
+                val certificateId = individ.intygId.extension
+                Person(individ.personId, age, sex, diagnoses, certificateId)
             }
 
     private fun calculateAge(personId: String): String {

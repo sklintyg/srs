@@ -178,4 +178,31 @@
 
     </changeSet>
 
+    <changeSet id="6" author="ef">
+        <createTable tableName="probability">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="certificate_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="probability" type="DOUBLE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="risk_category" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="incomming_diagnosis" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="diagnosis" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createIndex tableName="probability" indexName="idx_probability_certificate_id">
+            <column name="certificate_id"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>

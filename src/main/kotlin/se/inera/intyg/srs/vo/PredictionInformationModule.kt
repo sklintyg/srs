@@ -7,11 +7,15 @@ import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Diagno
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Prediktion
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Risksignal
 import se.inera.intyg.srs.persistence.DiagnosisRepository
+import se.inera.intyg.srs.persistence.Probability
+import se.inera.intyg.srs.persistence.ProbabilityRepository
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.Diagnos
 import java.math.BigInteger
 
 @Service
-class PredictionInformationModule(val rAdapter: PredictionAdapter, val diagnosisRepo: DiagnosisRepository) : InformationModule<Prediktion> {
+class PredictionInformationModule(val rAdapter: PredictionAdapter,
+                                  val diagnosisRepo: DiagnosisRepository,
+                                  val probabilityRepo: ProbabilityRepository) : InformationModule<Prediktion> {
 
     private val log = LogManager.getLogger()
 
@@ -52,6 +56,9 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter, val diagnosis
                 diagnosPrediktion.sannolikhetOvergransvarde = calculatedPrediction.prediction
                 diagnosPrediktion.diagnos = outgoingDiagnosis
                 riskSignal.riskkategori = calculateRisk(calculatedPrediction.diagnosis, calculatedPrediction.prediction!!)
+
+                persistProbability(diagnosPrediktion, person.certificateId)
+
             } else {
                 riskSignal.riskkategori = BigInteger.ONE
             }
@@ -59,8 +66,15 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter, val diagnosis
 
             outgoingPrediction.diagnosprediktion.add(diagnosPrediktion)
         }
-
         return outgoingPrediction
+    }
+
+    private fun persistProbability(diagnosPrediction: Diagnosprediktion, certificateId: String) {
+        log.info("Persisting probability for certificateId: $certificateId")
+        val probability = Probability(certificateId, diagnosPrediction.sannolikhetOvergransvarde,
+                diagnosPrediction.risksignal.riskkategori.intValueExact(),
+                diagnosPrediction.inkommandediagnos.code, diagnosPrediction.diagnos.code)
+        probabilityRepo.save(probability)
     }
 
     private fun calculateRisk(diagnosisId: String, prediction: Double): BigInteger {
