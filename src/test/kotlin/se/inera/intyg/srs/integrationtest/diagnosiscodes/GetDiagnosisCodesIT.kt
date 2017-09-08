@@ -8,8 +8,6 @@ import se.inera.intyg.srs.controllers.TestController
 import se.inera.intyg.srs.integrationtest.BaseIntegrationTest
 import se.inera.intyg.srs.integrationtest.util.whenever
 
-const val SOAP_ROOT = "Envelope.Body.GetPredictionQuestionsResponse"
-
 class GetDiagnosisCodesIT : BaseIntegrationTest() {
 
     @Test

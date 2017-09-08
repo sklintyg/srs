@@ -7,11 +7,10 @@ import org.junit.Test
 import se.inera.intyg.srs.integrationtest.BaseIntegrationTest
 import se.inera.intyg.srs.integrationtest.util.whenever
 
-
-const val SOAP_ROOT = "Envelope.Body.GetSRSInformationResponse"
-const val STATISTIK_ROOT = "$SOAP_ROOT.bedomningsunderlag.statistik"
-
 class StatistikIT : BaseIntegrationTest() {
+
+    private val SOAP_ROOT = "Envelope.Body.GetSRSInformationResponse"
+    private val STATISTIK_ROOT = "$SOAP_ROOT.bedomningsunderlag.statistik"
 
     @Test
     fun testExistingImageShouldBeReturnedAndNonExistingShouldYieldErrorMessage() {

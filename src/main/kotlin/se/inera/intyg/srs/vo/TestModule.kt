@@ -44,7 +44,7 @@ class TestModule(private val consentRepo: ConsentRepository,
 
     private fun mapToMeasurePriorities(recommendations: List<String>) =
             recommendations
-                    .mapIndexed { i, recText -> Recommendation(uniqueId.incrementAndGet(), recText) }
+                    .map { recText -> Recommendation(uniqueId.incrementAndGet(), recText) }
                     .map { rec -> recommendationRepo.save(rec) }
                     .mapIndexed { i, rec -> MeasurePriority(i + 1, rec) }
                     .map { priority -> priorityRepo.save(priority) }

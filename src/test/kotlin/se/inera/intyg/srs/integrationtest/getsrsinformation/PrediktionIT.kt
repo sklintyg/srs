@@ -1,9 +1,15 @@
 package se.inera.intyg.srs.integrationtest.getsrsinformation
 
+import com.jayway.restassured.RestAssured
+import com.jayway.restassured.http.ContentType
+import org.hamcrest.Matchers.equalTo
 import org.junit.Test
 import se.inera.intyg.srs.integrationtest.BaseIntegrationTest
+import se.inera.intyg.srs.integrationtest.util.whenever
 
 class PrediktionIT : BaseIntegrationTest() {
+
+    private val SOAP_ROOT = "Envelope.Body.GetSRSInformationResponse"
 
     @Test
     fun testShouldReturnMaximumRiskFromModel() {
@@ -25,7 +31,17 @@ class PrediktionIT : BaseIntegrationTest() {
 
     @Test
     fun testMissingPredictionShouldYieldErrorMessage() {
-        // Om prediktion saknas för en diagnos ska "PREDIKTION SAKNAS" returneras för den diagnosen.
+        // Om prediktion saknas för en diagnos ska detta indikeras för den diagnosen.
+        RestAssured.given()
+            .contentType(ContentType.XML)
+            .body(getClasspathResourceAsString("prediktion/getPrediktionRequest.xml")
+                    .replace("diagnosis_placeholder", "FINNSINTE"))
+        .whenever()
+            .post("/services/getsrs")
+        .then()
+            .statusCode(200)
+            .assertThat()
+                .body("$SOAP_ROOT.resultCode", equalTo("OK"))
+                .body("$SOAP_ROOT.bedomningsunderlag.prediktion.diagnosprediktion.risksignal.beskrivning", equalTo("Prediktion saknas."))
     }
-
 }

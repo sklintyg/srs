@@ -7,9 +7,9 @@ import org.junit.Test
 import se.inera.intyg.srs.integrationtest.BaseIntegrationTest
 import se.inera.intyg.srs.integrationtest.util.whenever
 
-const val SOAP_ROOT = "Envelope.Body.GetConsentResponse"
-
 class GetConsentIT : BaseIntegrationTest() {
+
+    private val SOAP_ROOT = "Envelope.Body.GetConsentResponse"
 
     @Test
     fun testPositiveConsent() {
