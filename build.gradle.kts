@@ -31,6 +31,7 @@ task<Test>("restAssuredTest") {
     outputs.upToDateWhen { false }
     systemProperty("integration.tests.baseUrl", System.getProperty("baseUrl") ?: "http://localhost:8080/")
     include("**/*IT*")
+    excludes.clear()
 }
 
 publishing {
