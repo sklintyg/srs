@@ -32,3 +32,4 @@
   copy:
     src: "{{ app_resources_folder }}/model/"
     dest: "/opt/models"
+    remote_src: yes
