@@ -1,9 +1,11 @@
 package se.inera.intyg.srs.integrationtest.getsrsinformation
 
-import com.jayway.restassured.RestAssured
+import com.jayway.restassured.RestAssured.given
 import com.jayway.restassured.http.ContentType
 import org.hamcrest.Matchers.equalTo
+import org.junit.Ignore
 import org.junit.Test
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.GetSRSInformationResponseType
 import se.inera.intyg.srs.integrationtest.BaseIntegrationTest
 import se.inera.intyg.srs.integrationtest.util.whenever
 
@@ -53,9 +55,31 @@ class PrediktionIT : BaseIntegrationTest() {
     }
 
     @Test
+    @Ignore("Funktionalitet inte implementerat än (INTYG-4463)")
+    fun testResultShouldBeSavedToDatabase() {
+        // Kontrollera att Prediktionsresultat ska sparas i databasen tillsammans med
+        // Intygs-ID
+
+        //val response =
+            given()
+                .contentType(ContentType.XML)
+                .body(getClasspathResourceAsString("prediktion/getPrediktionRequest.xml")
+                        .replace("diagnosis_placeholder", "FINNSINTE")
+                        .replace("intygsid_placeholder", "testid"))
+            .whenever()
+                .post("/services/getsrs")
+            .then()
+                .extract().response().`as`(GetSRSInformationResponseType::class.java)
+
+        /*val intyg = getIntyg("testid")
+        val riskkategori = response.bedomningsunderlag[0].prediktion.diagnosprediktion[0].risksignal.riskkategori
+        assertThat(riskkategori, equalTo(intyg.riskkategori))*/
+    }
+
+    @Test
     fun testMissingPredictionShouldYieldErrorMessage() {
         // Om prediktion saknas för en diagnos ska detta indikeras för den diagnosen.
-        RestAssured.given()
+        given()
             .contentType(ContentType.XML)
             .body(getClasspathResourceAsString("prediktion/getPrediktionRequest.xml")
                     .replace("diagnosis_placeholder", "FINNSINTE"))

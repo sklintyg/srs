@@ -65,6 +65,12 @@ open class BaseIntegrationTest {
                 request,
                 PredictionDiagnosis::class.java)
 
+    protected fun getIntyg(intygsId: String) =
+            restTemplate.getForObject(
+                    "/intyg/$intygsId",
+                    String::class.java
+            )
+
     protected fun getClasspathResourceAsString(fileName: String): String =
         ClassPathResource("integrationtest/$fileName").file.readText()
 

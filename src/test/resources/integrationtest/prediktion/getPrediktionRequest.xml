@@ -29,7 +29,7 @@
                </urn:diagnos>
                <urn:intyg-id>
                   <urn1:root>root</urn1:root>
-                  <urn1:extension>abc</urn1:extension>
+                  <urn1:extension>intygsid_placeholder</urn1:extension>
                </urn:intyg-id>
             </urn:individ>
          </urn:individer>

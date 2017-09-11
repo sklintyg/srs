@@ -96,7 +96,7 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
         return underlag
     }
 
-    private fun transformIndividuals(individer: List<Individ>): List<Person> =
+    private fun transformIndividuals(individer: List<Individ>) =
             individer.map { individ ->
                 val age = calculateAge(individ.personId)
                 val sex = calculateSex(individ.personId)

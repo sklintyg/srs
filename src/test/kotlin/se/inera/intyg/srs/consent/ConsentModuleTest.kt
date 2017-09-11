@@ -2,12 +2,9 @@ package se.inera.intyg.srs.consent
 
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
-import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
-import org.junit.Assert.assertEquals
 import org.mockito.Mockito
 import se.inera.intyg.srs.persistence.Consent
 import se.inera.intyg.srs.persistence.ConsentRepository
@@ -34,11 +31,11 @@ class ConsentModuleTest {
 
     private fun initData() {
         whenever(repo.findConsentByPersonnummerAndVardgivareId(PERSONNUMMER_WITH_CONSENT, HSAID))
-                .thenReturn(createConsent(PERSONNUMMER_WITH_CONSENT, true, HSAID))
+                .thenReturn(createConsent(PERSONNUMMER_WITH_CONSENT, HSAID))
         whenever(repo.save( Mockito.anyObject<Consent>())).thenReturn(consent)
     }
 
-    private fun createConsent(personnummer: String, samtycke: Boolean, hsaId: String): Consent {
+    private fun createConsent(personnummer: String, hsaId: String): Consent {
         return Consent(personnummer, hsaId, LocalDateTime.of(2017, 1, 1, 1, 1), 1)
     }
 

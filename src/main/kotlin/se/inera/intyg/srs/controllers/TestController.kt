@@ -79,6 +79,10 @@ class TestController(val consentModule: ConsentModule,
     fun createStatistics(@RequestBody statistics: StatisticsRequest) =
             testModule.createStatistic(statistics.diagnosId, statistics.bildUrl)
 
+    @GetMapping("intyg/{id}")
+    fun getIntyg(@RequestParam intygsId: String) =
+            null//testModule.getIntyg(intygsId)
+
     @PostMapping("/force-model-update")
     fun forceModelUpdate() =
             testModule.forceModelUpdate()
