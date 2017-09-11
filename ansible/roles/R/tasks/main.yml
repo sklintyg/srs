@@ -30,6 +30,5 @@
 
 - name: Copy rdata files
   copy:
-    src: "{{ app_resources_folder }}/model/"
+    src: "{{ app_resources_src }}model/"
     dest: "/opt/models"
-    remote_src: yes
