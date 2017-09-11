@@ -18,27 +18,26 @@ stage('build') {
     }
 }
 
-// TODO: Uncomment when time has come
-//stage('deploy') {
-    //node {
-        //util.run {
-            //ansiblePlaybook extraVars: [version: buildVersion, ansible_ssh_port: "22", deploy_from_repo: "false"], \
-                //installation: 'ansible-yum', inventory: 'ansible/inventory/srs/test', playbook: 'ansible/deploy.yml'
-            //util.waitForServer('https://srs.inera.nordicmedtest.se/inera-certificate/version.jsp')
-        //}
-    //}
-//}
 
-// TODO: Uncomment when time has come
+stage('deploy') {
+    node {
+        util.run {
+            ansiblePlaybook extraVars: [version: buildVersion, ansible_ssh_port: "22", deploy_from_repo: "false"], \
+                installation: 'ansible-yum', inventory: 'ansible/inventory/srs/test', playbook: 'ansible/deploy.yml'
+            util.waitForServer('https://srs.inera.nordicmedtest.se/inera-certificate/version.jsp')
+        }
+    }
+}
+
 //stage('restAssured') {
-    //node {
-        //try {
-            //shgradle "restAssuredTest -DbaseUrl=http://srs.inera.nordicmedtest.se/"
-        //} finally {
-            //publishHTML allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'web/build/reports/tests/restAssuredTest', \
-                //reportFiles: 'index.html', reportName: 'RestAssured results'
-        //}
-    //}
+//    node {
+//        try {
+//            shgradle "restAssuredTest -DbaseUrl=http://srs.inera.nordicmedtest.se/"
+//        } finally {
+//            publishHTML allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'web/build/reports/tests/restAssuredTest', \
+//                reportFiles: 'index.html', reportName: 'RestAssured results'
+//        }
+//    }
 //}
 
 stage('tag and upload') {
