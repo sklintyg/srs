@@ -65,6 +65,10 @@ class BootstrapData {
                 listOf(prioRepo.save(MeasurePriority(1, recommendation11)),
                         prioRepo.save(MeasurePriority(2, recommendation12)))))
 
+        measureRepo.save(Measure(6, "M79", "Reumatism, ospecificerad", "1.0",
+                listOf(prioRepo.save(MeasurePriority(1, recommendation11)),
+                        prioRepo.save(MeasurePriority(2, recommendation12)))))
+
         val question01 = questionRepo.save(PredictionQuestion(1,
                 "Sysselsättningsstatus",
                 "Vilken är din nuvarande sysselsättning?",
