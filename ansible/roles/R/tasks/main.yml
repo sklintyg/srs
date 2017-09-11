@@ -30,5 +30,5 @@
 
 - name: Copy rdata files
   copy:
-    src: "{{ playbook_dir }}/../models/"
+    src: "{{ app_resources_folder }}/model/"
     dest: "/opt/models"

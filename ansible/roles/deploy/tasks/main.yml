@@ -1,15 +1,5 @@
 ---
 
-- name: Ensure that application resources folder exists
-  file:
-    state: directory
-    path: "{{ app_resources_folder }}"
-
-- name: Copy application resources
-  copy:
-    src: "{{ app_resources_src }}"
-    dest: "{{ app_resources_folder }}"
-
 - name: Stop tomcat
   service:
     name: "{{ tomcat_service }}"

@@ -28,5 +28,6 @@
     - mysql
     - resources
     - unlock-config-folder
+    - app-resources
     - R
     - deploy
