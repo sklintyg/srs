@@ -19,7 +19,6 @@ import se.riv.itintegration.monitoring.rivtabp21.v1.PingForConfigurationResponde
 import javax.xml.ws.Endpoint
 
 @SpringBootApplication
-@Import(BootstrapData::class)
 class Application : SpringBootServletInitializer() {
     private val log = LogManager.getLogger()
 
