@@ -1,6 +1,6 @@
 package se.inera.intyg.srs.integrationtest.getsrsinformation
 
-import com.jayway.restassured.RestAssured
+import com.jayway.restassured.RestAssured.given
 import com.jayway.restassured.http.ContentType
 import org.hamcrest.Matchers
 import org.junit.Test
@@ -16,7 +16,7 @@ class StatistikIT : BaseIntegrationTest() {
     fun testExistingImageShouldBeReturnedAndNonExistingShouldYieldErrorMessage() {
         addStatistics("M75", "http://i.imgur.com/q0qXPgz.gif")
 
-        RestAssured.given()
+        given()
             .contentType(ContentType.XML)
             .body(getClasspathResourceAsString("statistik/getStatistikRequest.xml"))
         .whenever()
@@ -37,7 +37,7 @@ class StatistikIT : BaseIntegrationTest() {
 
         addStatistics("M75", "http://i.imgur.com/q0qXPgz.gif")
 
-        RestAssured.given()
+        given()
             .contentType(ContentType.XML)
             .body(getClasspathResourceAsString("statistik/getStatistikHigherDiagnoseRequest.xml"))
         .whenever()

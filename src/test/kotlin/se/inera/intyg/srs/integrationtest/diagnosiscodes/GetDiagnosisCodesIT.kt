@@ -12,23 +12,9 @@ class GetDiagnosisCodesIT : BaseIntegrationTest() {
 
     @Test
     fun testDiagnosisCodes() {
-        addDiagnosis(TestController.DiagnosisRequest(
-                "M24",
-                0.54,
-                emptyList()
-        ))
-
-        addDiagnosis(TestController.DiagnosisRequest(
-                "M14",
-                0.54,
-                emptyList()
-        ))
-
-        addDiagnosis(TestController.DiagnosisRequest(
-                "M6",
-                0.54,
-                emptyList()
-        ))
+        addDiagnosis(TestController.DiagnosisRequest("M24", 0.54, emptyList()))
+        addDiagnosis(TestController.DiagnosisRequest("M14", 0.54, emptyList()))
+        addDiagnosis(TestController.DiagnosisRequest("M6", 0.54, emptyList()))
 
         RestAssured.given()
             .contentType(ContentType.XML)
@@ -42,6 +28,5 @@ class GetDiagnosisCodesIT : BaseIntegrationTest() {
                 .body("Envelope.Body.GetDiagnosisCodesResponse.diagnos[1].code", equalTo("M14"))
                 .body("Envelope.Body.GetDiagnosisCodesResponse.diagnos[2].code", equalTo("M6"))
     }
-
 
 }

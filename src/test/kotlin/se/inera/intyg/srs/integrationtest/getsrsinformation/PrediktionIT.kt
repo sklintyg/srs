@@ -30,6 +30,29 @@ class PrediktionIT : BaseIntegrationTest() {
     }
 
     @Test
+    fun testExistingPredictionOn5CharDiagnosisId() {
+        // Om prediktion finns för M75 och M7512 och M7512 efterfrågas
+        // så är det prediktion för M7512 som ska returneras
+    }
+
+    @Test
+    fun testTooLongDiagnosisCodeRequestShouldBeRejected() {
+        // Anropa med 6-ställig kod och verifiera fel
+    }
+
+    @Test
+    fun testHighestVersionOfPredictionShouldBeUsed() {
+        // Om två prediktionsfiler för samma diagnos finns ska den med högst
+        // versionsnummer användas
+    }
+
+    @Test
+    fun testMissingInputParameters() {
+        // Om inparametrar till modellen saknas i anropet ska felmeddelande
+        // anges.
+    }
+
+    @Test
     fun testMissingPredictionShouldYieldErrorMessage() {
         // Om prediktion saknas för en diagnos ska detta indikeras för den diagnosen.
         RestAssured.given()

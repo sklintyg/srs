@@ -14,9 +14,7 @@ class PredictionQuestionsIT : BaseIntegrationTest() {
 
     @Test
     fun testExistingImageShouldBeReturnedAndNonExistingShouldYieldErrorMessage() {
-        addDiagnosis(DiagnosisRequest(
-                "M24",
-                0.54,
+        addDiagnosis(DiagnosisRequest("M24", 0.54,
                 listOf(PredictionQuestion("Stressad?", "abc", "Hjälptext",
                         listOf(PredictionResponse("Lite kanske", "def", true),
                                 PredictionResponse("Bara på fredagar", "ghi", false))

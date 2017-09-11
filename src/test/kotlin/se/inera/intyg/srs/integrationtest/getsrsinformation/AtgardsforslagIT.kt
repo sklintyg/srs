@@ -3,6 +3,7 @@ package se.inera.intyg.srs.integrationtest.getsrsinformation
 import com.jayway.restassured.RestAssured
 import com.jayway.restassured.http.ContentType
 import org.hamcrest.Matchers.equalTo
+import org.hamcrest.Matchers.notNullValue
 import org.junit.Test
 import se.inera.intyg.srs.integrationtest.BaseIntegrationTest
 import se.inera.intyg.srs.integrationtest.util.whenever
@@ -59,8 +60,10 @@ class AtgardsforslagIT : BaseIntegrationTest() {
                 .body("$ATGARD_ROOT.rekommendation[1].diagnos.displayName", equalTo("Riktigt stressad"))
                 .body("$ATGARD_ROOT.rekommendation[1].atgard[0].atgardsforslag", equalTo("Ta det lugnt"))
                 .body("$ATGARD_ROOT.rekommendation[1].atgard[0].prioritet", equalTo("1"))
+                .body("$ATGARD_ROOT.rekommendation[1].atgard[0].version", notNullValue())
                 .body("$ATGARD_ROOT.rekommendation[1].atgard[1].atgardsforslag", equalTo("Hetsa inte upp dig"))
                 .body("$ATGARD_ROOT.rekommendation[1].atgard[1].prioritet", equalTo("2"))
+                .body("$ATGARD_ROOT.rekommendation[1].atgard[1].version", notNullValue())
 
     }
 }
