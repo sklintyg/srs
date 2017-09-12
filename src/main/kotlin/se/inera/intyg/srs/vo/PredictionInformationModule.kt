@@ -7,6 +7,7 @@ import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Diagno
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Prediktion
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Risksignal
 import se.inera.intyg.srs.persistence.DiagnosisRepository
+import se.inera.intyg.srs.persistence.PredictionDiagnosis
 import se.inera.intyg.srs.persistence.Probability
 import se.inera.intyg.srs.persistence.ProbabilityRepository
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.Diagnos
@@ -43,19 +44,20 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
             val calculatedPrediction = rAdapter.getPrediction(person, incomingDiagnosis, extraParams)
             diagnosPrediktion.diagnosprediktionstatus = calculatedPrediction.status
 
-            val riskSignal = Risksignal()
+            val diagnosis = diagnosisRepo.findOneByDiagnosisId(calculatedPrediction.diagnosis)
 
+            val riskSignal = Risksignal()
             diagnosPrediktion.risksignal = riskSignal
 
-            if (calculatedPrediction.status == Diagnosprediktionstatus.OK ||
-                    calculatedPrediction.status == Diagnosprediktionstatus.DIAGNOSKOD_PA_HOGRE_NIVA) {
+            if ((calculatedPrediction.status == Diagnosprediktionstatus.OK ||
+                    calculatedPrediction.status == Diagnosprediktionstatus.DIAGNOSKOD_PA_HOGRE_NIVA) && diagnosis != null) {
                 val outgoingDiagnosis = Diagnos()
                 outgoingDiagnosis.codeSystem = incomingDiagnosis.codeSystem
                 outgoingDiagnosis.code = calculatedPrediction.diagnosis
 
                 diagnosPrediktion.sannolikhetOvergransvarde = calculatedPrediction.prediction
                 diagnosPrediktion.diagnos = outgoingDiagnosis
-                riskSignal.riskkategori = calculateRisk(calculatedPrediction.diagnosis, calculatedPrediction.prediction!!)
+                riskSignal.riskkategori = calculateRisk(diagnosis, calculatedPrediction.prediction!!)
 
                 persistProbability(diagnosPrediktion, person.certificateId)
 
@@ -77,16 +79,12 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
         probabilityRepo.save(probability)
     }
 
-    private fun calculateRisk(diagnosisId: String, prediction: Double): BigInteger {
-        val diagnosis = diagnosisRepo.findOneByDiagnosisId(diagnosisId)
-        return if (diagnosis != null)
+    private fun calculateRisk(diagnosis: PredictionDiagnosis, prediction: Double): BigInteger =
             when {
                 prediction <= (2 * diagnosis.prevalence) / (1 * diagnosis.prevalence + 1) -> BigInteger.valueOf(2)
                 prediction <= (4 * diagnosis.prevalence) / (3 * diagnosis.prevalence + 1) -> BigInteger.valueOf(3)
                 else -> BigInteger.valueOf(4)
             }
-        else BigInteger.ONE
-    }
 }
 
 fun originalDiagnosis(incoming: Diagnosis): Diagnos {
