@@ -44,7 +44,7 @@
             <urn:individ>
                <urn:person-id>198801080214</urn:person-id>
                <urn:diagnos>
-                  <urn1:code>Z99</urn1:code>
+                  <urn1:code>diagnos_placeholder</urn1:code>
                   <urn1:codeSystem>1.2.752.116.1.1.1.1.3</urn1:codeSystem>
                </urn:diagnos>
                <urn:intyg-id>

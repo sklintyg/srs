@@ -19,26 +19,6 @@
                <urn:frageid-srs>SA_1_gross</urn:frageid-srs>
                <urn:svarsid-srs>0</urn:svarsid-srs>
             </urn:fragasvar>
-            <urn:fragasvar>
-               <urn:frageid-srs>DP_atStart</urn:frageid-srs>
-               <urn:svarsid-srs>false</urn:svarsid-srs>
-            </urn:fragasvar>
-            <urn:fragasvar>
-               <urn:frageid-srs>Visits_yearBefore_all_r1_median</urn:frageid-srs>
-               <urn:svarsid-srs>LessT2V</urn:svarsid-srs>
-            </urn:fragasvar>
-            <urn:fragasvar>
-               <urn:frageid-srs>SA_SyssStart_fct</urn:frageid-srs>
-               <urn:svarsid-srs>work</urn:svarsid-srs>
-            </urn:fragasvar>
-            <urn:fragasvar>
-               <urn:frageid-srs>fam_cat_4_cat_fct</urn:frageid-srs>
-               <urn:svarsid-srs>Married</urn:svarsid-srs>
-            </urn:fragasvar>
-            <urn:fragasvar>
-               <urn:frageid-srs>edu_cat_fct</urn:frageid-srs>
-               <urn:svarsid-srs>>12 years</urn:svarsid-srs>
-            </urn:fragasvar>
          </urn:prediktionsfaktorer>
          <urn:individer>
             <urn:individ>

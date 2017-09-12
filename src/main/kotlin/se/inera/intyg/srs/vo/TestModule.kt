@@ -44,10 +44,9 @@ class TestModule(private val consentRepo: ConsentRepository,
     private val uniqueId = AtomicLong(1000)
 
     private val testModels = mapOf(
-            Pair("x99v0", Pair("$modelDir/../testmodel/Model1A.RData", "$modelDir/PM_X99_v0.0.RData")),
-            Pair("x99v1", Pair("$modelDir/../testmodel/Model1B.RData", "$modelDir/PM_X99_v1.0.RData")),
-            Pair("z99v0", Pair("$modelDir/../testmodel/Model2A.RData", "$modelDir/PM_Z99_v0.0.RData")),
-            Pair("z99v1", Pair("$modelDir/../testmodel/Model2B.RData", "$modelDir/PM_Z99_v1.0.RData"))
+            Pair("x99v0",   Pair("$modelDir/../testmodel/Model1.RData", "$modelDir/PM_X99_v0.0.RData")),
+            Pair("x9900v0", Pair("$modelDir/../testmodel/Model2.RData", "$modelDir/PM_X9900_v0.0.RData")),
+            Pair("x99v1",   Pair("$modelDir/../testmodel/Model2.RData", "$modelDir/PM_X99_v1.0.RData"))
     )
 
     fun createMeasure(diagnosisId: String, diagnosisText: String, recommendations: List<String>): Measure =
@@ -107,15 +106,14 @@ class TestModule(private val consentRepo: ConsentRepository,
 
     fun setTestModels(models: TestController.ModelRequest) {
         Files.walk(Paths.get(modelDir))
-                .filter { it.getName(it.nameCount - 1).toString().contains(Regex("X99|Z99")) }
+                .filter { it.getName(it.nameCount - 1).toString().contains("X99") }
                 .forEach { Files.delete(it) }
 
         val copyPaths = mutableListOf<Pair<String, String>>()
 
         if (models.x99v0) testModels["x99v0"]?.let { copyPaths.add(it) }
+        if (models.x99v0) testModels["x9900v0"]?.let { copyPaths.add(it) }
         if (models.x99v1) testModels["x99v1"]?.let { copyPaths.add(it) }
-        if (models.z99v0) testModels["z99v0"]?.let { copyPaths.add(it) }
-        if (models.z99v1) testModels["z99v1"]?.let { copyPaths.add(it) }
 
         copyPaths.forEach { (from, to) -> Files.copy(Paths.get(from), Paths.get(to), StandardCopyOption.REPLACE_EXISTING) }
     }
