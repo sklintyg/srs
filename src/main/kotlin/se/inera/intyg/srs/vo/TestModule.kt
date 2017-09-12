@@ -1,5 +1,6 @@
 package se.inera.intyg.srs.vo
 
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import se.inera.intyg.srs.controllers.TestController
@@ -20,10 +21,13 @@ import se.inera.intyg.srs.persistence.Recommendation
 import se.inera.intyg.srs.persistence.RecommendationRepository
 import se.inera.intyg.srs.persistence.ResponseRepository
 import se.inera.intyg.srs.persistence.StatisticRepository
-import se.inera.intyg.srs.service.ModelFileUpdateService
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.nio.file.StandardCopyOption
 import java.time.LocalDateTime
 import java.util.concurrent.atomic.AtomicLong
 
+@Suppress("LeakingThis")
 @Service
 @Profile("it")
 class TestModule(private val consentRepo: ConsentRepository,
@@ -35,9 +39,16 @@ class TestModule(private val consentRepo: ConsentRepository,
                  private val predictPrioRepo: PredictionPriorityRepository,
                  private val questionRepo: QuestionRepository,
                  private val responseRepo: ResponseRepository,
-                 private val modelService: ModelFileUpdateService) {
+                 @Value("\${model.dir}") private val modelDir: String) {
 
     private val uniqueId = AtomicLong(1000)
+
+    private val testModels = mapOf(
+            Pair("x99v0", Pair("$modelDir/../testmodel/Model1A.RData", "$modelDir/PM_X99_v0.0.RData")),
+            Pair("x99v1", Pair("$modelDir/../testmodel/Model1B.RData", "$modelDir/PM_X99_v1.0.RData")),
+            Pair("z99v0", Pair("$modelDir/../testmodel/Model2A.RData", "$modelDir/PM_Z99_v0.0.RData")),
+            Pair("z99v1", Pair("$modelDir/../testmodel/Model2B.RData", "$modelDir/PM_Z99_v1.0.RData"))
+    )
 
     fun createMeasure(diagnosisId: String, diagnosisText: String, recommendations: List<String>): Measure =
             measureRepo.save(Measure(uniqueId.incrementAndGet(), diagnosisId, diagnosisText, "1.0", mapToMeasurePriorities(recommendations)))
@@ -94,6 +105,18 @@ class TestModule(private val consentRepo: ConsentRepository,
         diagnosisRepo.deleteAll()
     }
 
-    fun forceModelUpdate() = modelService.update()
+    fun setTestModels(models: TestController.ModelRequest) {
+        Files.walk(Paths.get(modelDir))
+                .filter { it.getName(it.nameCount - 1).toString().contains(Regex("X99|Z99")) }
+                .forEach { Files.delete(it) }
 
+        val copyPaths = mutableListOf<Pair<String, String>>()
+
+        if (models.x99v0) testModels["x99v0"]?.let { copyPaths.add(it) }
+        if (models.x99v1) testModels["x99v1"]?.let { copyPaths.add(it) }
+        if (models.z99v0) testModels["z99v0"]?.let { copyPaths.add(it) }
+        if (models.z99v1) testModels["z99v1"]?.let { copyPaths.add(it) }
+
+        copyPaths.forEach { (from, to) -> Files.copy(Paths.get(from), Paths.get(to), StandardCopyOption.REPLACE_EXISTING) }
+    }
 }

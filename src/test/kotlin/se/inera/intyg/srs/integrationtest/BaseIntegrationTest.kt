@@ -65,6 +65,19 @@ open class BaseIntegrationTest {
                 request,
                 PredictionDiagnosis::class.java)
 
+    protected fun setModels(vararg models: String): Void =
+            restTemplate.postForObject(
+                "/set-model",
+                createModelRequest(models),
+                Void::class.java)
+
+    private fun createModelRequest(models: Array<out String>) =
+            TestController.ModelRequest(
+                models.contains("x99v0"),
+                models.contains("x99v1"),
+                models.contains("z99v0"),
+                models.contains("z99v1"))
+
     protected fun getIntyg(intygsId: String) =
             restTemplate.getForObject(
                     "/intyg/$intygsId",

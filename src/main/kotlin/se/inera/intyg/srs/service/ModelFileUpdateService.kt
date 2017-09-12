@@ -10,6 +10,7 @@ import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.util.concurrent.CompletableFuture
 
 /**
  * Scheduled service for monitoring R model files in models.dir.
@@ -25,6 +26,11 @@ class ModelFileUpdateService(@Value("\${model.dir}") val modelDir: String) {
 
     private val models = mutableMapOf<String, Model>()
 
+    /**
+     * List of listeners that are interested in the next model update.
+     */
+    val listeners = mutableListOf<CompletableFuture<Void>>()
+
     init {
         doUpdate()
     }
@@ -37,17 +43,18 @@ class ModelFileUpdateService(@Value("\${model.dir}") val modelDir: String) {
     @Scheduled(cron = "\${model.update.cron}")
     fun update() {
         doUpdate()
+        listeners.forEach { it.complete(null) }
+        listeners.clear()
     }
 
     private final fun doUpdate() {
         log.info("Performing scheduled model file update...")
 
         try {
-            Files.walk(Paths.get(modelDir)).filter {
-                Files.isRegularFile(it) && it.getName(it.nameCount - 1).toString().toLowerCase().endsWith(DATA_FILE_EXTENSION)
-            }.forEach { file ->
-                addFile(file)
-            }
+            Files.walk(Paths.get(modelDir))
+                    .filter { Files.isRegularFile(it) }
+                    .filter { it.getName(it.nameCount - 1).toString().toLowerCase().endsWith(DATA_FILE_EXTENSION) }
+                    .forEach { file -> addFile(file) }
         } catch (e: IOException) {
             log.error("Error while reading from directory $modelDir: ", e)
         } catch (e: Exception) {

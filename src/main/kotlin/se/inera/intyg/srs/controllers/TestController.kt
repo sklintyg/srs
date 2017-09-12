@@ -9,15 +9,18 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import se.inera.intyg.srs.service.ModelFileUpdateService
 import se.inera.intyg.srs.vo.ConsentModule
 import se.inera.intyg.srs.vo.MeasureInformationModule
 import se.inera.intyg.srs.vo.TestModule
+import java.util.concurrent.CompletableFuture
 
 @RestController
 @Profile("it")
 class TestController(val consentModule: ConsentModule,
                      val measureModule: MeasureInformationModule,
-                     val testModule: TestModule) {
+                     val testModule: TestModule,
+                     val fileService: ModelFileUpdateService) {
 
     data class ConsentRequest(val personnummer: String,
                               val samtycke: Boolean,
@@ -32,6 +35,8 @@ class TestController(val consentModule: ConsentModule,
     data class PredictionResponse(val answer: String, val predictionId: String, val default: Boolean)
 
     data class DiagnosisRequest(val diagnosisId: String, val prevalence: Double, val questions: List<PredictionQuestion>)
+
+    data class ModelRequest(val x99v0: Boolean, val x99v1: Boolean, val z99v0: Boolean, val z99v1: Boolean)
 
     @PostMapping("/diagnosis")
     fun createDiagnosis(@RequestBody request: DiagnosisRequest) =
@@ -83,8 +88,17 @@ class TestController(val consentModule: ConsentModule,
     fun getIntyg(@RequestParam intygsId: String) =
             null//testModule.getIntyg(intygsId)
 
-    @PostMapping("/force-model-update")
-    fun forceModelUpdate() =
-            testModule.forceModelUpdate()
+    @PostMapping("/await-model-update")
+    fun forceModelUpdate() {
+        val cf = CompletableFuture<Void>()
+        fileService.listeners.add(cf)
+        cf.join()
+    }
+
+
+    @PostMapping("/set-models")
+    fun setTestModels(@RequestBody models: ModelRequest) =
+            testModule.setTestModels(models)
+
 
 }
