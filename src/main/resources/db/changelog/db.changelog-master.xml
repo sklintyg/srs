@@ -26,8 +26,8 @@
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="recommendation_text" type="VARCHAR(4096)">
-                <constraints primaryKey="true" nullable="false"/>
+            <column name="recommendation_text" type="text">
+                <constraints nullable="false"/>
             </column>
         </createTable>
 
