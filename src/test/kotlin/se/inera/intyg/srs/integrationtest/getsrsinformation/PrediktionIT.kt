@@ -4,7 +4,6 @@ import com.jayway.restassured.RestAssured.given
 import com.jayway.restassured.http.ContentType
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
-import org.junit.Ignore
 import org.junit.Test
 import se.inera.intyg.srs.controllers.TestController
 import se.inera.intyg.srs.integrationtest.BaseIntegrationTest
@@ -29,7 +28,6 @@ class PrediktionIT : BaseIntegrationTest() {
     }
 
     @Test
-    @Ignore("Osäkert om detta ska lösas inför piloten")
     fun testHighestVersionOfPredictionShouldBeUsed() {
         // Om två prediktionsfiler för samma diagnos finns ska den med högst
         // versionsnummer användas
@@ -79,8 +77,7 @@ class PrediktionIT : BaseIntegrationTest() {
         addDiagnosis(TestController.DiagnosisRequest("X99", 1.0, emptyList()))
         addDiagnosis(TestController.DiagnosisRequest("X9900", 1.0, emptyList()))
 
-        val response = sendPrediktionRequest("getPrediktion_Model2Request_output_0.77.xml", "X9900")
-        response.assertThat()
+        sendPrediktionRequest("getPrediktion_Model2Request_output_0.77.xml", "X9900").assertThat()
                 .body("$PREDIKTION_ROOT.sannolikhet-overgransvarde", equalTo("0.77"))
                 .body("$PREDIKTION_ROOT.diagnosprediktionstatus", equalTo("OK"))
     }
@@ -89,7 +86,6 @@ class PrediktionIT : BaseIntegrationTest() {
     fun testTooLongDiagnosisCodeRequestShouldBeRejected() {
         // Anropa med 6-ställig kod och verifiera fel
         sendPrediktionRequest("getPrediktion_Model2Request_output_0.77.xml", "X99001")
-                .statusCode(200)
                 .assertThat()
                 .body("$PREDIKTION_ROOT.diagnosprediktionstatus", equalTo("NOT_OK"))
     }
