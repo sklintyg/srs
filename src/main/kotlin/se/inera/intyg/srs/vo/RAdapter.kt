@@ -16,10 +16,13 @@ import kotlin.concurrent.withLock
 @Profile("runtime")
 class RAdapter(val modelService: ModelFileUpdateService) : PredictionAdapter {
     private val MIN_ID_POSITIONS = 3
+    private val MAX_ID_POSITIONS = 5
 
     private val log = LogManager.getLogger()
 
     private val rengine: Rengine = Rengine(arrayOf("--vanilla"), false, null)
+
+    private val lock: Lock = ReentrantLock()
 
     init {
 
@@ -45,12 +48,11 @@ class RAdapter(val modelService: ModelFileUpdateService) : PredictionAdapter {
         // for the execution of prediction models, and there is no reason to the believe that the number of calls
         // to this service will be excessive during the pilot. However, if this is more widely deployed once the pilot
         // is over, we would need to consider porting the R models to some solution that scales better.
-        val lock: Lock = ReentrantLock()
         lock.withLock {
             val (model, status) = getModelForDiagnosis(diagnosis.code)
 
             if (model == null) {
-                return Prediction(diagnosis.code, null, Diagnosprediktionstatus.PREDIKTIONSMODELL_SAKNAS)
+                return Prediction(diagnosis.code, null, status)
             }
 
             try {
@@ -87,6 +89,11 @@ class RAdapter(val modelService: ModelFileUpdateService) : PredictionAdapter {
 
     private fun getModelForDiagnosis(diagnosisId: String): Pair<ModelFileUpdateService.Model?, Diagnosprediktionstatus> {
         var currentId = cleanDiagnosisCode(diagnosisId)
+
+        if (currentId.length > MAX_ID_POSITIONS) {
+            return Pair(null, Diagnosprediktionstatus.NOT_OK)
+        }
+
         var status: Diagnosprediktionstatus = Diagnosprediktionstatus.OK
         while (currentId.length >= MIN_ID_POSITIONS) {
             val model = modelService.modelForCode(currentId)

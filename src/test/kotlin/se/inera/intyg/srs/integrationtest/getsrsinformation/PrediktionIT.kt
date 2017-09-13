@@ -88,7 +88,9 @@ class PrediktionIT : BaseIntegrationTest() {
     fun testTooLongDiagnosisCodeRequestShouldBeRejected() {
         // Anropa med 6-ställig kod och verifiera fel
         sendPrediktionRequest("getPrediktion_Model2Request_output_0.77.xml", "X99001")
-                .statusCode(400)
+                .statusCode(200)
+                .assertThat()
+                .body("$PREDIKTION_ROOT.diagnosprediktionstatus", equalTo("NOT_OK"))
     }
 
     @Test

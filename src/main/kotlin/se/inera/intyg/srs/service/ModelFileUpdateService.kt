@@ -11,6 +11,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.concurrent.CompletableFuture
+import java.util.stream.Collectors
 
 /**
  * Scheduled service for monitoring R model files in models.dir.
@@ -24,7 +25,7 @@ class ModelFileUpdateService(@Value("\${model.dir}") val modelDir: String) {
 
     private val DATA_FILE_EXTENSION = ".rdata"
 
-    private val models = mutableMapOf<String, Model>()
+    private var models = mapOf<String, List<Model>>()
 
     /**
      * List of listeners that are interested in the next model update.
@@ -35,9 +36,12 @@ class ModelFileUpdateService(@Value("\${model.dir}") val modelDir: String) {
         doUpdate()
     }
 
-    fun modelForCode(currentId: String): Model? {
-        return models[currentId]
-    }
+    fun modelForCode(currentId: String, version: String? = null): Model? =
+            if (version == null) {
+                models[currentId]?.maxBy { it.version }
+            } else {
+                models[currentId]?.find { it.version == version }
+            }
 
     @Transactional
     @Scheduled(cron = "\${model.update.cron}")
@@ -51,10 +55,13 @@ class ModelFileUpdateService(@Value("\${model.dir}") val modelDir: String) {
         log.info("Performing scheduled model file update...")
 
         try {
-            Files.walk(Paths.get(modelDir))
+            val fileList = Files.walk(Paths.get(modelDir))
                     .filter { Files.isRegularFile(it) }
                     .filter { it.getName(it.nameCount - 1).toString().toLowerCase().endsWith(DATA_FILE_EXTENSION) }
-                    .forEach { file -> addFile(file) }
+                    .map { toModel(it) }
+                    .collect(Collectors.toList())
+            models = fileList.filterNotNull()
+                    .groupBy { it.diagnosis }
         } catch (e: IOException) {
             log.error("Error while reading from directory $modelDir: ", e)
         } catch (e: Exception) {
@@ -62,14 +69,14 @@ class ModelFileUpdateService(@Value("\${model.dir}") val modelDir: String) {
         }
     }
 
-    private fun addFile(file: Path) {
+    private fun toModel(file: Path): Model {
         val fileName = file.fileName.toString()
         val dStartPos = fileName.indexOf('_')
         val dEndPos = fileName.lastIndexOf('_')
         val vEndPos = fileName.indexOf('.')
         val diagnosis = fileName.substring(dStartPos + 1, dEndPos)
         val version = fileName.substring(dEndPos + 1, vEndPos)
-        models.put(diagnosis, Model(diagnosis, version, file.toAbsolutePath().toString()))
+        return Model(diagnosis, version, file.toAbsolutePath().toString())
     }
 
     class Model(val diagnosis: String, val version: String, val fileName: String)

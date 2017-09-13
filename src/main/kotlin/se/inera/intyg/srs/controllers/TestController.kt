@@ -95,7 +95,6 @@ class TestController(val consentModule: ConsentModule,
         cf.join()
     }
 
-
     @PostMapping("/set-models")
     fun setTestModels(@RequestBody models: ModelRequest) =
             testModule.setTestModels(models)
