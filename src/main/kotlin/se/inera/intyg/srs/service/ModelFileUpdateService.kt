@@ -6,12 +6,11 @@ import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
+import java.io.File
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path
-import java.nio.file.Paths
 import java.util.concurrent.CompletableFuture
-import java.util.stream.Collectors
 
 /**
  * Scheduled service for monitoring R model files in models.dir.
@@ -55,13 +54,13 @@ class ModelFileUpdateService(@Value("\${model.dir}") val modelDir: String) {
         log.info("Performing scheduled model file update...")
 
         try {
-            val fileList = Files.walk(Paths.get(modelDir))
+            models = File(modelDir).walk()
+                    .map { it.toPath() }
                     .filter { Files.isRegularFile(it) }
                     .filter { it.getName(it.nameCount - 1).toString().toLowerCase().endsWith(DATA_FILE_EXTENSION) }
                     .map { toModel(it) }
-                    .collect(Collectors.toList())
-            models = fileList.filterNotNull()
                     .groupBy { it.diagnosis }
+
         } catch (e: IOException) {
             log.error("Error while reading from directory $modelDir: ", e)
         } catch (e: Exception) {
