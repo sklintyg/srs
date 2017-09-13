@@ -24,7 +24,6 @@ stage('deploy') {
         util.run {
             ansiblePlaybook extraVars: [version: buildVersion, ansible_ssh_port: "22", deploy_from_repo: "false"], \
                 installation: 'ansible-yum', inventory: 'ansible/inventory/srs/test', playbook: 'ansible/site.yml'
-            util.waitForServer('https://srs.inera.nordicmedtest.se/inera-certificate/version.jsp')
         }
     }
 }
