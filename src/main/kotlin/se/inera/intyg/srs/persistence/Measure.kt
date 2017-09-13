@@ -1,15 +1,12 @@
 package se.inera.intyg.srs.persistence
 
-import javax.persistence.Entity
-import javax.persistence.FetchType
-import javax.persistence.Id
-import javax.persistence.JoinColumn
-import javax.persistence.OneToMany
+import javax.persistence.*
 
 @Entity
 class Measure(@Id
               val id: Long,
               val diagnosisId: String,
+              @Column(name = "diagnosis_text", columnDefinition = "clob")
               val diagnosisText: String,
               val version: String,
               @OneToMany(fetch = FetchType.EAGER)

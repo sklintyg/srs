@@ -14,7 +14,7 @@
             <column name="diagnosis_id" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="diagnosis_text" type="VARCHAR(4096)">
+            <column name="diagnosis_text" type="text">
                 <constraints nullable="false"/>
             </column>
             <column name="version" type="VARCHAR(255)">
