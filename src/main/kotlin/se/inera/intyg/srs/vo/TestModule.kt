@@ -16,6 +16,7 @@ import se.inera.intyg.srs.persistence.PredictionPriority
 import se.inera.intyg.srs.persistence.PredictionPriorityRepository
 import se.inera.intyg.srs.persistence.PredictionQuestion
 import se.inera.intyg.srs.persistence.PredictionResponse
+import se.inera.intyg.srs.persistence.ProbabilityRepository
 import se.inera.intyg.srs.persistence.QuestionRepository
 import se.inera.intyg.srs.persistence.Recommendation
 import se.inera.intyg.srs.persistence.RecommendationRepository
@@ -39,6 +40,7 @@ class TestModule(private val consentRepo: ConsentRepository,
                  private val predictPrioRepo: PredictionPriorityRepository,
                  private val questionRepo: QuestionRepository,
                  private val responseRepo: ResponseRepository,
+                 private val probabilityRepo: ProbabilityRepository,
                  @Value("\${model.dir}") private val modelDir: String) {
 
     private val uniqueId = AtomicLong(1000)
@@ -97,6 +99,8 @@ class TestModule(private val consentRepo: ConsentRepository,
 
     fun deleteAllStatistics() = statisticsRepo.deleteAll()
 
+    fun deleteAllIntyg() = probabilityRepo.deleteAll()
+
     fun deleteAllPredictionQuestions() {
         responseRepo.deleteAll()
         predictPrioRepo.deleteAll()
@@ -112,9 +116,12 @@ class TestModule(private val consentRepo: ConsentRepository,
         val copyPaths = mutableListOf<Pair<String, String>>()
 
         if (models.x99v0) testModels["x99v0"]?.let { copyPaths.add(it) }
-        if (models.x99v0) testModels["x9900v0"]?.let { copyPaths.add(it) }
+        if (models.x9900v0) testModels["x9900v0"]?.let { copyPaths.add(it) }
         if (models.x99v1) testModels["x99v1"]?.let { copyPaths.add(it) }
 
         copyPaths.forEach { (from, to) -> Files.copy(Paths.get(from), Paths.get(to), StandardCopyOption.REPLACE_EXISTING) }
     }
+
+    fun getIntyg(intygsId: String) =
+        probabilityRepo.findByCertificateId(intygsId)
 }

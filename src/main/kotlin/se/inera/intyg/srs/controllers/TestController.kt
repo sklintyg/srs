@@ -85,8 +85,12 @@ class TestController(val consentModule: ConsentModule,
             testModule.createStatistic(statistics.diagnosId, statistics.bildUrl)
 
     @GetMapping("intyg/{id}")
-    fun getIntyg(@RequestParam intygsId: String) =
-            null//testModule.getIntyg(intygsId)
+    fun getIntyg(@PathVariable("id") intygsId: String) =
+            testModule.getIntyg(intygsId)
+
+    @DeleteMapping("intyg")
+    fun deleteAllIntyg() =
+            testModule.deleteAllIntyg()
 
     @PostMapping("/await-model-update")
     fun forceModelUpdate() {
@@ -98,6 +102,4 @@ class TestController(val consentModule: ConsentModule,
     @PostMapping("/set-models")
     fun setTestModels(@RequestBody models: ModelRequest) =
             testModule.setTestModels(models)
-
-
 }

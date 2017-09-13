@@ -6,6 +6,7 @@ import org.junit.Before
 import org.junit.BeforeClass
 import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.core.io.ClassPathResource
+import org.springframework.web.client.RestTemplate
 import se.inera.intyg.srs.controllers.TestController
 import se.inera.intyg.srs.persistence.Consent
 import se.inera.intyg.srs.persistence.Measure
@@ -83,11 +84,13 @@ open class BaseIntegrationTest {
                 models.contains("x9900v0"),
                 models.contains("x99v1"))
 
+
+    @Suppress("UNCHECKED_CAST")
     protected fun getIntyg(intygsId: String) =
-            restTemplate.getForObject(
-                    "/intyg/$intygsId",
-                    String::class.java
-            )
+        restTemplate.getForObject(
+                "/intyg/$intygsId",
+                List::class.java
+        ) as List<LinkedHashMap<String, Any>>
 
     protected fun getClasspathResourceAsString(fileName: String): String =
         ClassPathResource("integrationtest/$fileName").file.readText()
@@ -96,7 +99,7 @@ open class BaseIntegrationTest {
 
         private val baseURI = System.getProperty("integration.tests.baseUrl") ?: "http://localhost:8080"
 
-        private val restTemplate = RestTemplateBuilder().rootUri(baseURI).build()
+        val restTemplate: RestTemplate = RestTemplateBuilder().rootUri(baseURI).build()
 
         @BeforeClass
         @JvmStatic

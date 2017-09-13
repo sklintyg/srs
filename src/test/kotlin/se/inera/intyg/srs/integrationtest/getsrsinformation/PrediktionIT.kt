@@ -2,10 +2,10 @@ package se.inera.intyg.srs.integrationtest.getsrsinformation
 
 import com.jayway.restassured.RestAssured.given
 import com.jayway.restassured.http.ContentType
+import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
 import org.junit.Ignore
 import org.junit.Test
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.GetSRSInformationResponseType
 import se.inera.intyg.srs.controllers.TestController
 import se.inera.intyg.srs.integrationtest.BaseIntegrationTest
 import se.inera.intyg.srs.integrationtest.util.whenever
@@ -29,6 +29,7 @@ class PrediktionIT : BaseIntegrationTest() {
     }
 
     @Test
+    @Ignore("Osäkert om detta ska lösas inför piloten")
     fun testHighestVersionOfPredictionShouldBeUsed() {
         // Om två prediktionsfiler för samma diagnos finns ska den med högst
         // versionsnummer användas
@@ -78,8 +79,8 @@ class PrediktionIT : BaseIntegrationTest() {
         addDiagnosis(TestController.DiagnosisRequest("X99", 1.0, emptyList()))
         addDiagnosis(TestController.DiagnosisRequest("X9900", 1.0, emptyList()))
 
-        val response2 = sendPrediktionRequest("getPrediktion_Model2Request_output_0.77.xml", "X9900")
-        response2.assertThat()
+        val response = sendPrediktionRequest("getPrediktion_Model2Request_output_0.77.xml", "X9900")
+        response.assertThat()
                 .body("$PREDIKTION_ROOT.sannolikhet-overgransvarde", equalTo("0.77"))
                 .body("$PREDIKTION_ROOT.diagnosprediktionstatus", equalTo("OK"))
     }
@@ -107,25 +108,21 @@ class PrediktionIT : BaseIntegrationTest() {
     }
 
     @Test
-    @Ignore("Funktionalitet inte implementerat än (INTYG-4463)")
     fun testResultShouldBeSavedToDatabase() {
         // Kontrollera att Prediktionsresultat ska sparas i databasen tillsammans med
         // Intygs-ID
+        restTemplate.delete("/intyg")
+        setModels("x99v0")
+        addDiagnosis(TestController.DiagnosisRequest("X99", 1.0, emptyList()))
 
-        //val response =
-            given()
-                .contentType(ContentType.XML)
-                .body(getClasspathResourceAsString("prediktion/getPrediktionRequest.xml")
-                        .replace("diagnosis_placeholder", "FINNSINTE")
-                        .replace("intygsid_placeholder", "testid"))
-            .whenever()
-                .post("/services/getsrs")
-            .then()
-                .extract().response().`as`(GetSRSInformationResponseType::class.java)
+        sendPrediktionRequest("getPrediktion_Model1Request_output_0.44.xml", "X999", "TestId")
 
-        /*val intyg = getIntyg("testid")
-        val riskkategori = response.bedomningsunderlag[0].prediktion.diagnosprediktion[0].risksignal.riskkategori
-        assertThat(riskkategori, equalTo(intyg.riskkategori))*/
+        getIntyg("TestId").first().let {
+            assertThat(it["diagnosis"] as String, equalTo("X99"))
+            assertThat(it["incommingDiagnosis"] as String, equalTo("X999"))
+            assertThat(it["probability"] as Double, equalTo(0.44))
+            assertThat(it["riskCategory"] as Int, equalTo(2))
+        }
     }
 
     @Test
