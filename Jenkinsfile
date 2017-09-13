@@ -28,16 +28,16 @@ stage('deploy') {
     }
 }
 
-//stage('restAssured') {
-//    node {
-//        try {
-//            shgradle "restAssuredTest -DbaseUrl=http://srs.inera.nordicmedtest.se/"
-//        } finally {
-//            publishHTML allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'web/build/reports/tests/restAssuredTest', \
-//                reportFiles: 'index.html', reportName: 'RestAssured results'
-//        }
-//    }
-//}
+stage('restAssured') {
+    node {
+        try {
+            shgradle "restAssuredTest -DbaseUrl=http://srs.inera.nordicmedtest.se/"
+        } finally {
+            publishHTML allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'web/build/reports/tests/restAssuredTest', \
+                reportFiles: 'index.html', reportName: 'RestAssured results'
+        }
+    }
+}
 
 stage('tag and upload') {
     node {
