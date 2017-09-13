@@ -80,10 +80,10 @@
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="personnummer" type="VARCHAR(255)">
+            <column name="personnummer" type="VARCHAR(14)">
                 <constraints nullable="false"/>
             </column>
-            <column name="vardgivare_id" type="VARCHAR(255)">
+            <column name="vardgivare_id" type="VARCHAR(36)">
                 <constraints nullable="false"/>q
             </column>
             <column name="skapat_tid" type="DATETIME">
@@ -105,7 +105,7 @@
             <column name="id" type="BIGINT">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="diagnosis_id" type="VARCHAR(255)">
+            <column name="diagnosis_id" type="VARCHAR(10)">
                 <constraints nullable="false"/>
             </column>
             <column name="prevalence" type="DOUBLE"/>
@@ -136,7 +136,7 @@
             <column name="prediction_id" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="default" type="boolean">
+            <column name="is_default" type="boolean">
                 <constraints nullable="false"/>
             </column>
             <column name="priority" type="INTEGER">
@@ -183,7 +183,7 @@
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="certificate_id" type="VARCHAR(255)">
+            <column name="certificate_id" type="VARCHAR(36)">
                 <constraints nullable="false"/>
             </column>
             <column name="probability" type="DOUBLE">
@@ -192,10 +192,10 @@
             <column name="risk_category" type="INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="incomming_diagnosis" type="VARCHAR(255)">
+            <column name="incomming_diagnosis" type="VARCHAR(10)">
                 <constraints nullable="false"/>
             </column>
-            <column name="diagnosis" type="VARCHAR(255)">
+            <column name="diagnosis" type="VARCHAR(10)">
                 <constraints nullable="false"/>
             </column>
         </createTable>

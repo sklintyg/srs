@@ -77,12 +77,14 @@ class BootstrapData {
                         responseRepo.save(PredictionResponse(2, "Arbetslös", "unemp", false, 2)),
                         responseRepo.save(PredictionResponse(3, "Föräldraledig", "p.leave", false, 3)),
                         responseRepo.save(PredictionResponse(4, "Studerar", "stud", false, 4)))))
+
         val question02 = questionRepo.save(PredictionQuestion(2,
                 "Påbörjades det pågående sjukskrivningsfallet inom primärvården?",
                 "Sjukskrevs du från primärvården i början av fallet?",
                 "NoCareAtStart",
                 listOf(responseRepo.save(PredictionResponse(5, "Ja", "NoCareAtStart", true, 1)),
                         responseRepo.save(PredictionResponse(6, "Nej", "CareAtStart", false, 2)))))
+
         val question03 = questionRepo.save(PredictionQuestion(3,
                 "Tidigare sjukskrivning",
                 "Ungefär hur många dagar har du varit sjukskriven under de senaste 12 månaderna. (Alternativ formulering: Om du tänker tillbaka till juni förra året, ungefär hur många dagar har du varit sjukskriven sedan dess?) (dvs specificera samma månad som besöket sker)",
@@ -91,24 +93,28 @@ class BootstrapData {
                         responseRepo.save(PredictionResponse(8, "15-90 dagar", "(0,90]", false, 2)),
                         responseRepo.save(PredictionResponse(9, "91-180", "(90,180]", false, 3)),
                         responseRepo.save(PredictionResponse(10, "181-365", "(180,366]", false, 4)))))
+
         val question04 = questionRepo.save(PredictionQuestion(4,
                 "Högsta utbildningsnivå",
                 "Har du gått på universitet eller högskola? (inklusive ha gått kurser)",
                 "edu_cat_fct",
                 listOf(responseRepo.save(PredictionResponse(11, "Ja", "XXXXXXXXX", false, 1)),
                         responseRepo.save(PredictionResponse(12, "Nej", "XXXXXXXXX", true, 2)))))
+
         val question05 = questionRepo.save(PredictionQuestion(5,
                 "Läkarbesök, sjukhus senaste 12 månaderna - ej PV",
                 "Har du haft mer än ett läkarbesök utanför primärvården de senaste 12 månaderna? (t.ex. på sjukhus)",
                 "Visits_yearBefore_all_r1_median",
                 listOf(responseRepo.save(PredictionResponse(13, "Ja", "XXXXXXXXX", false, 1)),
                         responseRepo.save(PredictionResponse(14, "Nej", "XXXXXXXXX", true, 2)))))
+
         val question06 = questionRepo.save(PredictionQuestion(6,
                 "Född i Sv",
                 "Är du född i Sverige?",
                 "birth_cat_fct",
                 listOf(responseRepo.save(PredictionResponse(15, "Ja", "XXXXXXXXX", true, 1)),
                         responseRepo.save(PredictionResponse(16, "Nej", "XXXXXXXXX", false, 2)))))
+
         val question07 = questionRepo.save(PredictionQuestion(7,
                 "Grad av sjukskrivning tidigare i fallet?",
                 "Var du först sjukskriven på hel- eller deltid i det här fallet?",
@@ -117,24 +123,28 @@ class BootstrapData {
                         responseRepo.save(PredictionResponse(18, "75%", "0.75", false, 2)),
                         responseRepo.save(PredictionResponse(19, "50%", "0.5", false, 3)),
                         responseRepo.save(PredictionResponse(20, "25%", "0.25", false, 4)))))
+
         val question08 = questionRepo.save(PredictionQuestion(8,
                 "Samsjuklighet",
                 "Hur många andra långvariga sjukdomar har du?",
                 "comorbidity",
                 listOf(responseRepo.save(PredictionResponse(21, "0 eller 1", "no", true, 1)),
                         responseRepo.save(PredictionResponse(22, "2 eller fler", "yes", false, 2)))))
+
         val question09 = questionRepo.save(PredictionQuestion(9,
                 "Partiell sjuk- eller aktivitetsersättning",
                 "Har du deltids förtidspension (sjukersättning alt aktivitetsersättning) nu?",
                 "DP_atStart",
                 listOf(responseRepo.save(PredictionResponse(23, "Nej", "0", true, 1)),
                         responseRepo.save(PredictionResponse(24, "Ja", "1", false, 2)))))
+
         val question10 = questionRepo.save(PredictionQuestion(10,
                 "Inlagd sjukhus",
                 "Har du varit inlagd på sjukhus mer än en dag de senaste 12 månaderna? (räkna ej pga okomplicerad förlossning)",
                 "Vtid_yearBefore_all_r1_median",
                 listOf(responseRepo.save(PredictionResponse(25, "Nej", "XXXXXXXXX", true, 1)),
                         responseRepo.save(PredictionResponse(26, "Ja", "XXXXXXXXX", false, 2)))))
+
         val question11 = questionRepo.save(PredictionQuestion(11,
                 "Familjesituation",
                 "Är du ensamstående (Alt:  är du sambo/gift)?",

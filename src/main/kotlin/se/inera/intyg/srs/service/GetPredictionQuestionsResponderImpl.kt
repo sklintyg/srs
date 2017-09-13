@@ -28,7 +28,7 @@ class GetPredictionQuestionsResponderImpl(val diagnosisRepo: DiagnosisRepository
                     val outboundResponse = Svarsalternativ()
                     outboundResponse.svarsid = BigInteger.valueOf(savedResponse.id)
                     outboundResponse.svarsidSrs = savedResponse.predictionId
-                    outboundResponse.isDefault = savedResponse.default
+                    outboundResponse.isDefault = savedResponse.isDefault
                     outboundResponse.prioritet = BigInteger.valueOf(savedResponse.priority.toLong())
                     outboundResponse.svarstext = savedResponse.answer
                     outboundQuestion.svarsalternativ.add(outboundResponse)

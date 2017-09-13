@@ -8,7 +8,7 @@ class PredictionResponse(@Id
                          val id: Long,
                          val answer: String,
                          val predictionId: String,
-                         val default: Boolean,
+                         val isDefault: Boolean,
                          val priority: Int) {
 
 }

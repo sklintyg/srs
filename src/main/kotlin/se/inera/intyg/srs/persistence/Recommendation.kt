@@ -2,12 +2,12 @@ package se.inera.intyg.srs.persistence
 
 import javax.persistence.Entity
 import javax.persistence.Id
-import javax.persistence.*
+import javax.persistence.Column
 
 @Entity
 class Recommendation(@Id
                      val id: Long,
-                     @Column(name = "recommendation_text", columnDefinition = "clob")
+                     @Column(name = "recommendation_text", columnDefinition = "text")
                      val recommendationText: String) {
 
     override fun toString() =
