@@ -9,8 +9,10 @@
   file:
     state: directory
     path: "{{ app_resources_folder }}"
+    owner: "{{ tomcat_user }}"
 
 - name: Copy application resources
   copy:
     src: "{{ app_resources_src }}"
     dest: "{{ app_resources_folder }}"
+    owner: "{{ tomcat_user }}"

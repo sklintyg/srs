@@ -27,6 +27,7 @@ app_resources_src: "{{ playbook_dir }}/../src/main/resources/"
 app_resources_folder: "{{ inera_root }}/{{ inventory_hostname }}-resources"
 
 # Tomcat installation
+tomcat_user: inera-tomcat
 tomcat_service: "{{ inventory_hostname }}-tomcat"
 inera_tomcat_folder: "{{ inera_root }}/{{ tomcat_service }}"
 
