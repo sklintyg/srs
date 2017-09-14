@@ -2,14 +2,16 @@ package se.inera.intyg.srs.service
 
 import org.apache.logging.log4j.LogManager
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.scheduling.annotation.EnableScheduling
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import se.inera.intyg.srs.persistence.InternalStatistic
 import se.inera.intyg.srs.persistence.StatisticRepository
-import java.nio.file.*
+import java.io.File
+import java.nio.file.Files
+import java.nio.file.Path
 import java.nio.file.attribute.BasicFileAttributes
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -50,7 +52,9 @@ class StatisticsFileUpdateService(@Value("\${statistics.image.dir}") val imageDi
         val dbEntries: List<InternalStatistic> = repo.findAll().toList()
         val diskEntries = ArrayList<String>()
 
-        Files.walk(Paths.get(imageDir))
+        File(imageDir).walk()
+                .map { it.toPath() }
+                .filterNotNull()
                 .filter { file -> isRequiredFileType(file) && isVaildFileName(file) }
                 .forEach { file ->
                     val fileName = fixFileName(file)
@@ -79,7 +83,7 @@ class StatisticsFileUpdateService(@Value("\${statistics.image.dir}") val imageDi
         }
     }
 
-    private fun fixFileName(file: Path?): String = file?.fileName.toString().dropLast(4)
+    private fun fixFileName(file: Path): String = file.fileName.toString().dropLast(4)
 
     private fun isVaildFileName(file: Path): Boolean = fileNameRegex.matches(fixFileName(file))
 
