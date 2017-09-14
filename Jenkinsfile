@@ -1,3 +1,5 @@
+#!groovy
+
 def buildVersion = "1.0.${BUILD_NUMBER}"
 
 stage('checkout') {
