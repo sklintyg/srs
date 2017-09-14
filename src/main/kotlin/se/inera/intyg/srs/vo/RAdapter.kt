@@ -2,10 +2,13 @@ package se.inera.intyg.srs.vo
 
 import org.apache.logging.log4j.LogManager
 import org.rosuda.JRI.Rengine
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Diagnosprediktionstatus
 import se.inera.intyg.srs.service.ModelFileUpdateService
+import java.io.File
+import java.io.BufferedReader
 import java.util.*
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
@@ -14,7 +17,7 @@ import kotlin.concurrent.withLock
 
 @Configuration
 @Profile("runtime")
-class RAdapter(val modelService: ModelFileUpdateService) : PredictionAdapter {
+class RAdapter(val modelService: ModelFileUpdateService, @Value("\${r.log.file.path}") val rLogFilePath: String) : PredictionAdapter {
     private val MIN_ID_POSITIONS = 3
     private val MAX_ID_POSITIONS = 5
 
@@ -28,10 +31,7 @@ class RAdapter(val modelService: ModelFileUpdateService) : PredictionAdapter {
 
         // Turn on logging from R
         Rengine.DEBUG = 1
-        val filepath = "/tmp/r-log"
-        rengine.eval("log<-file('$filepath')")
-        rengine.eval("sink(log, append=TRUE)")
-        rengine.eval("sink(log, append=TRUE, type='message')")
+        startRLogging()
 
         // Load required library pch
         rengine.eval("library(pch)")
@@ -40,6 +40,30 @@ class RAdapter(val modelService: ModelFileUpdateService) : PredictionAdapter {
     @PreDestroy
     fun shutdown() {
         rengine.end()
+    }
+
+    private fun startRLogging() {
+        rengine.eval("log<-file('$rLogFilePath')")
+        rengine.eval("sink(log, append=FALSE)")
+        rengine.eval("sink(log, append=FALSE, type='message')")
+    }
+
+    // INTYG-4481: In case of execution error in R: append log contents to main log.
+    // Then clear out old R log, by closing and then reopening log file with append disabled.
+    private fun wipeRLogFileAndReportError() {
+        rengine.eval("sink(file = NULL)")
+        rengine.eval("close(log)")
+        val logtext = File(rLogFilePath).bufferedReader().use(BufferedReader::readText)
+        log.error("""
+            |Error occurred in R execution.
+            |See the dump below from the R log for details:
+            |---------R LOG BEGIN---------
+            """.trimMargin()
+                .plus("\n")
+                .plus(logtext)
+                .plus("\n----------R LOG END----------"))
+
+        startRLogging()
     }
 
     override fun getPrediction(person: Person, diagnosis: Diagnosis, extraParams: Map<String, String>): Prediction {
@@ -77,7 +101,7 @@ class RAdapter(val modelService: ModelFileUpdateService) : PredictionAdapter {
                 log.info("Successful prediction, result: " + rOutput.asDouble())
                 Prediction(model.diagnosis, rOutput.asDouble(), status)
             } else {
-                log.error("An error occurred during execution of the prediction model.")
+                wipeRLogFileAndReportError()
                 Prediction(diagnosis.code, null, Diagnosprediktionstatus.NOT_OK)
             }
         }
