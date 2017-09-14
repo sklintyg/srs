@@ -35,7 +35,7 @@ stage('restAssured') {
         try {
             shgradle "restAssuredTest -DbaseUrl=http://srs.inera.nordicmedtest.se/"
         } finally {
-            publishHTML allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'web/build/reports/tests/restAssuredTest', \
+            publishHTML allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'build/reports/tests/restAssuredTest', \
                 reportFiles: 'index.html', reportName: 'RestAssured results'
         }
     }
