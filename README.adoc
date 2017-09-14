@@ -50,11 +50,9 @@ In schemas/intyg/clinicalprocess-healthcond-srs:
  ./gradlew clean build install
 
 
-=== Copy models to /opt
+=== R models 
 
-For now, the model files used by R are hard-coded to be found in '/opt/models'. Therefore, copy the directory 'models' (in this repo) and its
-contents to '/opt'.
-
+R models for testing purposes are checked-in into version control, and can be found at srs/src/main/resources/model.
 
 === Building and running the application
 
@@ -75,6 +73,24 @@ The 'runtime' profile is necessary to make sure that a real connection to the R 
 There is a SoapUI in the project repository which can be used to fire test messages at the application once it's running. Import the file
 soapui/GetSRSInformation-soapui-project.xml into your SoapUI and try it.
 
+== Run with docker (with pre-installed java and R)
+To run with docker, first build schemas according to instructions above, then use the following commands:
+
+host
+----
+./gradlew clean build
+docker run -it -p 8080:8080 -v <complete_path_to_srs_folder_in_host_os>:/srs --entrypoint=/bin/bash jaehyeon/r-java
+----
+
+container
+----
+/usr/bin/R
+install.packages("pch")
+quit()
+y
+cd /srs
+R_HOME=/usr/lib/R java -Djava.library.path="/usr/local/lib/R/site-library/rJava/jri" -Dsrs.resources.folder="/srs/src/main/resources" -jar build/libs/*.war --spring.profiles.active=runtime
+----
 
 == H2
 
