@@ -6,7 +6,6 @@ import javax.persistence.*
 
 @Entity
 class InternalStatistic(val diagnosisId: String,
-                        @Column(length = 400)
                         var pictureUrl: String,
                         @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
                         var timestamp: LocalDateTime,
