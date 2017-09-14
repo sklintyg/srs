@@ -76,13 +76,15 @@ soapui/GetSRSInformation-soapui-project.xml into your SoapUI and try it.
 == Run with docker (with pre-installed java and R)
 To run with docker, first build schemas according to instructions above, then use the following commands:
 
-host
+1) host, from srs directory
+
 ----
 ./gradlew clean build
 docker run -it -p 8080:8080 -v <complete_path_to_srs_folder_in_host_os>:/srs --entrypoint=/bin/bash jaehyeon/r-java
 ----
 
-container
+2) container
+
 ----
 /usr/bin/R
 install.packages("pch")
