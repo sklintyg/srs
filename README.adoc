@@ -62,10 +62,11 @@ Now that the dependencies are taken care of, we build the application as usual:
 
 To run the application run the following, substituting your values for R_HOME and java.library.path:
 
- R_HOME=/Library/Frameworks/R.framework/Resources java -Djava.library.path="/Library/Frameworks/R.framework/Resources/library/rJava/jri" -Dsrs.resources.folder="[SRS-project]/src/main/resources" -jar build/libs/*.war --spring.profiles.active=runtime
+ R_HOME=/Library/Frameworks/R.framework/Resources java -Djava.library.path="/Library/Frameworks/R.framework/Resources/library/rJava/jri" -Dsrs.resources.folder="[SRS-project]/src/main/resources" -jar build/libs/*.war --spring.profiles.active=runtime,it
 
 Replace [SRS-project] with your local SRS-project directory
 The 'runtime' profile is necessary to make sure that a real connection to the R engine is created.
+The 'it' profile is needed to enable the testability api (used in restAssured integration tests).
 
 
 === SoapUI
@@ -80,18 +81,22 @@ To run with docker, first build schemas according to instructions above, then us
 
 ----
 ./gradlew clean build
-docker run -it -p 8080:8080 -v <complete_path_to_srs_folder_in_host_os>:/srs --entrypoint=/bin/bash jaehyeon/r-java
+docker run -it -e TZ=Europe/Stockholm -p 8080:8080 -v <complete_path_to_srs_folder_in_host_os>:/srs --entrypoint=/bin/bash jaehyeon/r-java
 ----
+
+Note that the timezone environment variable is required due to integrations tests that make an assumption that the timezone host and the container is the same. If timezone of the host is not Europe/Stockholm, change the timezone variable accordingly.
+
 
 2) container
 
 ----
 /usr/bin/R
 install.packages("pch")
+40
 quit()
-y
+n
 cd /srs
-R_HOME=/usr/lib/R java -Djava.library.path="/usr/local/lib/R/site-library/rJava/jri" -Dsrs.resources.folder="/srs/src/main/resources" -jar build/libs/*.war --spring.profiles.active=runtime
+R_HOME=/usr/lib/R java -Djava.library.path="/usr/local/lib/R/site-library/rJava/jri" -Dsrs.resources.folder="/srs/src/main/resources" -jar build/libs/*.war --spring.profiles.active=runtime,it
 ----
 
 == H2
