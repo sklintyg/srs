@@ -51,8 +51,9 @@ class RAdapter(val modelService: ModelFileUpdateService, @Value("\${r.log.file.p
     // INTYG-4481: In case of execution error in R: append log contents to main log.
     // Then clear out old R log, by closing and then reopening log file with append disabled.
     private fun wipeRLogFileAndReportError() {
+        /*The R statement below somehow implicitely closes the log file (closing it again causes segfault). Someone with
+          R experience should confirm this, in order to make sure we don't leak resources (file pointers).*/
         rengine.eval("sink(file = NULL)")
-        rengine.eval("close(log)")
         val logtext = File(rLogFilePath).bufferedReader().use(BufferedReader::readText)
         log.error("""
             |Error occurred in R execution.
