@@ -6,11 +6,14 @@ import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Diagno
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Diagnosprediktionstatus
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Prediktion
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Risksignal
+
+import se.inera.intyg.srs.service.monitoring.logPrediction
 import se.inera.intyg.srs.persistence.DiagnosisRepository
 import se.inera.intyg.srs.persistence.PredictionDiagnosis
 import se.inera.intyg.srs.persistence.Probability
 import se.inera.intyg.srs.persistence.ProbabilityRepository
-import se.inera.intyg.srs.service.monitoring.logPrediction
+import se.inera.intyg.srs.util.getModelForDiagnosis
+
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.Diagnos
 import java.math.BigInteger
 
@@ -42,16 +45,21 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
             val diagnosPrediktion = Diagnosprediktion()
             diagnosPrediktion.inkommandediagnos = originalDiagnosis(incomingDiagnosis)
 
-            val calculatedPrediction = rAdapter.getPrediction(person, incomingDiagnosis, extraParams)
-            diagnosPrediktion.diagnosprediktionstatus = calculatedPrediction.status
+            var calculatedPrediction: Prediction? = null
+            val diagnosis = diagnosisRepo.getModelForDiagnosis(incomingDiagnosis.code)
 
-            val diagnosis = diagnosisRepo.findOneByDiagnosisId(calculatedPrediction.diagnosis)
+            if (diagnosis != null && isCorrectPredictionParamsAgainstDiagnosis(diagnosis, extraParams)) {
+                calculatedPrediction = rAdapter.getPrediction(person, incomingDiagnosis, extraParams)
+                diagnosPrediktion.diagnosprediktionstatus = calculatedPrediction.status
+            } else {
+                diagnosPrediktion.diagnosprediktionstatus = Diagnosprediktionstatus.NOT_OK
+            }
 
             val riskSignal = Risksignal()
             diagnosPrediktion.risksignal = riskSignal
-
-            if ((calculatedPrediction.status == Diagnosprediktionstatus.OK ||
-                    calculatedPrediction.status == Diagnosprediktionstatus.DIAGNOSKOD_PA_HOGRE_NIVA) && diagnosis != null) {
+            if (diagnosis != null && calculatedPrediction != null &&
+                    (calculatedPrediction.status == Diagnosprediktionstatus.OK ||
+                    calculatedPrediction.status == Diagnosprediktionstatus.DIAGNOSKOD_PA_HOGRE_NIVA)) {
                 val outgoingDiagnosis = Diagnos()
                 outgoingDiagnosis.codeSystem = incomingDiagnosis.codeSystem
                 outgoingDiagnosis.code = calculatedPrediction.diagnosis
@@ -65,14 +73,60 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
             } else {
                 riskSignal.riskkategori = BigInteger.ONE
             }
+
             riskSignal.beskrivning = categoryDescriptions[riskSignal.riskkategori]
-            logPrediction(extraParams, diagnosPrediktion.diagnos.code, diagnosis?.prevalence?.toString() ?: "", person.sex.name,
-                    person.ageCategory, calculatedPrediction.prediction?.toString() ?: "", riskSignal.riskkategori.intValueExact(),
-                    calculatedPrediction.status.toString())
+
+            logPrediction(extraParams, diagnosPrediktion.diagnos?.code ?: "", diagnosis?.prevalence?.toString() ?: "", person.sex.name,
+                    person.ageCategory, calculatedPrediction?.prediction?.toString() ?: "", riskSignal.riskkategori.intValueExact(),
+                    calculatedPrediction?.status?.toString() ?: "")
 
             outgoingPrediction.diagnosprediktion.add(diagnosPrediktion)
         }
         return outgoingPrediction
+    }
+
+    private fun isCorrectPredictionParamsAgainstDiagnosis(diagnosis: PredictionDiagnosis, extraParams: Map<String,
+            String>): Boolean {
+        val diagnosisFromRepo = diagnosisRepo.findOneByDiagnosisId(diagnosis.diagnosisId) ?: return false
+
+
+        val inc = HashMap<String, String>()
+        extraParams.filter { it.key != "Region" }.map { inc.put(it.key, it.value) }
+
+        val req = HashMap<String, List<String>>()
+        diagnosisFromRepo.questions.forEach {
+            req.put(it.question.predictionId, it.question.answers.map { it.predictionId })
+        }
+
+        val validation = isCorrectQuestionsAndAnswers(inc, req)
+        if (!validation.first) {
+            log.error("Missing mandatory prediction parameters for ${diagnosisFromRepo.diagnosisId}: " +
+                    "${validation.second}")
+            return false
+        }
+        return true
+    }
+
+    private fun isCorrectQuestionsAndAnswers(inc: HashMap<String, String>, req: HashMap<String, List<String>>) :
+            Pair<Boolean, List<String>> {
+        val errorList: MutableList<String> = ArrayList()
+
+        if (!inc.keys.containsAll(req.keys)) {
+            req.keys.filter { !inc.keys.contains(it) }.toCollection(errorList)
+        }
+
+        inc.forEach {
+            if (req[it.key] != null && !req[it.key]!!.contains(it.value)) {
+                errorList.add("Incorrect answer: ${it.value} for question: ${it.key}")
+            }
+        }
+
+        return if (errorList.isEmpty()) {
+            Pair(true, errorList)
+        } else {
+            Pair(false, errorList)
+        }
+
     }
 
     private fun persistProbability(diagnosPrediction: Diagnosprediktion, certificateId: String) {

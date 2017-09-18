@@ -1,6 +1,7 @@
 package se.inera.intyg.srs.service
 
 import org.apache.cxf.annotations.SchemaValidation
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import se.inera.intyg.clinicalprocess.healthcond.srs.getpredictionquestions.v1.GetPredictionQuestionsRequestType
 import se.inera.intyg.clinicalprocess.healthcond.srs.getpredictionquestions.v1.GetPredictionQuestionsResponderInterface
@@ -8,20 +9,16 @@ import se.inera.intyg.clinicalprocess.healthcond.srs.getpredictionquestions.v1.G
 import se.inera.intyg.clinicalprocess.healthcond.srs.getpredictionquestions.v1.Prediktionsfraga
 import se.inera.intyg.clinicalprocess.healthcond.srs.getpredictionquestions.v1.Svarsalternativ
 import se.inera.intyg.srs.persistence.DiagnosisRepository
-import se.inera.intyg.srs.persistence.PredictionDiagnosis
+import se.inera.intyg.srs.util.getModelForDiagnosis
 import java.math.BigInteger
-import java.util.*
 
 @Service
 @SchemaValidation(type = SchemaValidation.SchemaValidationType.BOTH)
-class GetPredictionQuestionsResponderImpl(val diagnosisRepo: DiagnosisRepository) : GetPredictionQuestionsResponderInterface {
-
-    private val MAX_ID_POSITIONS: Int = 5
-    private val MIN_ID_POSITIONS: Int = 3
+class GetPredictionQuestionsResponderImpl(@Autowired val diagnosisRepository: DiagnosisRepository) : GetPredictionQuestionsResponderInterface {
 
     override fun getPredictionQuestions(request: GetPredictionQuestionsRequestType): GetPredictionQuestionsResponseType {
         val response = GetPredictionQuestionsResponseType()
-        val diagnosis = getModelForDiagnosis(request.diagnos.code) ?: return response
+        val diagnosis = diagnosisRepository.getModelForDiagnosis(request.diagnos.code) ?: return response
 
         diagnosis.questions.forEach { savedQuestion ->
             val outboundQuestion = Prediktionsfraga()
@@ -43,23 +40,4 @@ class GetPredictionQuestionsResponderImpl(val diagnosisRepo: DiagnosisRepository
         }
         return response
     }
-
-    private fun getModelForDiagnosis(diagnosisId: String): PredictionDiagnosis? {
-        var currentId = cleanDiagnosisCode(diagnosisId)
-
-        if (currentId.length > MAX_ID_POSITIONS) {
-            return null
-        }
-
-        while (currentId.length >= MIN_ID_POSITIONS) {
-            val diagnosis = diagnosisRepo.findOneByDiagnosisId(currentId)
-            if (diagnosis != null) {
-                return diagnosis
-            }
-            currentId = currentId.substring(0, currentId.length - 1)
-        }
-        return null
-    }
-
-    private fun cleanDiagnosisCode(diagnosisId: String): String = diagnosisId.toUpperCase(Locale.ENGLISH).replace(".", "")
 }

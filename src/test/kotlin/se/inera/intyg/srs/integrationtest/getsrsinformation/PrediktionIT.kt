@@ -8,6 +8,7 @@ import org.junit.Test
 import se.inera.intyg.srs.controllers.TestController
 import se.inera.intyg.srs.integrationtest.BaseIntegrationTest
 import se.inera.intyg.srs.integrationtest.util.whenever
+import se.inera.intyg.srs.persistence.PredictionResponse
 
 class PrediktionIT : BaseIntegrationTest() {
 
@@ -43,12 +44,13 @@ class PrediktionIT : BaseIntegrationTest() {
     @Test
     fun testShouldPickUpChangedModelFiles() {
         setModels() // Removes all models
+        addDiagnosis(TestController.DiagnosisRequest("X99", 1.0, emptyList()))
+
         val response1 = sendPrediktionRequest("getPrediktion_Model1Request_output_0.89.xml", "X99")
         response1.assertThat()
                 .body("$PREDIKTION_ROOT.diagnosprediktionstatus", equalTo("PREDIKTIONSMODELL_SAKNAS"))
 
         setModels("x99v0")
-        addDiagnosis(TestController.DiagnosisRequest("X99", 1.0, emptyList()))
 
         val response2 = sendPrediktionRequest("getPrediktion_Model1Request_output_0.89.xml", "X99")
         response2.assertThat()
@@ -96,7 +98,19 @@ class PrediktionIT : BaseIntegrationTest() {
         // anges.
         // TODO: Ett mer beskrivande felmeddelande hade varit bättre än bara "NOT_OK".
         setModels("x99v0")
-        addDiagnosis(TestController.DiagnosisRequest("X99", 1.0, emptyList()))
+        addDiagnosis(TestController.DiagnosisRequest("X99", 1.0,
+                listOf(
+                        TestController.PredictionQuestion("Question", "SA_1_gross", "Help text",
+                                listOf(
+                                        TestController.PredictionResponse("SA_1_gross", "0", true),
+                                        TestController.PredictionResponse("SA_1_gross", "1", true)
+                                        )),
+                        TestController.PredictionQuestion("Question", "DP_atStart", "Help text",
+                                listOf(
+                                        TestController.PredictionResponse("DP_atStart", "true", true),
+                                        TestController.PredictionResponse("DP_atStart", "false", true)
+                                )
+                ))))
 
         sendPrediktionRequest("getPrediktion_Model1Request_missingParams.xml", "X99")
                 .assertThat()
