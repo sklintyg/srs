@@ -8,6 +8,7 @@ build/
 /eclipse-build/
 out/
 *.iml
+logs/
 
 # Test model files generated during IT
 *X99*.RData 

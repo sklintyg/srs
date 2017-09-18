@@ -2,12 +2,23 @@
 <Configuration status="WARN">
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
+            <MarkerFilter marker="MONITORING" onMatch="DENY" onMismatch="ACCEPT"/>
             <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
         </Console>
+        <RollingFile name="MonitoringRollingFile" fileName="logs/monitoring.csv"
+            filePattern="logs/monitoring-%d{MM-dd-yyyy}.csv.gz">
+            <MarkerFilter marker="MONITORING" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout>
+                <header>timestamp,diagnosisCode,prevalence,prediction,predictionLevel,region,sex,ageCategory,SA_SyssStart_fct,NoCareAtStart,SA_1_gross,edu_cat_fct,Visits_yearBefore_all,birth_cat_fct,SA_ExtentFirst,comorbidity,DP_atStart,Vtid_yeahBefore_all_r1_Median,fam_cat_4_cat_fct,statusCode\n</header>
+                <pattern>%d{HH:mm:ss.SSS},%msg%n</pattern>
+            </PatternLayout>
+            <TimeBasedTriggeringPolicy />
+        </RollingFile>
     </Appenders>
     <Loggers>
         <Root level="debug">
             <AppenderRef ref="Console"/>
+            <AppenderRef ref="MonitoringRollingFile"/>
         </Root>
     </Loggers>
 </Configuration>

@@ -10,6 +10,7 @@ import se.inera.intyg.srs.persistence.DiagnosisRepository
 import se.inera.intyg.srs.persistence.PredictionDiagnosis
 import se.inera.intyg.srs.persistence.Probability
 import se.inera.intyg.srs.persistence.ProbabilityRepository
+import se.inera.intyg.srs.service.monitoring.logPrediction
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.Diagnos
 import java.math.BigInteger
 
@@ -65,6 +66,9 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
                 riskSignal.riskkategori = BigInteger.ONE
             }
             riskSignal.beskrivning = categoryDescriptions[riskSignal.riskkategori]
+            logPrediction(extraParams, diagnosPrediktion.diagnos.code, diagnosis?.prevalence?.toString() ?: "", person.sex.name,
+                    person.ageCategory, calculatedPrediction.prediction?.toString() ?: "", riskSignal.riskkategori.intValueExact(),
+                    calculatedPrediction.status.toString())
 
             outgoingPrediction.diagnosprediktion.add(diagnosPrediktion)
         }
