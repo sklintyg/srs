@@ -91,7 +91,7 @@ class StatisticsFileUpdateService(@Value("\${statistics.image.dir}") val imageDi
 
     private fun cleanDiagnosisCode(diagnosisId: String): String = diagnosisId.toUpperCase(Locale.ENGLISH).replace(".", "")
 
-    private fun getModifiedTime(file: Path?): LocalDateTime {
+    private fun getModifiedTime(file: Path): LocalDateTime {
         return LocalDateTime.ofInstant(
                 Files.readAttributes(file, BasicFileAttributes::class.java)
                         .lastModifiedTime().toInstant(), ZoneId.systemDefault())

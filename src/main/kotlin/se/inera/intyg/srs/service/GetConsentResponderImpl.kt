@@ -1,13 +1,11 @@
 package se.inera.intyg.srs.service
 
 import org.apache.logging.log4j.LogManager
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import se.inera.intyg.clinicalprocess.healthcond.srs.getconsent.v1.GetConsentRequestType
 import se.inera.intyg.clinicalprocess.healthcond.srs.getconsent.v1.GetConsentResponderInterface
 import se.inera.intyg.clinicalprocess.healthcond.srs.getconsent.v1.GetConsentResponseType
 import se.inera.intyg.clinicalprocess.healthcond.srs.getconsent.v1.Samtyckesstatus
-
 import se.inera.intyg.srs.vo.ConsentModule
 
 @Service
