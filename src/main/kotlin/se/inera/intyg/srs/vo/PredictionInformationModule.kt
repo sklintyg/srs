@@ -87,24 +87,19 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
 
     private fun isCorrectPredictionParamsAgainstDiagnosis(diagnosis: PredictionDiagnosis, extraParams: Map<String,
             String>): Boolean {
-        val diagnosisFromRepo = diagnosisRepo.findOneByDiagnosisId(diagnosis.diagnosisId) ?: return false
-
-
         val inc = HashMap<String, String>()
         extraParams.filter { it.key != "Region" }.map { inc.put(it.key, it.value) }
 
         val req = HashMap<String, List<String>>()
-        diagnosisFromRepo.questions.forEach {
+
+        diagnosis.questions.forEach {
             req.put(it.question.predictionId, it.question.answers.map { it.predictionId })
         }
-
-        val validation = isCorrectQuestionsAndAnswers(inc, req)
-        if (!validation.first) {
-            log.error("Missing mandatory prediction parameters for ${diagnosisFromRepo.diagnosisId}: " +
-                    "${validation.second}")
-            return false
+        val (isOk, errorList) = isCorrectQuestionsAndAnswers(inc, req)
+        if (!isOk) {
+            log.error("Missing mandatory prediction parameters for ${diagnosis.diagnosisId}: $errorList")
         }
-        return true
+        return isOk
     }
 
     private fun isCorrectQuestionsAndAnswers(inc: HashMap<String, String>, req: HashMap<String, List<String>>) :
