@@ -53,11 +53,12 @@ Now that the dependencies are taken care of, we build the application as usual:
 
 To run the application run the following, substituting your values for R_HOME and java.library.path:
 
- R_HOME=/Library/Frameworks/R.framework/Resources java -Djava.library.path="/Library/Frameworks/R.framework/Resources/library/rJava/jri" -Dsrs.resources.folder="[SRS-project]/src/main/resources" -jar build/libs/*.war --spring.profiles.active=runtime,it
+ R_HOME=/Library/Frameworks/R.framework/Resources java -Djava.library.path="/Library/Frameworks/R.framework/Resources/library/rJava/jri" -Dsrs.resources.folder="[SRS-project]/src/main/resources" -jar build/libs/*.war --spring.profiles.active=runtime,it,bootstrap
 
 Replace [SRS-project] with your local SRS-project directory
 The 'runtime' profile is necessary to make sure that a real connection to the R engine is created.
 The 'it' profile is needed to enable the testability api (used in restAssured integration tests).
+The 'bootstrap' profile ensures the application is bootstrapped with example data at startup.
 
 
 === SoapUI

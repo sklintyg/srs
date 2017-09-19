@@ -21,7 +21,7 @@ import se.inera.intyg.srs.persistence.ResponseRepository
 import se.inera.intyg.srs.persistence.StatisticRepository
 
 @Configuration
-@Profile("runtime")
+@Profile("bootstrap")
 class BootstrapData {
 
     @Bean
