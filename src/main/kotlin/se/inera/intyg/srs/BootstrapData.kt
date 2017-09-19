@@ -39,7 +39,7 @@ class BootstrapData {
         val recommendation08 = recommendationRepo.save(Recommendation(8, "remiss till behandling med rTMS"))
         val recommendation09 = recommendationRepo.save(Recommendation(9, "Remiss till Internetförmedlad KBT via Internetbaserat stöd och behandling"))
         val recommendation10 = recommendationRepo.save(Recommendation(10, "SSRI-läkemedel"))
-        val recommendation11 = recommendationRepo.save(Recommendation(11, "partiell sjukskrivning"))
+        val recommendation11 = recommendationRepo.save(Recommendation(11, "partiell sjukskrivning ".repeat(16)))
         val recommendation12 = recommendationRepo.save(Recommendation(12, "FaR med regelbunden styrketräning för att förebygger nya besvär"))
 
         measureRepo.save(Measure(1, "F43.8A", "Utmattningssyndrom", "1.0",
