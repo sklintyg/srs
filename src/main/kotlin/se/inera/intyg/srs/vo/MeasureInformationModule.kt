@@ -11,7 +11,7 @@ import se.inera.intyg.srs.persistence.Measure
 import se.inera.intyg.srs.persistence.MeasureRepository
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.Diagnos
 import java.math.BigInteger
-import java.util.*
+import java.util.Locale
 
 @Service
 class MeasureInformationModule(val measureRepo: MeasureRepository) : InformationModule<Atgardsrekommendationer> {

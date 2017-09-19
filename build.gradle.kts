@@ -9,6 +9,7 @@ plugins {
     id("se.inera.intyg.plugin.common") version "1.0.45"
     id("org.springframework.boot") version "1.5.6.RELEASE"
     id("org.ajoberstar.grgit") version "2.0.0"
+    id("org.jlleitschuh.gradle.ktlint") version "2.1.1"
 }
 
 group = "se.inera.intyg.srs"

@@ -8,7 +8,7 @@ import se.inera.intyg.clinicalprocess.healthcond.srs.setconsent.v1.SetConsentRes
 import se.inera.intyg.srs.vo.ConsentModule
 
 @Service
-class SetConsentResponderImpl(val consentModule: ConsentModule): SetConsentResponderInterface {
+class SetConsentResponderImpl(val consentModule: ConsentModule) : SetConsentResponderInterface {
 
     private val log = LogManager.getLogger()
 

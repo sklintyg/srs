@@ -9,6 +9,4 @@ class PredictionResponse(@Id
                          val answer: String,
                          val predictionId: String,
                          val isDefault: Boolean,
-                         val priority: Int) {
-
-}
+                         val priority: Int)

@@ -53,7 +53,6 @@ open class BaseIntegrationTest {
                         timeObject.getInt("minute")))
     }
 
-
     protected fun addStatistics(diagnosId: String, bildUrl: String): String =
         restTemplate.postForObject(
             "/statistics",
@@ -77,13 +76,11 @@ open class BaseIntegrationTest {
                 Void::class.java)
     }
 
-
     private fun createModelRequest(models: Array<out String>) =
             TestController.ModelRequest(
                 models.contains("x99v0"),
                 models.contains("x9900v0"),
                 models.contains("x99v1"))
-
 
     @Suppress("UNCHECKED_CAST")
     protected fun getIntyg(intygsId: String) =

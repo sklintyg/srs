@@ -15,7 +15,7 @@ import java.nio.file.Path
 import java.nio.file.attribute.BasicFileAttributes
 import java.time.LocalDateTime
 import java.time.ZoneId
-import java.util.*
+import java.util.Locale
 
 /**
  * Scheduled service for checking for new statistics images in the dir specified with statistics.image.dir,
@@ -101,6 +101,5 @@ class StatisticsFileUpdateService(@Value("\${statistics.image.dir}") val imageDi
         return Files.isRegularFile(file)
                 && file.getName(file.getNameCount() - 1).toString().toLowerCase().endsWith(imageFileExtension)
     }
-
 
 }

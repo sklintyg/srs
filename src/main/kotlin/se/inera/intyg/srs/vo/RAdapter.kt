@@ -9,7 +9,7 @@ import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Diagno
 import se.inera.intyg.srs.service.ModelFileUpdateService
 import java.io.File
 import java.io.BufferedReader
-import java.util.*
+import java.util.Locale
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
 import javax.annotation.PreDestroy

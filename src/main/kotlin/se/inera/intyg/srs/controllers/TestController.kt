@@ -1,6 +1,5 @@
 package se.inera.intyg.srs.controllers
 
-
 import org.springframework.context.annotation.Profile
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping

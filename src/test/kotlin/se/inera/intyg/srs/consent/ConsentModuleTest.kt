@@ -2,7 +2,9 @@ package se.inera.intyg.srs.consent
 
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
@@ -58,6 +60,6 @@ class ConsentModuleTest {
         val result = consentModule.setConsent(personnummer, true, HSAID)
         assertNotNull(result)
         assertEquals(ResultCodeEnum.OK, result)
-
     }
+
 }

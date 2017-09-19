@@ -37,4 +37,3 @@ enum class Markers(val logName: String) {
     abstract fun marker(): Marker
 }
 
-

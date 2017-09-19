@@ -13,6 +13,4 @@ class PredictionDiagnosis(@Id
                           val prevalence: Double,
                           @OneToMany(fetch = FetchType.EAGER)
                           @JoinColumn(name="diagnosis_id")
-                          val questions: Collection<PredictionPriority>) {
-
-}
+                          val questions: Collection<PredictionPriority>)

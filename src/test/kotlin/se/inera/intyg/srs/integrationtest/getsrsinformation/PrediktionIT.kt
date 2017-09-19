@@ -57,7 +57,6 @@ class PrediktionIT : BaseIntegrationTest() {
                 .body("$PREDIKTION_ROOT.sannolikhet-overgransvarde", equalTo("0.89"))
     }
 
-
     @Test
     fun testExistingPredictionOnHigherDiagnosisIdLevel() {
         // T.ex. När prediktion efterfrågas på M751 men bara finns på M75

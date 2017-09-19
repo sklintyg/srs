@@ -1,6 +1,10 @@
 package se.inera.intyg.srs.persistence
 
-import javax.persistence.*
+import javax.persistence.Entity
+import javax.persistence.FetchType
+import javax.persistence.Id
+import javax.persistence.JoinColumn
+import javax.persistence.OneToMany
 
 @Entity
 class Measure(@Id

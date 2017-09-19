@@ -2,7 +2,7 @@ package se.inera.intyg.srs.util
 
 import se.inera.intyg.srs.persistence.DiagnosisRepository
 import se.inera.intyg.srs.persistence.PredictionDiagnosis
-import java.util.*
+import java.util.Locale
 
 fun DiagnosisRepository.getModelForDiagnosis(diagnosisId: String): PredictionDiagnosis? {
     val MAX_ID_POSITIONS = 5
@@ -24,5 +24,4 @@ fun DiagnosisRepository.getModelForDiagnosis(diagnosisId: String): PredictionDia
 }
 
 private fun cleanDiagnosisCode(diagnosisId: String): String = diagnosisId.toUpperCase(Locale.ENGLISH).replace(".", "")
-
 

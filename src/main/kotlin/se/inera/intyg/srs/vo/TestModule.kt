@@ -46,9 +46,9 @@ class TestModule(private val consentRepo: ConsentRepository,
     private val uniqueId = AtomicLong(1000)
 
     private val testModels = mapOf(
-            Pair("x99v0",   Pair("$modelDir/../testmodel/Model1.RData", "$modelDir/PM_X99_v0.0.RData")),
+            Pair("x99v0", Pair("$modelDir/../testmodel/Model1.RData", "$modelDir/PM_X99_v0.0.RData")),
             Pair("x9900v0", Pair("$modelDir/../testmodel/Model2.RData", "$modelDir/PM_X9900_v0.0.RData")),
-            Pair("x99v1",   Pair("$modelDir/../testmodel/Model2.RData", "$modelDir/PM_X99_v1.0.RData"))
+            Pair("x99v1", Pair("$modelDir/../testmodel/Model2.RData", "$modelDir/PM_X99_v1.0.RData"))
     )
 
     fun createMeasure(diagnosisId: String, diagnosisText: String, recommendations: List<String>): Measure =
@@ -68,7 +68,6 @@ class TestModule(private val consentRepo: ConsentRepository,
     fun createPredictionQuestion(request: TestController.DiagnosisRequest): PredictionDiagnosis =
         diagnosisRepo.save(PredictionDiagnosis(uniqueId.incrementAndGet(),
                 request.diagnosisId, request.prevalence, mapToPredictions(request.questions)))
-
 
     private fun mapToPredictions(questions: List<TestController.PredictionQuestion>): List<PredictionPriority> =
         questions

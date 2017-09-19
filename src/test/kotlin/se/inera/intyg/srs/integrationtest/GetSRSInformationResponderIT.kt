@@ -2,7 +2,10 @@ package se.inera.intyg.srs.integrationtest
 
 import com.jayway.restassured.RestAssured.given
 import com.jayway.restassured.http.ContentType
-import org.hamcrest.Matchers.*
+import org.hamcrest.Matchers.containsString
+import org.hamcrest.Matchers.equalTo
+import org.hamcrest.Matchers.hasItem
+import org.hamcrest.Matchers.not
 import org.junit.Test
 import se.inera.intyg.srs.integrationtest.util.whenever
 

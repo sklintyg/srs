@@ -49,7 +49,6 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
                     transformPredictionFactors(request.prediktionsfaktorer)
                 else mapOf()
 
-
         val response = GetSRSInformationResponseType()
 
         if (request.utdatafilter.isPrediktion) {
@@ -151,8 +150,6 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
                     in 33..39 -> SYD
                     in 55..57 -> SYD
                     else -> ""
-                }
-            else ""
-
+                } else ""
 
 }

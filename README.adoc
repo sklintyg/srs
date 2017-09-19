@@ -40,19 +40,10 @@ java.library.path=/usr/lib64/R/library/rJava/jri
 These values will be used when the srs application is started, but first:
 
 
-=== Compile schemas
-
-Since we're still in quite rapid development, srs relies on a snapshot version of the intyg schemas, and therefore you need to build and
-install the latest version of these into your local maven repo:
-
-In schemas/intyg/clinicalprocess-healthcond-srs:
-
- ./gradlew clean build install
-
-
 === R models 
 
-R models for testing purposes are checked-in into version control, and can be found at srs/src/main/resources/model.
+R models for testing purposes are checked-in into version control, and can be found at src/main/resources/model.
+
 
 === Building and running the application
 
@@ -75,7 +66,7 @@ There is a SoapUI in the project repository which can be used to fire test messa
 soapui/GetSRSInformation-soapui-project.xml into your SoapUI and try it.
 
 == Run with docker (with pre-installed java and R)
-To run with docker, first build schemas according to instructions above, then use the following commands:
+To run with docker, use the following commands:
 
 1) host, from srs directory
 
@@ -119,10 +110,6 @@ Here's an example of running the 'site.yml' for provisioning to test, using what
  ansible-playbook -i inventory/srs/test site.yml -e "gitcrypt_key_file=/opt/key/git-crypt4.key gitcrypt_key_name=git-crypt4.key" -e "version=0.0.1-SNAPSHOT" -e "deploy_from_repo=false"
 
 
-== GNU Awk
+== ktlint
 
-  ssconvert -S ~/Downloads/SRS_PM_FrågorOchSvar.xlsx /tmp/fragor.csv
-
-  cat /tmp/fragor.csv.0 | sed '1d' | awk 'BEGIN { FPAT = "([^,]+)|(\"[^\"]+\")" } { print "val question"NR" = questionRepo.save(PredictionQuestion("NR", "$1", "$2", \""$3"\", listOf()))" }'
-  cat /tmp/fragor.csv.1 | sed '1d' | awk 'BEGIN { FPAT = "([^,]+)|(\"[^\"]+\")" } { print "responseRepo.save(PredictionResponse("NR", \""$2"\", \""$3"\", "tolower($4)", "$5")) // "$1 }'
-  cat /tmp/fragor.csv.2 | sed '1d' | awk -F, 'BEGIN { countD = 0 } { if ($1 != lastD) { countD += 1; countP = 1; printf ")))\ndiagnosisRepo.save(PredictionDiagnosis("countD", \""$1"\", listOf(predictPrioRepo.save(PredictionPriority("countP", "$2"))" } else { countP += 1; printf ", predictPrioRepo.save(PredictionPriority("countP", "$2"))" }; lastD = $1 } END { print ")))" }'
+As of now, "ktlint" is one of few code quality tools that work with Kotlin code. To run ktlint on the SRS code, type "gradle ktlintCheck".

@@ -11,5 +11,4 @@ class PredictionPriority(val priority: Int,
                          @ManyToOne
                          val question: PredictionQuestion,
                          @Id @GeneratedValue(strategy = GenerationType.AUTO)
-                         val id: Long = -1) {
-}
+                         val id: Long = -1)
