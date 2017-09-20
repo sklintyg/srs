@@ -64,6 +64,10 @@ Additional profiles:
 'mysql' - Uses the jndi resource as datasource (to be used on remote machines)
 'local' - Uses a local mysql database configured in application-local.properties
 
+To debug the application use the following:
+
+ -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005
+
 === SoapUI
 
 There is a SoapUI in the project repository which can be used to fire test messages at the application once it's running. Import the file
