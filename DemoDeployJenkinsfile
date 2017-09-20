@@ -1,0 +1,55 @@
+#!groovy
+
+def baseVersion = "1.0.*"
+
+stage('checkout tools') {
+    node {
+        util.run {
+            dir('base_tools') {
+                git url: "https://github.com/sklintyg/tools.git", branch: "develop"
+            }
+        }
+    }
+}
+
+stage('checkout SRS') {
+    node {
+        git url: "https://github.com/sklintyg/srs.git", branch: GIT_BRANCH
+        util.run { checkout scm }
+    }
+}
+
+stage('run cleanup scripts') {
+    node {
+        util.run {
+            dir('base_tools') {
+                ansiblePlaybook(extraVars: [ansible_ssh_host: "164.40.180.107"], installation: 'ansible-yum',
+                        inventory: 'ansible/inventory/srs/demo', playbook: 'ansible/cleanup.yml')
+            }
+        }
+    }
+}
+
+stage('provision (tools)') {
+    node {
+        util.run {
+            dir('base_tools') {
+                ansiblePlaybook(extraVars: [ansible_ssh_host: "164.40.180.107"], installation: 'ansible-yum',
+                        inventory: 'ansible/inventory/srs/demo', playbook: 'ansible/provision.yml')
+            }
+        }
+    }
+}
+
+stage('deploy') {
+    node {
+        util.run {
+            def itVersion = util.latestVersion("se/inera/intyg/srs", baseVersion)
+
+            ansiblePlaybook(extraVars: [version: "${itVersion}", ansible_ssh_host: "164.40.180.107", deploy_from_repo: "true"],
+                            installation: 'ansible-yum', inventory: 'ansible/inventory/srs/demo', playbook: 'ansible/deploy.yml')
+
+            util.waitForServer('https://demo.srs.intygstjanster.se/services')
+        }
+    }
+}
