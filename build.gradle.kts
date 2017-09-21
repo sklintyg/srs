@@ -6,7 +6,7 @@ plugins {
     kotlin("plugin.spring", "1.1.4-3")
     kotlin("plugin.jpa", "1.1.4-3")
 
-    id("se.inera.intyg.plugin.common") version "1.0.45"
+    id("se.inera.intyg.plugin.common") version "1.0.56"
     id("org.springframework.boot") version "1.5.6.RELEASE"
     id("org.ajoberstar.grgit") version "2.0.0"
     id("org.jlleitschuh.gradle.ktlint") version "2.1.1"
@@ -52,12 +52,6 @@ publishing {
     }
 }
 
-repositories {
-    mavenLocal()
-    maven { url = uri("https://build-inera.nordicmedtest.se/nexus/repository/releases/") }
-    mavenCentral()
-}
-
 dependencies {
     val kotlinVersion = "1.1.4-3"
 
@@ -90,4 +84,11 @@ dependencies {
     testCompile("com.jayway.restassured:rest-assured:2.8.0")
     testCompile("com.nhaarman:mockito-kotlin-kt1.1:1.5.0")
     testCompile("org.exparity:hamcrest-date:2.0.1")
+}
+
+repositories {
+    mavenLocal()
+    maven { url = uri("https://build-inera.nordicmedtest.se/nexus/repository/releases/") }
+    mavenCentral()
+
 }
