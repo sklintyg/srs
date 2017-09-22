@@ -1,3 +1,6 @@
+import se.inera.intyg.TagReleaseTask
+import se.inera.intyg.VersionPropertyFileTask
+
 plugins {
     war
     `maven-publish`
@@ -6,7 +9,7 @@ plugins {
     kotlin("plugin.spring", "1.1.4-3")
     kotlin("plugin.jpa", "1.1.4-3")
 
-    id("se.inera.intyg.plugin.common") version "1.0.56"
+    id("se.inera.intyg.plugin.common") version "1.0.59"
     id("org.springframework.boot") version "1.5.6.RELEASE"
     id("org.ajoberstar.grgit") version "2.0.0"
     id("org.jlleitschuh.gradle.ktlint") version "2.1.1"
@@ -19,10 +22,10 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions { jvmTarget = "1.8" }
 }
 
-val versionTask = task<se.inera.intyg.VersionPropertyFileTask>("createVersionPropertyFile")
+val versionTask = task<VersionPropertyFileTask>("createVersionPropertyFile")
 tasks["war"].dependsOn(versionTask)
 
-task<se.inera.intyg.TagReleaseTask>("tagRelease")
+task<TagReleaseTask>("tagRelease")
 
 tasks.withType<Test> {
     exclude("**/*IT*")
@@ -88,7 +91,6 @@ dependencies {
 
 repositories {
     mavenLocal()
-    maven { url = uri("https://build-inera.nordicmedtest.se/nexus/repository/releases/") }
+    maven("https://build-inera.nordicmedtest.se/nexus/repository/releases/")
     mavenCentral()
-
 }
