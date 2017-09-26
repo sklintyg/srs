@@ -42,6 +42,17 @@
     src: "{{ releases_folder }}/srs-{{ version }}.war"
     dest: "{{ webapps_folder }}/ROOT.war"
 
+- name: Fetch configuration repo to get new branches
+  command: git fetch origin
+  args:
+    chdir: "{{ config_folder }}"
+
+- name: Update configuration to {{ config_version }}
+  git:
+    repo: "{{ config_repository }}"
+    dest: "{{ config_folder }}"
+    version: "{{ config_version }}"
+
 - name: Start tomcat
   service:
     name: "{{ tomcat_service }}"
