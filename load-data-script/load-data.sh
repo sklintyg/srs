@@ -85,7 +85,7 @@ do
         echo "${DIAGNOSIS_INDEX}|${diagnosis}|${diagnosis_text}|${version}" >> "$TMP_MEASURE_FILE"
         ((DIAGNOSIS_INDEX++))
     fi
-    echo "$id|$atgard" >> "$TMP_RECOMMENDATION_FILE"
+    echo "$id|$atgard|REK" >> "$TMP_RECOMMENDATION_FILE"
     echo "$id|$priority|${measure_diagnosis["$diagnosis"]}|$id" >> "$TMP_MEASURE_PRIORITY_FILE"
 done < <(cat $ATGARD_FILE | sed '1d' | awk 'BEGIN { FPAT = "([^,]+)|(\"[^\"]+\")" } {  print ""NR"|"$1"|"$2"|"$3"|"$4"|"$5"" }')
 

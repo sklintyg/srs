@@ -212,5 +212,12 @@
             tableName="prediction_diagnosis" />
     </changeSet>
 
+    <changeSet id="8" author="kja">
+        <addColumn tableName="recommendation">
+            <column name="type" type="VARCHAR(10)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
 
 </databaseChangeLog>

@@ -4,6 +4,8 @@ import org.springframework.boot.CommandLineRunner
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Atgardstyp.OBS
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Atgardstyp.REK
 import se.inera.intyg.srs.persistence.DiagnosisRepository
 import se.inera.intyg.srs.persistence.Measure
 import se.inera.intyg.srs.persistence.MeasurePriority
@@ -29,18 +31,20 @@ class BootstrapData {
              prioRepo: MeasurePriorityRepository, statisticRepo: StatisticRepository, responseRepo: ResponseRepository,
              questionRepo: QuestionRepository, diagnosisRepo: DiagnosisRepository, predictPrioRepo: PredictionPriorityRepository) = CommandLineRunner {
 
-        val recommendation01 = recommendationRepo.save(Recommendation(1, "patienten bör överväga att kontakta företagshälsovård och arbetsgivare för att avgränsa eller byta arbetsuppgifter, eller t.o.m. byta yrke eller arbetsplats"))
-        val recommendation02 = recommendationRepo.save(Recommendation(2, "remiss till behandling med psykoterapeutiska metoder"))
-        val recommendation03 = recommendationRepo.save(Recommendation(3, "ge patienten lättillgänglig information om diagnosen och behandlingsmöjligheter"))
-        val recommendation04 = recommendationRepo.save(Recommendation(4, "patienten bör överväga att kontakta företagshälsovård och arbetsgivare för att undersöka möjligheter till ergonomisk rådgivning och arbetsanpassning."))
-        val recommendation05 = recommendationRepo.save(Recommendation(5, "förmedling av kontakt med fysioterapeut"))
-        val recommendation06 = recommendationRepo.save(Recommendation(6, "FaR med konditions- och styrketräning"))
-        val recommendation07 = recommendationRepo.save(Recommendation(7, "remiss till behandling med KBT"))
-        val recommendation08 = recommendationRepo.save(Recommendation(8, "remiss till behandling med rTMS"))
-        val recommendation09 = recommendationRepo.save(Recommendation(9, "Remiss till Internetförmedlad KBT via Internetbaserat stöd och behandling"))
-        val recommendation10 = recommendationRepo.save(Recommendation(10, "SSRI-läkemedel"))
-        val recommendation11 = recommendationRepo.save(Recommendation(11, "partiell sjukskrivning ".repeat(16)))
-        val recommendation12 = recommendationRepo.save(Recommendation(12, "FaR med regelbunden styrketräning för att förebygger nya besvär"))
+        val recommendation01 = recommendationRepo.save(Recommendation(1, REK, "patienten bör överväga att kontakta företagshälsovård och arbetsgivare för att avgränsa eller byta arbetsuppgifter, eller t.o.m. byta yrke eller arbetsplats"))
+        val recommendation02 = recommendationRepo.save(Recommendation(2, REK, "remiss till behandling med psykoterapeutiska metoder"))
+        val recommendation03 = recommendationRepo.save(Recommendation(3, REK, "ge patienten lättillgänglig information om diagnosen och behandlingsmöjligheter"))
+        val recommendation04 = recommendationRepo.save(Recommendation(4, REK, "patienten bör överväga att kontakta företagshälsovård och arbetsgivare för att undersöka möjligheter till ergonomisk rådgivning och arbetsanpassning."))
+        val recommendation05 = recommendationRepo.save(Recommendation(5, REK, "förmedling av kontakt med fysioterapeut"))
+        val recommendation06 = recommendationRepo.save(Recommendation(6, REK, "FaR med konditions- och styrketräning"))
+        val recommendation07 = recommendationRepo.save(Recommendation(7, REK, "remiss till behandling med KBT"))
+        val recommendation08 = recommendationRepo.save(Recommendation(8, REK, "remiss till behandling med rTMS"))
+        val recommendation09 = recommendationRepo.save(Recommendation(9, REK, "Remiss till Internetförmedlad KBT via Internetbaserat stöd och behandling"))
+        val recommendation10 = recommendationRepo.save(Recommendation(10, REK, "SSRI-läkemedel"))
+        val recommendation11 = recommendationRepo.save(Recommendation(11, REK, "partiell sjukskrivning ".repeat(16)))
+        val recommendation12 = recommendationRepo.save(Recommendation(12, REK, "FaR med regelbunden styrketräning för att förebygger nya besvär"))
+        val recommendation13 = recommendationRepo.save(Recommendation(13, OBS, "Observation 1"))
+        val recommendation14 = recommendationRepo.save(Recommendation(14, OBS, "Observation 2"))
 
         measureRepo.save(Measure(1, "F43.8A", "Utmattningssyndrom", "1.0",
                 listOf(prioRepo.save(MeasurePriority(1, recommendation01)),
@@ -67,7 +71,9 @@ class BootstrapData {
 
         measureRepo.save(Measure(6, "M79", "Reumatism, ospecificerad", "1.0",
                 listOf(prioRepo.save(MeasurePriority(1, recommendation11)),
-                        prioRepo.save(MeasurePriority(2, recommendation12)))))
+                        prioRepo.save(MeasurePriority(2, recommendation12)),
+                        prioRepo.save(MeasurePriority(1, recommendation13)),
+                        prioRepo.save(MeasurePriority(2, recommendation14)))))
 
         val question01 = questionRepo.save(PredictionQuestion(1,
                 "Sysselsättningsstatus",

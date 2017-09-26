@@ -6,12 +6,16 @@ import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Atgard
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Atgardsrekommendation
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Atgardsrekommendationer
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Atgardsrekommendationstatus
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Atgardstyp
 import se.inera.intyg.srs.persistence.Measure
 import se.inera.intyg.srs.persistence.MeasureRepository
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.Diagnos
 import java.math.BigInteger
 import java.util.Locale
+import kotlin.collections.HashMap
+import kotlin.collections.List
+import kotlin.collections.Map
+import kotlin.collections.find
+import kotlin.collections.forEach
 
 @Service
 class MeasureInformationModule(val measureRepo: MeasureRepository) : InformationModule<Atgardsrekommendationer> {
@@ -47,8 +51,7 @@ class MeasureInformationModule(val measureRepo: MeasureRepository) : Information
                 measure.priorities.forEach {
                     val atgard = Atgard()
                     atgard.atgardId = BigInteger.ONE
-                    // Temporary atgardstyp
-                    atgard.atgardstyp = Atgardstyp.REK
+                    atgard.atgardstyp = it.recommendation.type
                     atgard.atgardsforslag = it.recommendation.recommendationText
                     atgard.prioritet = BigInteger.valueOf(it.priority.toLong())
                     // Temp version

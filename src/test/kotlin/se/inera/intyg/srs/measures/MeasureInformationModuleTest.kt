@@ -8,6 +8,7 @@ import org.junit.Test
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Atgardsrekommendationstatus.DIAGNOSKOD_PA_HOGRE_NIVA
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Atgardsrekommendationstatus.INFORMATION_SAKNAS
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Atgardsrekommendationstatus.OK
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Atgardstyp
 import se.inera.intyg.srs.persistence.Measure
 import se.inera.intyg.srs.persistence.MeasurePriority
 import se.inera.intyg.srs.persistence.MeasureRepository
@@ -37,9 +38,9 @@ class MeasureInformationModuleTest {
 
     fun insertMeasureData() {
         whenever(measureRepo.findByDiagnosisIdStartingWith(DIAGNOSIS_A12)).thenReturn(listOf(Measure(1, DIAGNOSIS_A12, "Depression", "1.0",
-                listOf(MeasurePriority(1, Recommendation(1, "Softa"))))))
+                listOf(MeasurePriority(1, Recommendation(1, Atgardstyp.REK, "Softa"))))))
         whenever(measureRepo.findByDiagnosisIdStartingWith(DIAGNOSIS_B12)).thenReturn(listOf(Measure(2, DIAGNOSIS_B12, "Benbrott", "1.0",
-                listOf(MeasurePriority(1, Recommendation(2, "Hoppa på ett ben"))))))
+                listOf(MeasurePriority(1, Recommendation(2, Atgardstyp.OBS, "Hoppa på ett ben"))))))
     }
 
     @Test
@@ -66,8 +67,12 @@ class MeasureInformationModuleTest {
         val result = module.getInfo(listOf(person), mapOf())
         assertEquals(2, result.get(person)!!.rekommendation.size)
         assertEquals(DIAGNOSIS_A12, result.get(person)!!.rekommendation.get(0).diagnos.code)
+        assertEquals(1, result.get(person)!!.rekommendation.get(0).atgard.size)
+        assertEquals(Atgardstyp.REK, result.get(person)!!.rekommendation.get(0).atgard.get(0).atgardstyp)
         assertEquals(OK, result.get(person)!!.rekommendation.get(0).atgardsrekommendationstatus)
         assertEquals(DIAGNOSIS_B12, result.get(person)!!.rekommendation.get(1).diagnos.code)
+        assertEquals(1, result.get(person)!!.rekommendation.get(1).atgard.size)
+        assertEquals(Atgardstyp.OBS, result.get(person)!!.rekommendation.get(1).atgard.get(0).atgardstyp)
         assertEquals(OK, result.get(person)!!.rekommendation.get(1).atgardsrekommendationstatus)
     }
 

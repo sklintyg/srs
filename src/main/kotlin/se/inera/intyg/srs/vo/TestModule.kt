@@ -3,6 +3,7 @@ package se.inera.intyg.srs.vo
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Atgardstyp
 import se.inera.intyg.srs.controllers.TestController
 import se.inera.intyg.srs.persistence.ConsentRepository
 import se.inera.intyg.srs.persistence.DiagnosisRepository
@@ -56,7 +57,7 @@ class TestModule(private val consentRepo: ConsentRepository,
 
     private fun mapToMeasurePriorities(recommendations: List<String>) =
             recommendations
-                    .map { recText -> Recommendation(uniqueId.incrementAndGet(), recText) }
+                    .map { recText -> Recommendation(uniqueId.incrementAndGet(), Atgardstyp.REK, recText) }
                     .map { rec -> recommendationRepo.save(rec) }
                     .mapIndexed { i, rec -> MeasurePriority(i + 1, rec) }
                     .map { priority -> priorityRepo.save(priority) }
