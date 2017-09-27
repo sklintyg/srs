@@ -65,7 +65,6 @@ class StatisticsFileUpdateService(@Value("\${statistics.image.dir}") val imageDi
                         log.info("New file found, saving as: $fileName")
                         repo.save(InternalStatistic(fileName, buildUrl(fileName), fileModifiedTime))
                     } else if (!existingImage.timestamp.equals(fileModifiedTime)) {
-                        println("Existing: ${existingImage.timestamp} Modified: $fileModifiedTime")
                         log.info("Existing but modified file found, updating $fileName")
                         existingImage.timestamp = fileModifiedTime
                         repo.save(existingImage)
