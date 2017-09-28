@@ -1,0 +1,12 @@
+"Frågetext (Förslag till text på SRS-sidan i Webcert ""Beräkning av risk"")","Hjälptext, ska visas när man ""hoovrar"" över frågetexten/faktorn",FrågeId,"FrågeId i prediktion","Från KI: Informationskälla ","Från KI: Förklaring till informationen: Vad anger informationen? ","Från KI: Förklaring till informationen: Hur samlas den in? ","Från KI: Förklaring till informationen: Vilka alternativ finns? ","Från KI: Förklaring till informationen:  Hur  påverkar den risken?"
+"Huvudsaklig sysselsättning","Vilken är patientens nuvarande sysselsättning?",,SA_SyssStart_fct,,,,,
+"Sjukskrivningsfallet påbörjat inom primärvården","Påbörjas/påbörjades det pågående sjukskrivningsfallet inom primärvården?",,NoCareAtStart,,,,,
+"Tidigare sjukskrivning senaste 12 månaderna (kortare version: Tidigare sjukskrivning)","Har patienten varit sjukskriven mer än 14 dagar i sträck de senaste 12 månaderna? I så fall, ungefär hur många dagar totalt?",,SA_1_gross,,,,,
+Högskolestudier,"Har patienten studerat på universitets- eller högskolenivå?",,edu_cat_fct,,,,,
+"Läkarbesök utanför primärvården senaste 12 månaderna (kortare version: Läkarbesök utanför primärvården)","Har patienten haft mer än ett läkarbesök utanför primärvården de senaste 12 månaderna? (t.ex. på sjukhus)",,Visits_yearBefore_all_r1_median,,,,,
+"Född i Sverige","Är patienten född i Sverige?",,birth_cat_fct,,,,,
+"Initial grad av sjukskrivning i aktuellt sjukfall","Vilken grad av sjukskrivning har/hade patienten vid starten av sjukfallet?",,SA_ExtentFirst,,,,,
+Samsjuklighet,"Hur många andra långvariga sjukdomar har patienten?",,comorbidity,,,,,
+"Sjuk- eller aktivitetsersättning på deltid","Har patienten sjuk-eller aktivitetsersättning nu?",,DP_atStart,,,,,
+"Inlagd på sjukhus senaste 12 månaderna (kortare version: Inlagd på sjukhus)","Har patienten varit inlagd på sjukhus mer än en dag de senaste 12 månaderna? (räkna ej pga okomplicerad förlossning)",,Vtid_yearBefore_all_r1_median,,,,,
+"Civilstånd (eller   Familjesituation) ","Är patienten gift/sammanboende eller ensamstående?  Särbo?",,fam_cat_4_cat_fct,,,,,
