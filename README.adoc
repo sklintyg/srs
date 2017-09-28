@@ -61,7 +61,7 @@ The 'it' profile is needed to enable the testability api (used in restAssured in
 The 'bootstrap' profile ensures the application is bootstrapped with example data at startup.
 
 Additional profiles:
-'mysql' - Uses the jndi resource as datasource (to be used on remote machines)
+'remote' - Uses the jndi configured jdbc-resource as datasource and uses log4j-config from srs-konfiguration.
 'local' - Uses a local mysql database configured in application-local.properties
 
 To debug the application use the following:
