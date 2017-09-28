@@ -16,5 +16,16 @@
 # vagrantPort=2222 : dev-only
 # keyFile=/home/user/long/path/.vagrant/machines/default/virtualbox/private_key : dev-only
 
-- include: provision.yml
-- include: deploy_tomcat.yml
+- hosts: tomcat
+  serial: 1
+  become: yes
+  environment:
+    "{{ proxy_env}}"
+  roles:
+    - config-folder
+    - environment
+    - jars
+    - resources
+    - unlock-config-folder
+    - app-resources
+    - R
