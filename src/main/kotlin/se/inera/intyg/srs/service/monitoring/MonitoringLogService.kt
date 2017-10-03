@@ -6,7 +6,7 @@ import org.apache.logging.log4j.MarkerManager
 
 fun logPrediction(input: Map<String, String>, diagnosisCode: String, limit: String, sex: String, ageCategory: String, prediction: String, predictionLevel: Int, statusCode: String) {
     val log = LogManager.getLogger()
-    log.debug(Markers.MONITORING.marker(), "{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}",
+    log.info(Markers.MONITORING.marker(), "{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}",
             diagnosisCode,
             limit,
             prediction,
