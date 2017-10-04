@@ -9,3 +9,5 @@ tomcat_user: ine-app
 proxy_env:
   http_proxy: http://bf-proxy.sth:8888
   https_proxy: http://bf-proxy.sth:8888
+
+profiles: runtime,remote,bootstrap
