@@ -44,7 +44,7 @@ stage('provision (tools)') {
 stage('deploy') {
     node {
         util.run {
-            def itVersion = util.latestVersion("se/inera/intyg/srs", baseVersion)
+            def itVersion = util.latestVersion("se/inera/intyg/srs/srs", baseVersion)
 
             ansiblePlaybook(extraVars: [version: "${itVersion}", ansible_ssh_host: "164.40.180.107", deploy_from_repo: "true"],
                             installation: 'ansible-yum', inventory: 'ansible/inventory/srs/demo', playbook: 'ansible/site.yml')
