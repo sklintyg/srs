@@ -23,7 +23,7 @@ stage('run cleanup scripts') {
     node {
         util.run {
             dir('base_tools') {
-                ansiblePlaybook(extraVars: [ansible_ssh_host: "164.40.180.107"], installation: 'ansible-yum',
+                ansiblePlaybook(extraVars: [ansible_ssh_host: "164.40.180.108"], installation: 'ansible-yum',
                         inventory: 'ansible/inventory/srs/demo', playbook: 'ansible/cleanup.yml')
             }
         }
@@ -34,7 +34,7 @@ stage('provision (tools)') {
     node {
         util.run {
             dir('base_tools') {
-                ansiblePlaybook(extraVars: [ansible_ssh_host: "164.40.180.107"], installation: 'ansible-yum',
+                ansiblePlaybook(extraVars: [ansible_ssh_host: "164.40.180.108"], installation: 'ansible-yum',
                         inventory: 'ansible/inventory/srs/demo', playbook: 'ansible/provision.yml')
             }
         }
@@ -46,7 +46,7 @@ stage('deploy') {
         util.run {
             def itVersion = util.latestVersion("se/inera/intyg/srs/srs", baseVersion)
 
-            ansiblePlaybook(extraVars: [version: "${itVersion}", ansible_ssh_host: "164.40.180.107", deploy_from_repo: "true"],
+            ansiblePlaybook(extraVars: [version: "${itVersion}", ansible_ssh_host: "164.40.180.108", deploy_from_repo: "true"],
                             installation: 'ansible-yum', inventory: 'ansible/inventory/srs/demo', playbook: 'ansible/site.yml')
 
             util.waitForServer('https://demo.srs.intygstjanster.se/services', false)
