@@ -26,3 +26,5 @@ This requires read and write access to /tmp/
 ## Cleaning data
 
 The input files are required to not include any new line feeds other than those used to mark a new row of data. Clean the input by removing these new line feeds.
+
+Please also make sure that the files have correct line terminators (not CLRF). This is easily remedied with `dos2linux`.
