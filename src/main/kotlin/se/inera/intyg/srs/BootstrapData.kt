@@ -43,8 +43,8 @@ class BootstrapData {
         val recommendation10 = recommendationRepo.save(Recommendation(10, REK, "SSRI-läkemedel"))
         val recommendation11 = recommendationRepo.save(Recommendation(11, REK, "partiell sjukskrivning ".repeat(16)))
         val recommendation12 = recommendationRepo.save(Recommendation(12, REK, "FaR med regelbunden styrketräning för att förebygger nya besvär"))
-        val recommendation13 = recommendationRepo.save(Recommendation(13, OBS, "Observation 1"))
-        val recommendation14 = recommendationRepo.save(Recommendation(14, OBS, "Observation 2"))
+        val recommendation13 = recommendationRepo.save(Recommendation(13, OBS, "Observation1 <b>Observation1 med bold-tagg</b> Observation1 Observation1 Observation1 Observation1"))
+        val recommendation14 = recommendationRepo.save(Recommendation(14, OBS, "Observation2 <i>Observation2 med italics-tag</i> Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 "))
 
         measureRepo.save(Measure(1, "F43.8A", "Utmattningssyndrom", "1.0",
                 listOf(prioRepo.save(MeasurePriority(1, recommendation01)),
