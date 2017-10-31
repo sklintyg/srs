@@ -12,6 +12,7 @@ import se.inera.intyg.srs.persistence.DiagnosisRepository
 import se.inera.intyg.srs.persistence.PredictionDiagnosis
 import se.inera.intyg.srs.persistence.Probability
 import se.inera.intyg.srs.persistence.ProbabilityRepository
+import se.inera.intyg.srs.util.PredictionInformationUtil
 import se.inera.intyg.srs.util.getModelForDiagnosis
 
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.Diagnos
@@ -23,11 +24,6 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
                                   val probabilityRepo: ProbabilityRepository) : InformationModule<Prediktion> {
 
     private val log = LogManager.getLogger()
-
-    private val categoryDescriptions = mapOf(BigInteger.ONE to "Prediktion saknas.",
-            BigInteger.valueOf(2) to "Ingen förhöjd risk detekterad.",
-            BigInteger.valueOf(3) to "Förhöjd risk detekterad.",
-            BigInteger.valueOf(4) to "Starkt förhöjd risk detekterad.")
 
     override fun getInfo(persons: List<Person>, extraParams: Map<String, String>): Map<Person, Prediktion> {
         log.info(persons)
@@ -74,7 +70,7 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
                 riskSignal.riskkategori = BigInteger.ONE
             }
 
-            riskSignal.beskrivning = categoryDescriptions[riskSignal.riskkategori]
+            riskSignal.beskrivning = PredictionInformationUtil.categoryDescriptions[riskSignal.riskkategori]
 
             logPrediction(extraParams, diagnosPrediktion.diagnos?.code ?: "", diagnosis?.prevalence?.toString() ?: "", person.sex.name,
                     person.ageCategory, calculatedPrediction?.prediction?.toString() ?: "", riskSignal.riskkategori.intValueExact(),
