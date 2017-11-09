@@ -46,7 +46,7 @@ class BootstrapData {
         val recommendation13 = recommendationRepo.save(Recommendation(13, OBS, "Observation1 <b>Observation1 med bold-tagg</b> Observation1 Observation1 Observation1 Observation1"))
         val recommendation14 = recommendationRepo.save(Recommendation(14, OBS, "Observation2 <i>Observation2 med italics-tag</i> Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 "))
 
-        measureRepo.save(Measure(1, "F43.8A", "Utmattningssyndrom", "1.0",
+        measureRepo.save(Measure(1, "F438A", "Utmattningssyndrom", "1.0",
                 listOf(prioRepo.save(MeasurePriority(1, recommendation01)),
                         prioRepo.save(MeasurePriority(2, recommendation02)),
                         prioRepo.save(MeasurePriority(3, recommendation03)))))
