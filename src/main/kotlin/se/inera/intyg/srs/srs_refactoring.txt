@@ -1,8 +1,0 @@
-diagnoskod					scope.diagnosKod
-diagnosbeskrivning			scope.diagnosBeskrivning
-samtycke					scope.consent
-frågor och valda svar		qaIds (tas från getSelectedAnswerOptions fn.)
-observerade åtgärder		scope.atgarder.atgarderObs
-rekommenderade åtgärder		scope.atgarder.atgarderRek
-		
-		---------felmeddelanden----------
