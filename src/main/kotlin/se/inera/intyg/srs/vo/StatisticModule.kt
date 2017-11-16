@@ -2,22 +2,24 @@ package se.inera.intyg.srs.vo
 
 import org.apache.logging.log4j.LogManager
 import org.springframework.stereotype.Service
-import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Statistik
 import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Statistikbild
 import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Statistikstatus
 import se.inera.intyg.srs.persistence.InternalStatistic
 import se.inera.intyg.srs.persistence.StatisticRepository
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.Diagnos
 import java.util.Locale
+import kotlin.collections.HashMap
 
 @Service
-class StatisticModule(val statisticRepo: StatisticRepository) : InformationModule<Statistik> {
+class StatisticModule(val statisticRepo: StatisticRepository) : InformationModule<Statistikbild> {
 
     private val MIN_ID_POSITIONS = 3
 
-    override fun getInfo(persons: List<Person>, extraParams: Map<String, String>): Map<Person, Statistik> {
+    override fun getInfoForDiagnosis(diagnosisId: String): Statistikbild = getStatistikbildForDiagnosis(diagnosisId)
+
+    override fun getInfo(persons: List<Person>, extraParams: Map<String, String>): Map<Person, List<Statistikbild>> {
         log.info("Getting statistics for $persons")
-        val statistics: HashMap<Person, Statistik> = HashMap<Person, Statistik>()
+        val statistics: HashMap<Person, List<Statistikbild>> = HashMap<Person, List<Statistikbild>>()
         persons.forEach { person ->
             statistics.put(person, createInfo(person))
         }
@@ -26,15 +28,15 @@ class StatisticModule(val statisticRepo: StatisticRepository) : InformationModul
 
     private val log = LogManager.getLogger()
 
-    private fun createInfo(person: Person): Statistik {
-        val outgoingStatistik = Statistik()
+    private fun createInfo(person: Person): List<Statistikbild> {
+        val outgoingStatistik = mutableListOf<Statistikbild>()
         person.diagnoses.forEach { diagnose ->
-            outgoingStatistik.statistikbild.add(getStatistikbildForDiagnosis(diagnose.code))
+            outgoingStatistik.add(getStatistikbildForDiagnosis(diagnose.code))
         }
         return outgoingStatistik
     }
 
-    private fun getStatistikbildForDiagnosis(diagnosisId: String): Statistikbild? {
+    private fun getStatistikbildForDiagnosis(diagnosisId: String): Statistikbild {
         var currentId = cleanDiagnosisCode(diagnosisId)
         val possibleStatistics = statisticRepo.findByDiagnosisId(currentId.substring(0, MIN_ID_POSITIONS))
 

@@ -3,12 +3,15 @@ package se.inera.intyg.srs.service
 import org.apache.cxf.annotations.SchemaValidation
 import org.apache.logging.log4j.LogManager
 import org.springframework.stereotype.Service
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Atgardsrekommendationer
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Bedomningsunderlag
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.GetSRSInformationRequestType
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.GetSRSInformationResponderInterface
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.GetSRSInformationResponseType
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Individ
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Prediktion
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Prediktionsfaktorer
+import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Statistik
 import se.inera.intyg.srs.vo.Diagnosis
 import se.inera.intyg.srs.vo.MeasureInformationModule
 import se.inera.intyg.srs.vo.Person
@@ -54,8 +57,10 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
         if (request.utdatafilter.isPrediktion) {
             try {
                 predictionModule.getInfo(persons, extraInfo).forEach { (person, prediction) ->
+                    val dtoPredictionList = Prediktion()
+                    dtoPredictionList.diagnosprediktion.addAll(prediction)
                     val underlag = response.bedomningsunderlag.find { it.personId == person.personId } ?: createUnderlag(person.personId, response)
-                    underlag.prediktion = prediction
+                    underlag.prediktion = dtoPredictionList
                 }
             } catch (e: Exception) {
                 log.error("Predictions could not be produced. Please check for error.", e)
@@ -66,7 +71,9 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
             try {
                 measureModule.getInfo(persons).forEach { (person, measure) ->
                     val underlag = response.bedomningsunderlag.find { it.personId == person.personId } ?: createUnderlag(person.personId, response)
-                    underlag.atgardsrekommendationer = measure
+                    val dtoAtgardsrekommendationList = Atgardsrekommendationer()
+                    dtoAtgardsrekommendationList.rekommendation.addAll(measure)
+                    underlag.atgardsrekommendationer = dtoAtgardsrekommendationList
                 }
             } catch (e: Exception) {
                 log.error("Measures could not be produced. Please check for error.", e)
@@ -77,7 +84,9 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
             try {
                 statisticModule.getInfo(persons).forEach { (person, statistic) ->
                     val underlag = response.bedomningsunderlag.find { it.personId == person.personId } ?: createUnderlag(person.personId, response)
-                    underlag.statistik = statistic
+                    val dtoStatistikList = Statistik()
+                    dtoStatistikList.statistikbild.addAll(statistic)
+                    underlag.statistik = dtoStatistikList
                 }
             } catch (e: Exception) {
                 log.error("Statistics could not be produced. Please check for error.", e)

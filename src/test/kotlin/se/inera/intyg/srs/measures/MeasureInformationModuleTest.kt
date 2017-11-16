@@ -48,32 +48,32 @@ class MeasureInformationModuleTest {
         val nonExisting = "Z123"
         val person = Person("1212121212", YOUTHS, Sex.MAN, listOf(Diagnosis(nonExisting)), "test1")
         val result = module.getInfo(listOf(person), mapOf())
-        assertEquals(nonExisting, result.get(person)!!.rekommendation.get(0).inkommandediagnos.code)
-        assertEquals(INFORMATION_SAKNAS, result.get(person)!!.rekommendation.get(0).atgardsrekommendationstatus)
+        assertEquals(nonExisting, result.get(person)!![0].inkommandediagnos.code)
+        assertEquals(INFORMATION_SAKNAS, result.get(person)!![0].atgardsrekommendationstatus)
     }
 
     @Test
     fun diagnosisCodeIsShortenedUntilItMatches() {
         val person = Person("1212121212", YOUTHS, Sex.MAN, listOf(Diagnosis(DIAGNOSIS_A1234)), "test1")
         val result = module.getInfo(listOf(person), mapOf())
-        assertEquals(DIAGNOSIS_A12, result.get(person)!!.rekommendation.get(0).diagnos.code)
-        assertEquals(DIAGNOSIS_A1234, result.get(person)!!.rekommendation.get(0).inkommandediagnos.code)
-        assertEquals(DIAGNOSKOD_PA_HOGRE_NIVA, result.get(person)!!.rekommendation.get(0).atgardsrekommendationstatus)
+        assertEquals(DIAGNOSIS_A12, result.get(person)!![0].diagnos.code)
+        assertEquals(DIAGNOSIS_A1234, result.get(person)!![0].inkommandediagnos.code)
+        assertEquals(DIAGNOSKOD_PA_HOGRE_NIVA, result.get(person)!![0].atgardsrekommendationstatus)
     }
 
     @Test
     fun measureShouldBeReturnedForEachMatchingDiagnosis() {
         val person = Person("1212121212", YOUTHS, Sex.MAN, listOf(Diagnosis(DIAGNOSIS_A12), Diagnosis(DIAGNOSIS_B12)), "test1")
         val result = module.getInfo(listOf(person), mapOf())
-        assertEquals(2, result.get(person)!!.rekommendation.size)
-        assertEquals(DIAGNOSIS_A12, result.get(person)!!.rekommendation.get(0).diagnos.code)
-        assertEquals(1, result.get(person)!!.rekommendation.get(0).atgard.size)
-        assertEquals(Atgardstyp.REK, result.get(person)!!.rekommendation.get(0).atgard.get(0).atgardstyp)
-        assertEquals(OK, result.get(person)!!.rekommendation.get(0).atgardsrekommendationstatus)
-        assertEquals(DIAGNOSIS_B12, result.get(person)!!.rekommendation.get(1).diagnos.code)
-        assertEquals(1, result.get(person)!!.rekommendation.get(1).atgard.size)
-        assertEquals(Atgardstyp.OBS, result.get(person)!!.rekommendation.get(1).atgard.get(0).atgardstyp)
-        assertEquals(OK, result.get(person)!!.rekommendation.get(1).atgardsrekommendationstatus)
+        assertEquals(2, result.get(person)!!.size)
+        assertEquals(DIAGNOSIS_A12, result.get(person)!![0].diagnos.code)
+        assertEquals(1, result.get(person)!![0].atgard.size)
+        assertEquals(Atgardstyp.REK, result.get(person)!![0].atgard.get(0).atgardstyp)
+        assertEquals(OK, result.get(person)!![0].atgardsrekommendationstatus)
+        assertEquals(DIAGNOSIS_B12, result.get(person)!![1].diagnos.code)
+        assertEquals(1, result.get(person)!![1].atgard.size)
+        assertEquals(Atgardstyp.OBS, result.get(person)!![1].atgard.get(0).atgardstyp)
+        assertEquals(OK, result.get(person)!![1].atgardsrekommendationstatus)
     }
 
 }

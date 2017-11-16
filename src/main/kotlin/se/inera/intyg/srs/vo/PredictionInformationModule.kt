@@ -4,38 +4,38 @@ import org.apache.logging.log4j.LogManager
 import org.springframework.stereotype.Service
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Diagnosprediktion
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Diagnosprediktionstatus
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Prediktion
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Risksignal
-
-import se.inera.intyg.srs.service.monitoring.logPrediction
 import se.inera.intyg.srs.persistence.DiagnosisRepository
 import se.inera.intyg.srs.persistence.PredictionDiagnosis
 import se.inera.intyg.srs.persistence.Probability
 import se.inera.intyg.srs.persistence.ProbabilityRepository
+import se.inera.intyg.srs.service.monitoring.logPrediction
 import se.inera.intyg.srs.util.PredictionInformationUtil
 import se.inera.intyg.srs.util.getModelForDiagnosis
-
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.Diagnos
 import java.math.BigInteger
 
 @Service
 class PredictionInformationModule(val rAdapter: PredictionAdapter,
                                   val diagnosisRepo: DiagnosisRepository,
-                                  val probabilityRepo: ProbabilityRepository) : InformationModule<Prediktion> {
+                                  val probabilityRepo: ProbabilityRepository) : InformationModule<Diagnosprediktion> {
 
     private val log = LogManager.getLogger()
 
-    override fun getInfo(persons: List<Person>, extraParams: Map<String, String>): Map<Person, Prediktion> {
+    override fun getInfoForDiagnosis(diagnosisId: String): Diagnosprediktion =
+            throw NotImplementedError("Predictions can not be made with only diagnosis.")
+
+    override fun getInfo(persons: List<Person>, extraParams: Map<String, String>): Map<Person, List<Diagnosprediktion>> {
         log.info(persons)
-        val predictions = HashMap<Person, Prediktion>()
+        val predictions = HashMap<Person, List<Diagnosprediktion>>()
         persons.forEach { person ->
             predictions.put(person, createInfo(person, extraParams))
         }
         return predictions
     }
 
-    private fun createInfo(person: Person, extraParams: Map<String, String>): Prediktion {
-        val outgoingPrediction = Prediktion()
+    private fun createInfo(person: Person, extraParams: Map<String, String>): List<Diagnosprediktion> {
+        val outgoingPrediction = mutableListOf<Diagnosprediktion>()
 
         person.diagnoses.forEach { incomingDiagnosis ->
             val diagnosPrediktion = Diagnosprediktion()
@@ -55,7 +55,7 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
             diagnosPrediktion.risksignal = riskSignal
             if (diagnosis != null && calculatedPrediction != null &&
                     (calculatedPrediction.status == Diagnosprediktionstatus.OK ||
-                    calculatedPrediction.status == Diagnosprediktionstatus.DIAGNOSKOD_PA_HOGRE_NIVA)) {
+                            calculatedPrediction.status == Diagnosprediktionstatus.DIAGNOSKOD_PA_HOGRE_NIVA)) {
                 val outgoingDiagnosis = Diagnos()
                 outgoingDiagnosis.codeSystem = incomingDiagnosis.codeSystem
                 outgoingDiagnosis.code = calculatedPrediction.diagnosis
@@ -76,7 +76,7 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
                     person.ageCategory, calculatedPrediction?.prediction?.toString() ?: "", riskSignal.riskkategori.intValueExact(),
                     calculatedPrediction?.status?.toString() ?: "")
 
-            outgoingPrediction.diagnosprediktion.add(diagnosPrediktion)
+            outgoingPrediction.add(diagnosPrediktion)
         }
         return outgoingPrediction
     }
@@ -98,7 +98,7 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
         return isOk
     }
 
-    private fun isCorrectQuestionsAndAnswers(inc: HashMap<String, String>, req: HashMap<String, List<String>>) :
+    private fun isCorrectQuestionsAndAnswers(inc: HashMap<String, String>, req: HashMap<String, List<String>>):
             Pair<Boolean, List<String>> {
         val errorList: MutableList<String> = ArrayList()
 
