@@ -1,6 +1,6 @@
 package se.inera.intyg.srs.persistence
 
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Atgardstyp
+import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Atgardstyp
 import javax.persistence.Entity
 import javax.persistence.EnumType
 import javax.persistence.Enumerated

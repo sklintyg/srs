@@ -4,8 +4,8 @@ import org.springframework.boot.CommandLineRunner
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Atgardstyp.OBS
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Atgardstyp.REK
+import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Atgardstyp.OBS
+import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Atgardstyp.REK
 import se.inera.intyg.srs.persistence.DiagnosisRepository
 import se.inera.intyg.srs.persistence.Measure
 import se.inera.intyg.srs.persistence.MeasurePriority

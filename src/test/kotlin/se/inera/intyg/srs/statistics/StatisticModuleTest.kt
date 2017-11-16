@@ -5,8 +5,8 @@ import com.nhaarman.mockito_kotlin.whenever
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Statistikbild
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Statistikstatus
+import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Statistikbild
+import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Statistikstatus
 import se.inera.intyg.srs.persistence.InternalStatistic
 import se.inera.intyg.srs.persistence.StatisticRepository
 import se.inera.intyg.srs.service.YOUTHS

@@ -3,7 +3,7 @@ package se.inera.intyg.srs.vo
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Atgardstyp
+import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Atgardstyp
 import se.inera.intyg.srs.controllers.TestController
 import se.inera.intyg.srs.persistence.ConsentRepository
 import se.inera.intyg.srs.persistence.DiagnosisRepository
