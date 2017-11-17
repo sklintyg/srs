@@ -82,7 +82,7 @@ class Application : SpringBootServletInitializer() {
         val endpoint = EndpointImpl(bus, getRiskPredictionForCertificateResponder)
         endpoint.schemaLocations = listOf("classpath:core_components/clinicalprocess_healthcond_certificate_types_2.0.xsd",
                 "classpath:interactions/GetRiskPredictionForCertificate/GetRiskPredictionForCertificateResponder_1.0.xsd")
-        endpoint.publish("/get-risk-prediction-for-certificate")
+        endpoint.publish("/get-risk-prediction-for-certificate/v1.0")
         return endpoint
     }
 
