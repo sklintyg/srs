@@ -14,6 +14,7 @@ import se.inera.intyg.clinicalprocess.healthcond.srs.getdiagnosiscodes.v1.GetDia
 import se.inera.intyg.clinicalprocess.healthcond.srs.getpredictionquestions.v1.GetPredictionQuestionsResponderInterface
 import se.inera.intyg.clinicalprocess.healthcond.srs.getriskpredictionforcertificate.v1.GetRiskPredictionForCertificateResponderInterface
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.GetSRSInformationResponderInterface
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformationfordiagnosis.v1.GetSRSInformationForDiagnosisResponderInterface
 import se.inera.intyg.clinicalprocess.healthcond.srs.setconsent.v1.SetConsentResponderInterface
 import se.riv.itintegration.monitoring.rivtabp21.v1.PingForConfigurationResponderInterface
 import javax.xml.ws.Endpoint
@@ -30,6 +31,9 @@ class Application : SpringBootServletInitializer() {
 
     @Autowired
     lateinit var srsResponder: GetSRSInformationResponderInterface
+
+    @Autowired
+    lateinit var srsForDiagnosisResponder: GetSRSInformationForDiagnosisResponderInterface
 
     @Autowired
     lateinit var getRiskPredictionForCertificateResponder: GetRiskPredictionForCertificateResponderInterface
@@ -51,11 +55,20 @@ class Application : SpringBootServletInitializer() {
     }
 
     @Bean
-    fun srsInfoEndpoint(): Endpoint {
+    fun getSrsEndpoint(): Endpoint {
         val endpoint = EndpointImpl(bus, srsResponder)
         endpoint.schemaLocations = listOf("classpath:core_components/clinicalprocess_healthcond_certificate_types_2.0.xsd",
                 "classpath:interactions/GetSRSInformation/GetSRSInformationResponder_1.0.xsd")
         endpoint.publish("/getsrs")
+        return endpoint
+    }
+
+    @Bean
+    fun getSrsForDiagnosisEndpoint(): Endpoint {
+        val endpoint = EndpointImpl(bus, srsForDiagnosisResponder)
+        endpoint.schemaLocations = listOf("classpath:core_components/clinicalprocess_healthcond_certificate_types_2.0.xsd",
+                "classpath:interactions/GetSRSInformationForDiagnosis/GetSRSInformationForDiagnosisResponder_1.0.xsd")
+        endpoint.publish("/getsrsfordiagnosis")
         return endpoint
     }
 
