@@ -31,12 +31,10 @@ class GetRiskPredictionForCertificateResponderImpl(@Autowired val probabilityRep
         log.info("Getting riskprediction for certificate")
 
         p0?.intygsId?.forEach { intygId ->
-            val probabilities = probabilityRepository.findByCertificateId(intygId)
+            val probability = probabilityRepository.findByCertificateId(intygId).maxBy { it.timestamp }
 
-            val optional = probabilities.stream().findFirst()
-            if (optional.isPresent()) {
-                val probability = optional.get()
-
+            if (probability != null) {
+                System.err.println(probability.timestamp)
                 val rp = RiskPrediktion()
                 rp.intygsId = probability.certificateId
                 val riskSignal = Risksignal()
