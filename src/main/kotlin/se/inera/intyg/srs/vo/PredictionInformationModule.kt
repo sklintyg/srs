@@ -17,6 +17,7 @@ import se.inera.intyg.srs.util.getModelForDiagnosis
 
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.Diagnos
 import java.math.BigInteger
+import java.time.LocalDateTime
 
 @Service
 class PredictionInformationModule(val rAdapter: PredictionAdapter,
@@ -123,8 +124,8 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
     private fun persistProbability(diagnosPrediction: Diagnosprediktion, certificateId: String) {
         log.info("Persisting probability for certificateId: $certificateId")
         val probability = Probability(certificateId, diagnosPrediction.sannolikhetOvergransvarde,
-                diagnosPrediction.risksignal.riskkategori.intValueExact(),
-                diagnosPrediction.inkommandediagnos.code, diagnosPrediction.diagnos.code)
+                diagnosPrediction.risksignal.riskkategori.intValueExact(), diagnosPrediction.inkommandediagnos.code,
+                diagnosPrediction.diagnos.code, LocalDateTime.now())
         probabilityRepo.save(probability)
     }
 

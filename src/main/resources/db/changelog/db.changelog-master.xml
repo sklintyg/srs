@@ -220,4 +220,10 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="9" author="kja">
+        <addColumn tableName="probability">
+            <column name="timestamp" type="DATETIME">
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
