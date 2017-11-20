@@ -4,9 +4,10 @@ import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Marker
 import org.apache.logging.log4j.MarkerManager
 
-fun logPrediction(input: Map<String, String>, diagnosisCode: String, limit: String, sex: String, ageCategory: String, prediction: String, predictionLevel: Int, statusCode: String) {
+fun logPrediction(input: Map<String, String>, diagnosisCode: String, limit: String, sex: String, ageCategory: String, prediction: String,
+                  predictionLevel: Int, statusCode: String, certificateId: String) {
     val log = LogManager.getLogger()
-    log.info(Markers.MONITORING.marker(), "{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}",
+    log.info(Markers.MONITORING.marker(), "{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}",
             diagnosisCode,
             limit,
             prediction,
@@ -25,7 +26,8 @@ fun logPrediction(input: Map<String, String>, diagnosisCode: String, limit: Stri
             input["DP_atStart"] ?: "",
             input["Vtid_yeahBefore_all_r1_Median"] ?: "",
             input["fam_cat_4_cat_fct"] ?: "",
-            statusCode)
+            statusCode,
+            certificateId)
 
 }
 
