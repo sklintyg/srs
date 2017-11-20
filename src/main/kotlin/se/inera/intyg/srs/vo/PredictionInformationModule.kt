@@ -74,7 +74,7 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
 
             logPrediction(extraParams, diagnosPrediktion.diagnos?.code ?: "", diagnosis?.prevalence?.toString() ?: "", person.sex.name,
                     person.ageCategory, calculatedPrediction?.prediction?.toString() ?: "", riskSignal.riskkategori.intValueExact(),
-                    calculatedPrediction?.status?.toString() ?: "")
+                    calculatedPrediction?.status?.toString() ?: "", person.certificateId)
 
             outgoingPrediction.add(diagnosPrediktion)
         }
