@@ -6,7 +6,8 @@ archive_dir: "{{ inera_root }}/archives"
 java_home: "{{ inera_root }}/jre8"
 releases_folder: "{{ inera_root }}/releases"
 deploy_from_repo: true
-reload_resources: true
+update_models: false
+update_statistik: false
 
 #Dummy value for proxy_env
 proxy_env: {}

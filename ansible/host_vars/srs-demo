@@ -4,6 +4,9 @@
 environment_name: "demo"
 config_etc_folder: "{{ config_folder }}/{{ environment_name }}"
 
+resources_models_folder: "/home/ine-intyg-build/models"
+resources_statistik_folder: "/home/ine-intyg-build/statistik_jpg"
+
 tomcat_user: ine-app
 
 proxy_env:
