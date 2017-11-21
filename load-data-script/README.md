@@ -1,6 +1,6 @@
 # Bootstrap SRS-data
 
-We will receive data from SRS-project in form of either csv-files or excel-files. Our script requires input to be csv-files so the first step is to convert the excel-files. To do this you can either use save as in editor of choice for these documents or use a command such as `ssconvert` (`ssconvert` is available in `gnumeric` project for Arch linux).
+We will receive data from SRS-project in form of either csv-files or excel-files. Our script requires input to be csv-files with pipe as field separator so the first step is to convert the excel-files. To do this you can either use save as in editor of choice for these documents or use a command such as `ssconvert` (`ssconvert` is available in `gnumeric` project for Arch linux).
 
 The input-files required are:
 * diagnosis.csv (diagnosis supported by SRS together with prevalence)

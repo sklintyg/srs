@@ -1,0 +1,12 @@
+Frågetext, förslag till text på SRS-sidan i Webcert "Beräkning av risk för lång sjukskrivning"|Hjälptext, ska visas när man "hoovrar" över frågetexten/faktorn|FrågeId i prediktion
+Huvudsaklig sysselsättning vid sjukskrivningsfallets början|Vilken var patientens huvudsakliga sysselsättning när sjukskrivningsfallet började?|SA_SyssStart_fct
+Sjukskrivningsfallet påbörjat inom primärvården|Utfärdades det första läkarintyget för detta sjukskrivningsfall inom primärvården?|NoCareAtStart
+Tidigare sjukskrivning mer än 14 dagar i sträck senaste 12 månaderna |Har patienten varit sjukskriven fler än 14 dagar i sträck under de senaste 12 månaderna, innan detta sjukskrivningsfall började?|SA_1_gross
+Tagit högskolepoäng|Har patienten tagit poäng på högskolenivå?|edu_cat_fct
+Fler än ett läkarbesök i specialiserad öppenvård (ej primärvård) senaste 12 månaderna|Har patienten varit på fler än ett läkarbesök i specialiserad öppenvård (t.ex. på sjukhusmottagning)  under de senaste 12 månaderna innan detta sjukskrivningsfall började? Primärvårdsbesök räknas inte.|Visits_yearBefore_all_r1_median
+Född i Sverige|Är patienten född i Sverige?|birth_cat_fct
+Sjukskrivningsgrad i början av sjukskrivningsfallet|Vilken var sjukskrivningsgraden när sjukskrivningsfallet påbörjades?|SA_ExtentFirst
+Annan långvarig/kronisk sjukdom|Har patienten annan kronisk/långvarig sjukdom? Hur många?|comorbidity
+Sjuk- eller aktivitetsersättning på deltid i början av sjukskrivningsfallet|Hade patienten sjuk-eller aktivitetsersättning på deltid när sjukskrivningsfallet påbörjades?|DP_atStart
+Inlagd på sjukhus minst två dagar senaste 12 månaderna innan sjukskrivningsfallet började|Inlagd på sjukhus minst 2 dagar under de senaste 12 månaderna innan sjukskrivningsfallet började|Vtid_yearBefore_all_r1_median
+Gift/sambo eller ensamstående/särbo|Är patienten gift/sammanboende eller ensamstående/särbo?|fam_cat_4_cat_fct
