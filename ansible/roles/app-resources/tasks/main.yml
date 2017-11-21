@@ -4,6 +4,7 @@
   file:
     state: absent
     path: "{{ app_resources_folder }}"
+  when: reload_resources|bool
 
 - name: Create application resources folder
   file:
@@ -11,6 +12,7 @@
     path: "{{ app_resources_folder }}"
     owner: "{{ tomcat_user }}"
     group: "{{ tomcat_user }}"
+  when: reload_resources|bool
 
 - name: Copy application resources
   copy:
@@ -18,3 +20,4 @@
     dest: "{{ app_resources_folder }}"
     owner: "{{ tomcat_user }}"
     group: "{{ tomcat_user }}"
+  when: reload_resources|bool
