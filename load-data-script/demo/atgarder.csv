@@ -1,137 +1,229 @@
-Åtgärdsförslag (formuleringen är under revidering och uppdatering)||||
-RÅD-id|Kategori (REK/OBS)|rekommenderade åtgärder(REK)/Tänk på att (OBS)|Åtgärd/åtgärder i intyget|Bedömning i intyget
-1|OBS|Kartlägga potentiella stressfaktorer och hur patienten kan bli <b>avlastad</b> ||
-2|OBS|Kartlägga <b>sömnstörningar</b> och motionsvanor||
-3|OBS|Skicka med lättillgänglig information om diagnosen och behandlingsmöjligheter||
-4|OBS|Eventuellt förmedla kontakt med andra i samma situation||
-5|OBS|Kvinnor och män med likartade arbetsvillkor drabbas av utmattningssyndrom i lika hög grad||
-6|OBS|Utreda eventuell depression, eftersom män ofta felaktigt ges en somatisk diagnos||
-7|OBS|Utreda samsjuklighet, eftersom kvinnor ofta felaktigt får en psykiatrisk diagnos||
-8|OBS|Informera om mindfulness -övningar via 1177 Vårdguiden||
-9|OBS|Byte av yrke eller arbetsplats kan vara alternativ||
-10|REK|Arbetsanpassning och stöd till arbetsplatsbesök samt arbetsplatsträning, via arbetsgivare och ev. företagshälsovård|Arbetsanpassning, Arbetsträning, Besök på arbetsplatsen, Kontakt med företagshälsovård|
-12|REK|Vid akut fas: Heltids- eller deltidssjukskrivning]i upp till 6 månader||
-13|REK|Psykoterapi eller psykosocial behandling ||
-14|OBS|Kartlägga potentiella stressfaktorer och hur patienten kan bli avlastad||
-15|OBS|Informera om kortvarig stress i syfte att undvika medikalisering och sjukskrivning||
-16|OBS|Stötta patientens egna åtgärder för att hantera stress||
-17|OBS|Alltid beakta suicidal risk||
-18|REK|FaR för minst 30 minuters motion per dag||
-19|REK|Psykoterapi för att understödja livsstilsförändringar och stresshantering||
-20|REK|Kroppsmedvetandeträning för att lära sig hantera kroppens varningssignaler||
-21|REK|Arbetsanpassning och stöd till successiv återgång via arbetsterapeut||
-22|REK|Fysioterapi för träning av kroppsmedvetenhet, avslappning och andning||
-23|OBS|Kartlägga grad av depression med hjälp av ICD 10, DSM IV och självskattningsschema||
-24|OBS|Full effekt av psykoterapi kan ske redan inom fyra veckor, men mest sannolikt efter minst åtta veckor beroende på grad||
-25|OBS|Undvika sjukskrivning vid lindrig förstagångsdepression,,
-26|OBS|Utreda samsjuklighet, eftersom kvinnor ofta felaktigt får en psykiatrisk diagnos||
-27|REK|Utredning enligt DSM IV-kriterier via psykiatrisk klinik,,
-28|REK|Psykoterapi: KBT, interpersonell psykoterapi (IPT), psykodynamisk korttidsterapi (ISTDP)||
-29|REK|Arbetsanpassning, via arbetsgivare och företagshälsovård||
-30|REK|Fysisk aktivitet (FaR med konditions- och styrketräning eller fysioterapi)||
-31|REK|Behandling med rTMS (repetitiv transkraniell magnetstimulering)||
-32|REK|Internetbaserad KBT, via 1177 Stöd och behandling||
-33|OBS|Överväga deltidssjukskrivning med anpassade arbetsuppgifter||
-34|OBS|Beakta barns behov av information, råd och stöd, enligt barnperspektivet||
-35|OBS|Kolla långtidssjukskrivna med prov, eftersom missbruk och alkohol är mer skamligt för kvinnor||
-36|OBS|Fråga kvinnor om våld i nära relationer||
-37|REK|Rehabiliteringsplan, i samverkan med anhörig och slutenvård||
-38|REK|Vid tidigare god effekt: återinsatt läkemedelsbehandling||
-39|REK|Psykosocial behandling: stödjande samtal, motiverande samtal eller psykopedagogisk behandling||
-40|REK|Arbetsterapi för funktionsträning och strukturstödjande insatser samt kognitiva hjälpmedel||
-41|REK|KBT eller mindfulness-baserad kognitiv terapi för att förebygga återfall||
-42|OBS|Erbjuda en strukturerad första bedömning||
-43|OBS|Bensodiazepiner är olämpliga pga. risk för toleransutveckling||
-44|OBS|Ge generella råd för att minska ångest och informera om mindfullness övningar via 1177 Vårdguiden||
-45|REK|Vid social fobi: Internetbaserad KBT via 1177 Stöd och behandling||
-46|REK|SSRI-läkemedel enligt Läkemedelverkets rekommendation||
-47|OBS|Utreda alkoholanvändning och samsjuklighet med missbruk och ångesttillstånd||
-48|OBS|Kartlägga behov av mer omfattande psykosocial behandling||
-49|OBS|Patient- och närståendeutbildning är ett värdefullt komplement till annan behandling||
-50|OBS|Arbeten som medför förhöjd stressnivå, oregelbunden livsföring och som stör normal dygnsrytm är olämpliga||
-51|REK|Psykopedagogisk behandling tillsammans med närstående||
-52|REK|Psykoterapi: KBT, familjefokuserad terapi (FFT), interpersonell och social rytmterapi (IPSRT)||
-53|OBS|Avråda från arbete ovan axelplanet||
-54|OBS|Instruera om armpendling, skulderstretchning, dörrlutning och dörrkarmspress||
-55|OBS|Överväga arbetsbyte tidigt då problem kan kvarstå under lång tid||
-56|REK|Ergonomisk arbetsplatsbedömning, via arbetsgivare och företagshälsovård||
-57|REK|Arbetsuppgiftsanpassning, via arbetsgivare och företagshälsovård||
-58|REK|Fysioterapi för träning av rörlighet, styrka och koordination som kan förbättra subjektiv funktion||
-59|REK|Kiropraktik för att behandla triggerpunkter i muskulatur||
-60|OBS|Kartlägga fysiska och psykosociala riskfaktorer som kan leda till utveckling av långvarig smärta||
-61|OBS|Posttraumatiskt stressyndrom (PTSD) drabbar 25 % av patienter med kvarvarande smärta efter olycka||
-62|OBS|Mer information om egenbehandling finns att läsa via 1177 Vårdguiden||
-63|OBS|Snabb fysioterapi och arbetsanpassning kan förhindra risken för kronisk smärta||
-64|REK|Fysioterapi för träning av förbättrad prestationsförmåga, stämningsläge, sömn och minskad stresskänslighet||
-65|REK|Ergonomisk arbetsplatsbedömning, via arbetsgivare och företagshälsovård||
-66|REK|Arbetsterapi för utprovning av hjälpmedel, via arbetsgivare och företagshälsovård||
-67|REK|Arbetsanpassning, via arbetsgivare och företagshälsovård||
-68|REK|Rehabiliteringsplan och stöd i försäkringsfrågor (via smärtspecialistmottagning eller rehabkoordinator)||
-69|REK|Utredning och behandling via smärtspecialistmottagning||
-70|OBS|Avråda från framåtböjda positioner och vridna lyft||
-71|OBS|Uppmuntra till fortsatt arbete och belastning vilket påskyndar läkningen||
-72|OBS|Informera om mindfulness övningar via 1177 Vårdguiden||
-73|REK|Fysioterapi med genomgång av ett styrketräningsprogram och ryggstretchövningar||
-74|REK|Fysisk aktivitet (FaR med konditions- och styrketräning samt rörlighets-och balansträning eller fysioterapi)||
-75|REK|Ergonomisk arbetsplatsbedömning, via arbetsgivare och företagshälsovård||
-76|REK|Arbetsanpassning, via arbetsgivare och företagshälsovård||
-77|OBS|Uppmuntra till fortsatt arbete och belastning vilket påskyndar läkningen.||
-78|OBS|Kartlägga bakomliggande orsaker såsom övervikt, arbetsställning, stress och missnöjdhet||
-79|OBS|Smärtstillande läkemedel kan hjälpa en inaktiv och rörelserädd patient||
-80|REK|Rökstopp genom sluta-röka-programmet Rökfri, via 1177 Vårdguiden||
-81|REK|Vid övervikt: Kostrådgivning, via dietist||
-82|REK|Kartläggning av arbetsplatsförhållanden och livssituation via företagshälsovård||
-83|REK|Multimodal rehabilitering för smärthantering via företagshälsovård||
-84|OBS|Akuta besvär kan återkomma utan direkt samband med fysiska påfrestningar||
-85|REK|Kartläggning av arbetsplatsförhållanden och livssituation via företagshälsovård||
-86|OBS|Muskelspänningar kan förknippas med stress pga. psykosociala arbetsvillkor||
-87|OBS|Träning av lår- och benmuskulatur minskar risken för droppfot och ytterligare besvär.||
-88|REK|Fysioterapi för träning av rygg- och lårmuskulatur||
-89|OBS|Det saknas vetenskapliga bevis för att TNS (transkutan nervstimulering), ultraljud, akupunktur, värme eller laserterapi skulle ha effekt||
-90|REK|Manuell terapi för smärtlindring via naprapat, kiropraktor eller fysioterapeut||
-91|OBS|Kartlägga motionsvanor och möjliga lösningar för avlastning (käpp, ortos, viktnedgång)||
-92|REK|Fysioterapi med instruktioner och hjälp att komma igång med lämplig träning via artrosskola||
-93|REK|Ergonomisk arbetsplatsbedömning, via arbetsgivare och företagshälsovård||
-94|OBS|Om det inte går att anpassa arbetsuppgifterna bör byte av arbete övervägas tidigt||
-95|REK|Bedömning och eventuell operation, via ortoped||
-96|OBS|Artroskopisk kirurgi vid knäartros inte har någon effekt på smärta, funktion och livskvalitet||
-97|OBS|Kartlägga kost- och motionsvanor, samt uppmuntra till viktnedgång även vid måttlig övervikt||
-98|REK|Vid övervikt: Kostrådgivning, via dietist||
-99|OBS|Ultraljudsbehandling inte har någon visad effekt||
-100|REK|Fysisk aktivitet (FaR med konditions- och styrketräning eller fysioterapi)||
-101|OBS|Mer information om egenbehandling finns att läsa via 1177 Vårdguiden||
-102|REK|Smärtstillande eller NSAID-läkemedel, exempelvis kortisoninjektion||
-103|REK|Fysioterapi eller arbetsterapi för ändring av belastningsmönster och utprovning av tumbas-ortos||
-104|OBS|Tidigt utreda ändrat belastningsmönster i kombination med smärtstillande eller NSAID-läkemedel||
-105|REK|Efter operation: Fysioterapi för träningsprogram med fokus på successivt ökad belastning||
-106|REK|FaR med konditions- och styrketräning||
-107|OBS|Det kan räcka med fem minuters träning om dagen för att förbättra situationen||
-108|REK|Arbetsuppgiftsanpassning, via arbetsgivare och företagshälsovård||
-109|OBS|Symptomen kan tyda på tidigt utvecklad knäartros, varpå artroskopisk kirurgi inte har någon effekt.||
-110|OBS|Avråda från vibrerande verktyg, ensidig tung handbelastning samt repetitiva arbetsuppgifter||
-111|OBS|Avråda från tung fysisk belastning de första 4 veckorna efter operation||
-112|OBS|Informera om hyperestesiträning av ömmande ärr efter operation||
-113|REK|Arbetsterapi för utprovning av handledsskena till natten||
-114|REK|Ergonomisk arbetsplatsbedömning, via arbetsgivare och företagshälsovård||
-115|REK|Arbetsuppgiftsanpassning, via arbetsgivare och företagshälsovård||
-116|OBS|Byte av yrke eller arbetsplats kan vara alternativ||
-117|OBS|Repetitiva sträck- och vridrörelser i handledens sträckmuskulatur och vid musklernas ursprung leder till degenerativa skador||
-118|OBS|Kartlägga arbets- eller fritidsaktivitet som eventuellt utlöst tillståndet||
-119|OBS|Självläkningspotentialen är stor och nära 90 % kan beräknas bli besvärsfria inom 1 år||
-120|OBS|Överväga deltidssjukskrivning med stöd av hjälpmedel||
-121|REK|Fysioterapi för instruktioner och hjälp med egenvård, inklusive stretching av extensorerna||
-122|REK|Arbetsanpassning för att ändra belastningsmönster, via arbetsgivare och företagshälsovård||
-123|REK|Arbetsterapi eller fysioterapi för utprovning av epikondylitbandage eller handledsstöd||
-124|REK|Ergonomisk arbetsplatsbedömning, via arbetsgivare och företagshälsovård||
-125|OBS|Isolerade ulnafrakturer kan vara parerskador och tecken på våld i nära relation, vilket ska uteslutas.||
-126|OBS|Tid för sjukskrivning beror på om fraktur är belägen på dominant eller icke-dominant sida.||
-127|OBS|Instruera om vikten av handen i högläge och omedelbar rörlighetsträning för cirkulation||
-128|REK|Fysioterapi eller arbetsterapi för mobilisering genom rörlighetsträning och ödemprofylax||
-129|REK|Ergonomisk arbetsplatsbedömning, via arbetsgivare och företagshälsovård||
-130|REK|Arbetsuppgiftsanpassning, via arbetsgivare och företagshälsovård||
-131|REK|Kostrådgivning om skelettstärkande kost via dietist ||
-132|OBS|Utreda patientens arbetsuppgifter vilket avgör tiden till återgång i arbete (ofta möjligt inom en vecka)||
-133|OBS|Informera om rök-, kost- och alkoholvanor i syfte att förebygga benbrott, via 1177 Vårdguiden||
-134|OBS|Instruera om högläge samt rörlighetsträning för att förebygga stelhet efter avgipsning||
-135|OBS|Utreda patientens arbetsuppgifter eftersom funktionsnedsättningen kan kvarstå efter gipsbehandling||
-136|REK|Arbetsanpassning, under läketiden 3
+Rekommendationer||
+ID|Kategori (REK/OBS)|till webcert: Rekommenderade åtgärder(REK)/Tänk på att (OBS)
+1|OBS|<br /> Diskutera socialt belastande och/eller arbetsrelaterade stressfaktorer och hur patienten kan bli avlastad dessa
+2|OBS|<br /> Stimulera återhämtningssystemet med vila och träning
+3|OBS|<br /> Patientriktad information om diagnosen och behandlingsmöjligheter finns via  1177 Vårdguiden
+4|OBS|<br /> Eventuellt förmedla kontakt med andra i samma situation
+5|OBS|<br /> Kvinnor och män med likartade arbetsvillkor drabbas av utmattningssyndrom i lika hög grad
+6|OBS|<br /> Existentiell smärta tolkas ofta som somatisk hos män och psykiatrisk hos kvinnor
+7|OBS|<br /> Informera om egenbehandling, exempelvis mindfulness-övningar via 1177 Vårdguiden
+8|OBS|<br /> Forskning visar att de patienter som kan byta både arbetsplats och yrke återhämtar sig bäst
+9|REK|Arbetsanpassning, arbetsplatsbesök och arbetsplatsträning, via arbetsgivare och ev. företagshälsovård
+10|REK|	Rehabsamordning och plan för återgång i arbete, i samverkan med närstående, vårdgivare, arbetsgivare och Försäkringskassan
+11|REK|Multimodal rehabilitering, via vårdgivare eller företagshälsovård alt. annan specialistmottagning
+12|REK|Psykoterapi och/eller psykosocial behandling för att understödja livsstilsförändringar och stresshantering
+13|OBS|<br /> Kartlägga potentiella stressfaktorer och hur patienten kan bli avlastad
+14|OBS|<br /> Stötta patienten i att identifiera och använda egna hälsofrämjande åtgärder för att hantera stress
+15|OBS|<br /> Överväg bakomliggande ångestsjukdom eller depression
+16|OBS|<br /> Uppmuntra till fortsatt sysselsättning och om aktuellt kontakt med arbetsgivare och arbetskamrater
+17|OBS|<br /> Alltid beakta suicidal risk
+18|REK|FaR med 30-45 min konditions- och styrketräning 2-3 ggr/vecka
+19|REK|Psykoedukation för avdramatisering och stresshantering, via vårdgivare och ev. specialistmottagning
+20|REK|Arbetsanpassning med omfördelning av arbetsuppgifter eller byte av arbetsställe, via arbetsgivare och ev. företagshälsovård 
+21|REK|Psykoterapi i grupp, via specialistmottagning
+22|REK|Arbetsanpassning inkl. stöd till arbetsplatsbesök och successiv återgång via arbetsterapeut
+23|REK|Basal kroppskännedom, för träning av avslappning och andning, via fysioterapeut
+24|OBS|<br /> Fråga om våld, hot och övergrepp 
+25|OBS|<br /> Stress, skadligt substansbruk och sömnbrist ökar risken för återinsjuknande
+26|OBS|<br /> Kartlägga grad av depression med hjälp av självskattning i ett frågeformulär
+27|OBS|<br /> God effekt av psykoterapi kan ske redan inom fyra veckor, men mer sannolikt efter minst åtta veckor beroende på grad
+28|OBS|<br /> Uppmuntra till fortsatt sysselsättning och om aktuellt kontakt med arbetsgivare och arbetskamrater
+29|OBS|<br /> Utreda samsjuklighet, inklusive alkohol- och droganamnes
+30|REK|Utredning enligt DSM IV-kriterier via psykiatrisk klinik
+31|REK|KBT (kognitiv beteendeterapi), ex. Acceptance and Commitment Therapy (ACT)
+32|REK|Psykoterapi: KBT, Acceptance and Commitment Therapy (ACT), interpersonell psykoterapi (IPT), psykodynamisk korttidsterapi (ISTDP)
+33|REK|Arbetsanpassning med omfördelning av arbetsuppgifter eller byte av arbetsställe, via arbetsgivare och ev. företagshälsovård
+34|REK|FaR med konditionsträning-3-7 ggr/vecka och styrketräning 2-3 ggr/vecka
+35|REK|Behandling med rTMS (repetitiv transkraniell magnetstimulering)
+36|REK|Internetbaserad KBT, via 1177 Stöd och behandling
+37|OBS|<br /> 	Överväga bakomliggande sjukdomar och personlighetsstörning
+38|OBS|<br /> Beakta barns behov av information, råd och stöd, enligt barnperspektivet
+39|OBS|<br /> Utreda samsjuklighet, inklusive alkohol- och droganamnes
+40|OBS|<br /> Heltidssjukskrivning kan försämra tillståndet, särskilt om problemet är kopplat till påfrestningar i privatlivet
+41|REK|	Rehabsamordning och plan för återgång i arbete, i samverkan med närstående, vårdgivare, arbetsgivare och Försäkringskassan
+42|REK|Vid tidigare god effekt: återinsatt läkemedelsbehandling
+43|REK|Psykosocial behandling: stödjande samtal, motiverande samtal eller psykopedagogisk behandling
+44|REK|Funktionsträning och strukturstödjande insatser samt kognitiva hjälpmedel, via arbetsterapeut
+45|REK|KBT eller mindfulness-baserad kognitiv terapi för att förebygga återfall
+46|OBS|<br /> 	En gradvis återgång i arbete kan underlätta, trots en risk för initialt ökat ångestpåslag
+47|OBS|<br /> Erbjuda en strukturerad första bedömning
+48|OBS|<br /> Förmedla kontakt med patientföreningar
+49|OBS|<br /> Undvika bensodiazepiner, pga. stor risk för tolerans- och beroendeutveckling
+50|OBS|<br /> Ge generella råd för att minska ångest och informera om mindfullness-övningar via 1177 Vårdguiden
+51|REK|KBT (kognitiv beteendeterapi) med traumaexponering, mindfulnessbaserad kognitiv terapi eller ACT(Acceptance and Commitment Therapy)
+52|REK|FaR med konditionsträning 3-5 ggr/vecka, via fysioterapeut
+53|REK|	Arbetsanpassning med omfördelning av arbetsuppgifter, via arbetsgivare och ev. företagshälsovård
+54|REK|Vid social fobi: Internetbaserad KBT via 1177 Stöd och behandling
+55|REK|SSRI-läkemedel enligt Läkemedelverkets rekommendation
+56|OBS|<br /> Utreda samsjuklighet inklusive alkohol- och droganamnes
+57|OBS|<br /> Diskutera eventuell samverkan med socialtjänsten eller andra myndigheter för att stabilisera livssituationen
+58|OBS|<br /> Personer med dolda funktionsnedsättningar kan uppleva sin position i arbetslivet som både utsatt och osäker
+59|OBS|<br /> Kartlägga behov av mer omfattande psykosocial behandling
+60|OBS|<br /> Patient- och närståendeutbildning är ett värdefullt komplement till annan behandling
+61|OBS|<br /> Arbeten som medför förhöjd stressnivå, oregelbunden livsföring och som stör normal dygnsrytm är olämpliga
+62|OBS|<br /> Patientriktad information om diagnosen och behandlingsmöjligheter finns via  1177 Vårdguiden
+63|REK|Patient- och närståendeutbildning, via vårdgivare eller specialistmottagning
+64|REK|	Rehabsamordning och plan för återgång i arbete, i samverkan med närstående, vårdgivare, arbetsgivare och Försäkringskassan
+65|REK|Arbetsanpassning med omfördelning av arbetsuppgifter eller byte av arbetsställe, via arbetsgivare och ev. företagshälsovård
+66|REK|Psykosocial behandling: stödjande samtal, motiverande samtal eller psykopedagogisk behandling
+67|REK|Psykoterapi: KBT, Acceptance and Commitment Therapy (ACT), familjefokuserad terapi (FFT), interpersonell och social rytmterapi (IPSRT)
+68|OBS|<br /> Avråda från arbete ovan axelplanet
+69|OBS|<br /> Instruera om t.ex. armpendling, skulderstretchning, dörrlutning och dörrkarmspress
+70|OBS|<br /> 	Multimodal rehabilitering kan vara en samlad väg tillbaka och minska risken för kronisk smärta
+71|OBS|<br /> Överväga arbetsbyte tidigt då problem kan kvarstå under lång tid
+72|REK|Multimodal rehabilitering, via vårdgivare eller företagshälsovård alt. annan specialistmottagning
+73|REK|Ergonomisk arbetsplatsbedömning, via arbetsgivare och ev. företagshälsovård
+74|REK|Arbetsanpassning med omfördelning av arbetsuppgifter, via arbetsgivare och ev. företagshälsovård
+75|REK|Fysioterapi för träning av rörlighet, styrka och koordination som kan förbättra funktion
+76|REK|Kiropraktik eller fysioterapi för att behandla triggerpunkter i muskulatur
+77|OBS|<br /> 	Personer med pisksnärtskada kan ha symtom liknande utmattningstillstånd
+78|OBS|<br /> 	Utreda hur smärtan och rörelseinskränkningen begränsar patientens förmåga att klara just sina arbetsuppgifter
+79|OBS|<br /> Kartlägg resurser för att motverka utveckling av kronisk smärta och medikalisering
+80|OBS|<br /> Efter olycka: Posttraumatiskt stressyndrom (PTSD) drabbar 25 % av patienter med kvarvarande smärta
+81|OBS|<br /> 	Smärtan kan förvärras av stress p.g.a. arbetsmiljö eller hemsituation
+82|OBS|<br /> Patientriktad information om diagnosen och behandlingsmöjligheter finns via  1177 Vårdguiden
+83|OBS|<br /> Multiprofessionell rehabilitering kan vara en samlad väg tillbaka och minska risken för kronisk smärta
+84|REK|FaR med smärtlindring, rådgivning och träningsprogram, via fysioterapeut
+85|REK|Ergonomisk arbetsplatsbedömning, via arbetsgivare och ev. företagshälsovård
+86|REK|	Multimodal rehabilitering, via vårdgivare eller företagshälsovård alt. annan specialistmottagning
+87|REK|	KBT (kognitiv beteendeterapi), via vårdgivare eller företagshälsovård
+88|OBS|<br /> Utreda arbetsrelaterade och/eller socialt belastande stressfaktorer
+89|OBS|<br /> Utreda hur smärtan och rörelseinskränkningen begränsar patientens förmåga att klara just sina arbetsuppgifter
+90|OBS|<br /> 	Förebyggande sjukpenning för fysioterapi kan vara ett lämpligt alternativ till sjukskrivning
+91|OBS|<br /> Alltför tunga, framåtböjda och vridna lyft kan förvärra smärtan
+92|OBS|<br /> Uppmuntra till fortsatt arbete och lagom belastning då det i allmänhet inte är farligt att arbeta trots att det gör ont
+93|OBS|<br /> Uppmuntra till fortsatt arbete och lagom belastning då det i allmänhet inte är farligt att arbeta trots att det gör ont
+94|OBS|<br /> Uppmuntra till fortsatt arbete och lagom belastning då det i allmänhet inte är farligt att arbeta trots att det gör ont
+95|OBS|<br /> Informera om mindfulness-övningar och kognitiv beteende terapi via 1177 Vårdguiden
+96|REK|FaR med smärtlindring, rådgivning och träningsprogram, via fysioterapeut
+97|REK|Ergonomisk arbetsplatsbedömning, via arbetsgivare och företagshälsovård
+98|REK|Arbetsanpassning med omfördelning av arbetsuppgifter eller byte av arbetsställe, via arbetsgivare och ev. företagshälsovård
+99|REK|Arbetsanpassning med omfördelning av arbetsuppgifter eller byte av arbetsställe, via arbetsgivare och ev. företagshälsovård
+100|REK|Arbetsanpassning med omfördelning av arbetsuppgifter eller byte av arbetsställe, via arbetsgivare och ev. företagshälsovård
+101|OBS|<br /> 	Diskutera bakomliggande faktorer som exempelvis övervikt, rökning, arbetsmiljö och livssituation
+102|OBS|<br /> Smärtstillande läkemedel, sensorisk stimulering och/eller KBT kan hjälpa en inaktiv och rörelserädd patient
+103|REK|Rökstopp exempelvis genom sluta-röka-programmet Rökfri, via 1177 Vårdguiden
+104|REK|Vid övervikt: Osteoporosutredningen eller kostrådgivning, via dietist eller utbildad sjukvårdspersonal
+105|REK|Kartläggning av arbetsplatsförhållanden och livssituation, via företagshälsovård
+106|REK|Multimodal rehabilitering för smärthantering, via vårdgivare eller företagshälsovård alt. annan specialistmottagning
+107|OBS|<br /> Akuta besvär kan återkomma utan direkt samband med fysiska påfrestningar
+108|REK|Ergonomisk arbetsplatsbedömning, via arbetsgivare och ev. företagshälsovård
+109|OBS|<br /> Smärtan kan förvärras av stress p.g.a. arbetsmiljö eller hemsituation
+110|OBS|<br /> Träning av lår- och benmuskulatur minskar risken för "droppfot" och ytterligare besvär.
+111|REK|FaR med smärtlindring, rådgivning och träningsprogram, via fysioterapeut
+112|OBS|<br /> Det saknas vetenskapliga bevis för att TNS (transkutan nervstimulering), ultraljud, akupunktur, värme eller laserterapi skulle ha effekt
+113|REK|Manuell terapi för smärtlindring via naprapat, kiropraktor eller fysioterapeut
+114|OBS|<br /> 	Utreda patientens arbetsuppgifter eftersom besvären ofta är förknippade med fysikaliska riskfaktorer på arbetsplatsen
+115|OBS|<br /> 	Uppmuntra till fortsatt arbete och lagom belastning då det i allmänhet inte är farligt att arbeta trots att det gör ont
+116|OBS|<br /> 	Stillasittande under en längre tid medför att mellankotsskivorna i ländryggen trycks ihop och näringstillförseln störs
+117|OBS|<br /> 	Uppmuntra patienten att undvika att vila i sängen och att så snart som möjligt komma upp och röra på sig
+118|OBS|<br /> 	Göra patienten medveten om vikten av lämplig regelbunden träning
+119|OBS|<br /> 	Det hittills inte finns några inga bevis på att massage, akupunktur, tens, korsett, kyla, värme, kortvågsdiatermi eller ultraljud hjälper vid tillfällig ryggvärk
+120|OBS|<br /> Kartlägga motionsvanor och möjliga lösningar för avlastning (käpp, ortos, viktnedgång)
+121|OBS|<br /> 	Uppmuntra till låga doser träning under lång tid eftersom patienter med generaliserad artros vanligen reagerar negativt på alltför kraftig träning
+122|OBS|<br /> 	Förebyggande sjukpenning för fysioterapi kan vara ett lämpligt alternativ till sjukskrivning
+123|OBS|<br /> 	Kartlägga kost- och motionsvanor - för inaktiva gör redan fem minuters träning om dagen skillnad
+124|OBS|<br /> 	Tidigt initiera en fysioterapeutisk bedömning för att utesluta muskulära rörelseinskränkningar
+125|OBS|<br /> 	Informera om vikten av konservativ behandling och att en genomsnittlig protes endast håller ett begränsat antal år
+126|REK|	FaR med konditions-, styrke- eller funktionell träning (2-3 ggr/vecka), via artrosskola eller fysioterapeut
+127|REK|Ergonomisk arbetsplatsbedömning, via arbetsgivare och företagshälsovård
+128|OBS|<br /> Om det inte går att anpassa arbetsuppgifterna bör byte av arbete övervägas tidigt
+129|OBS|<br /> Om det inte går att anpassa arbetsuppgifterna bör byte av arbete övervägas tidigt
+130|OBS|<br /> Symptomen tyder ofta på tidigt utvecklad knäartros
+131|OBS|<br /> 	Uppmuntra till viktnedgång även vid måttlig övervikt
+132|REK|Kostrådgivning, via dietist eller utbildad sjukvårdspersonal
+133|OBS|<br /> Ultraljudsbehandling inte har någon visad effekt
+134|OBS|<br /> Patientriktad information om diagnosen och behandlingsmöjligheter finns via  1177 Vårdguiden
+135|OBS|<br /> Patientriktad information om diagnosen och behandlingsmöjligheter finns via  1177 Vårdguiden
+136|REK|Smärtstillande eller NSAID-läkemedel, exempelvis kortisoninjektion
+137|REK|Fysioterapi för ändring av belastningsmönster
+138|OBS|<br /> Tidigt utreda ändrat belastningsmönster
+139|REK|Efter operation: Fysioterapi för träningsprogram med fokus på successivt ökad belastning
+140|OBS|<br /> För inaktiva gör redan fem minuters träning om dagen skillnad
+141|REK|Arbetsanpassning med omfördelning av arbetsuppgifter eller omplacering, via arbetsgivare och ev. företagshälsovård
+142|REK|	Ergonomisk arbetsplatsbedömning, via arbetsgivare och ev. företagshälsovård
+143|REK|Arbetsanpassning med omfördelning av arbetsuppgifter eller omplacering, via arbetsgivare och ev. företagshälsovård
+144|OBS|<br /> Avråda från vibrerande verktyg, ensidig tung handbelastning samt repetitiva arbetsuppgifter
+145|OBS|<br /> Utreda hur smärtan och rörelseinskränkningen begränsar patientens förmåga att klara just sina arbetsuppgifter
+146|OBS|<br /> Överväga tumbasartros eller reumatisk ledsjukdom vid långdragna besvär eller inflammationer på annat ställe
+147|OBS|<br /> Informera om hyperestesiträning av ömmande ärr efter operation
+148|REK|Utprovning av tumbasortos och/eller handledsskena, via arbetsterapeut
+149|REK|FaR med rådgivning och träningsprogram, via fysioterapeut
+150|REK|Ergonomisk arbetsplatsbedömning, via arbetsgivare och företagshälsovård
+151|REK|Arbetsanpassning med omfördelning av arbetsuppgifter, via arbetsgivare och ev. företagshälsovård
+152|OBS|<br /> Byte av yrke eller arbetsplats kan vara alternativ på sikt
+153|OBS|<br /> Repetitiva sträck- och vridrörelser i handledens sträckmuskulatur och vid musklernas ursprung leder till degenerativa skador
+154|OBS|<br /> 	Diskutera arbets- eller fritidsaktivitet som eventuellt utlöst tillståndet
+155|OBS|<br /> Självläkningspotentialen är stor och nära 90 % kan beräknas bli besvärsfria inom 1 år
+156|OBS|<br /> 	Överväga deltidssjukskrivning under en begränsad tidsperiod, ev. med stöd av hjälpmedel
+157|REK|FaR med smärtlindring, rådgivning och träningsprogram, via fysioterapeut
+158|REK|Arbetsanpassning med omfördelning av arbetsuppgifter eller byte av arbetsställe, via arbetsgivare och ev. företagshälsovård
+159|REK|Utprovning av epikondylitbandage eller handledsstöd, via arbetsterapeut eller fysioterapeut
+160|REK|Ergonomisk arbetsplatsbedömning, via arbetsgivare och ev. företagshälsovård
+161|OBS|<br /> Isolerade ulnafrakturer kan vara parerskador och tecken på våld i nära relation, vilket ska utredas
+162|OBS|<br /> 	Alkoholkonsumtion försvårar läkningen
+163|OBS|<br /> 	Utreda hur rörelseinskränkningen begränsar patientens förmåga att arbeta och vad patienten kan utföra även under pågående gipsbehandling
+164|OBS|<br /> Längd på sjukskrivning beror på om fraktur är belägen på dominant eller icke-dominant sida.
+165|OBS|<br /> Instruera om vikten av handen i högläge och omedelbar rörlighetsträning för cirkulation
+166|REK|Efter adekvat frakturbehandling: Fysioterapi eller arbetsterapi för mobilisering genom rörlighetsträning och ödemprofylax
+167|REK|Arbetsanpassning med omfördelning av arbetsuppgifter eller byte av arbetsställe, via arbetsgivare och ev. företagshälsovård
+168|REK|Osteoporosutredningen eller kostrådgivning, via dietist eller utbildad sjukvårdspersonal
+169|OBS|<br /> Informera om rök-, kost- och alkoholvanor i syfte att förebygga benbrott, via 1177 Vårdguiden
+170|OBS|<br /> Instruera om högläge samt rörlighetsträning för att förebygga stelhet efter avgipsning samt andra ev. komplikationer
+171|REK|Arbetsanpassning med omfördelning av arbetsuppgifter eller byte av arbetsställe, via arbetsgivare och företagshälsovård
+172|REK|Fysioterapi eller arbetsterapi för mobilisering genom rörlighetsträning och ödemprofylax
+173|REK|	Vid risk för karpaltunnelsyndrom: ergonomisk arbetsplatsbedömning, via arbetsgivare och ev. företagshälsovård
+174|REK|Utprovning av hjälpmedel inkl. stödskena, via arbetsterapeut eller fysioterapeut
+175|OBS|<br /> Funktionsnedsättning kan kvarstå, och pseudoartros kan uppstå, efter gipsbehandling
+176|OBS|<br /> Utreda patientens arbetsuppgifter; vissa arbeten kan utföras även under pågående gipsbehandling
+177|REK|	Fysioterapi eller arbetsterapi med rörlighetsträning och ödemprofylax (särskilt viktigt vid fraktur på os scaphoideum)
+178|REK|Fysisk aktivitet med rörlighetsträning och ödemprofylax, via tex. FaR eller fysioterapeut 
+179|REK|Arbetsanpassning med omfördelning av arbetsuppgifter eller byte av arbetsställe, via arbetsgivare och ev. företagshälsovård
+180|OBS|<br /> 	Informera arbetsgivare och Försäkringskassan om det är möjligt att återgå i arbete med hjälp av arbetsresor
+181|OBS|<br /> Utreda hur rörelseinskränkningen begränsar patientens förmåga att arbeta och vad patienten kan utföra även under pågående gipsbehandling
+182|REK|Arbetsresor, via arbetsgivare (dag 1-14) och Försäkringskassan (från dag 15)
+183|REK|	Arbetsanpassning med omfördelning av arbetsuppgifter eller omplacering, via arbetsgivare och ev. företagshälsovård
+184|REK|	FaR med individuellt utprovat träningsprogram för funktions- och aktivitetsträning, via fysioterapeut
+185|REK|Tillhandahållande av gånghjälpmedel, via företagshälsovård eller arbetsterapeut
+186|OBS|<br /> Skadan ofta kan innebära en ofrivilligt avbruten idrottskarriär
+187|OBS|<br /> Fysisk aktivitet ger smärtlindring och bättre funktion vid tidig knäartros
+188|OBS|<br /> 	Uppmuntra till fysisk aktivitet för smärtlindring, bättre funktion, ökad knästabilitet samt för att motverka ev. reluxation
+189|OBS|<br /> Patienten med ortos kan belasta och rörelseträna i ortosen
+190|OBS|<br /> Alltid behandla med fysioterapi innan kirurgi diskuteras
+191|REK|	FaR med individuellt utprovat träningsprogram för excentrisk styrketräning, via fysioterapeut
+192|OBS|<br /> Diskutera hur patienten kan upprätthålla struktur och livsbalans genom t.ex. fysisk aktivitet och social samvaro
+193|OBS|<br /> Återgång till arbete efter stroke är en viktig faktor för livskvaliteten
+194|OBS|<br /> Uppmärksamma komplikationer, exempelvis depression, kognitiva funktionsnedsättningar och trötthet
+195|OBS|<br /> Skicka med lättillgänglig information, eftersom dolda kognitiva besvär kan försvåra dialogen med anhöriga
+196|OBS|<br /> Uppmuntra till bibehållen kontakt med arbetsgivare och arbetskamrater
+197|REK|Arbetsanpassning, arbetsplatsbesök och arbetsträning, via arbetsgivare och ev. företagshälsovård
+198|REK|ADL träning och utprovning av hjälpmedel inkl. ortos, via arbetsterapeut
+199|REK|CI-terapi (Constraint Induced Movement Therapy), för träning av arm- och handfunktionen, via specialistmottagning
+200|REK|Fysioterapi med långvarig regelbunden handledd konditions-, styrke- och funktionsträning
+201|REK|Ergonomisk arbetsplatsbedömning, via arbetsgivare och företagshälsovård
+202|REK|Rehabsamordning och plan för återgång i arbete, i samverkan med närstående, vårdgivare, arbetsgivare och Försäkringskassan
+203|REK|Psykosocial behandling: stödjande samtal, motiverande samtal eller psykopedagogisk behandling
+204|REK|Psykoterapi: KBT, interpersonell psykoterapi (IPT), psykodynamisk korttidsterapi (ISTDP)
+205|REK|Utredning av körförmåga, via körskola eller motsvarande
+206|OBS|<br /> Kartlägga bakomliggande orsaker såsom sömn, bett, ångest och arbetsmiljö
+207|OBS|<br /> Instruera patienten om hur utlösande faktorer kan undvikas
+208|OBS|<br /> Utreda möjligheten till återgång i arbete med hjälp av arbetsplatsaktiviteter och arbetsanpassning 
+209|REK|Arbetsanpassning med omfördelning av arbetsuppgifter eller byte av arbetsställe, via arbetsgivare och ev. företagshälsovård
+210|REK|Fysioterapi eller psykoterapi med hantering av t.ex. stress, emotionell spänning eller sömnbrist
+211|REK|Bettfysiologisk utredning via ÖHN eller tandläkare
+212|OBS|<br /> En huvudvärksdagbok kan hjälpa patienten att registrera besvär samt effekt av läkemedelsanvändning
+213|OBS|<br /> Utreda samsjuklighet med utmattningssyndrom, ångest eller depression
+214|REK|Arbetsterapi för ADL träning enligt ReDO-metodiken
+215|REK|Psykosocial behandling: stödjande samtal, motiverande samtal eller psykopedagogisk behandling
+216|REK|Psykoterapi: KBT, Acceptance and Commitment Therapy (ACT), interpersonell psykoterapi (IPT), psykodynamisk korttidsterapi (ISTDP)
+217|REK|Beteendemedicinsk behandling i kombination med fysisk träning, via vårdcentral eller fysioterapeut
+218|REK|Akupunktur för smärtlindring via naprapat, kiropraktor eller fysioterapeut
+219|OBS|<br /> Byte av yrke eller arbetsplats kan vara alternativ på sikt
+220|OBS|<br /> Vissa patienter tenderar att överanstränga sig under episoder med mindre smärta och får som konsekvens episoder med svår smärta och uttalad oförmåga
+221|OBS|<br /> Passiv sjukskrivning och ogenomtänkta förnyade utredningar är skadliga
+222|OBS|<br /> Symtomen förvärras av stressfaktorer på arbetsplatsen, t.ex. dåliga relationer, monotona arbeten eller långa stunder sittande vid datorn utan paus
+223|OBS|<br /> Utesluta andra somatiska och ev. psykiska åkommor
+224|OBS|<br /> Obehandlad långvarig smärta kan öka risken för fibromyalgi
+225|OBS|<br /> Uppmuntra till fysisk aktivitet trots initialt övergående smärtökning
+226|OBS|<br /> Patienter ofta känner sig maktlösa pga. en osäkerhet kring diagnosen och en skepsis inom sjukvården vilket måste tas på allvar
+227|OBS|<br /> Behandling som inkluderar fysisk aktivitet ger 20
