@@ -37,7 +37,6 @@
     dest: "{{ app_resources_folder }}/model"
     owner: "{{ tomcat_user }}"
     group: "{{ tomcat_user }}"
-    remote_src: true
   when: update_models|bool
 
 - name: Copy application resources statistik
@@ -46,5 +45,4 @@
     dest: "{{ app_resources_folder }}/statistik"
     owner: "{{ tomcat_user }}"
     group: "{{ tomcat_user }}"
-    remote_src: true
   when: update_statistik|bool
