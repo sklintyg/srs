@@ -34,7 +34,7 @@
 - name: Copy application resources models
   copy:
     src: "{{ resources_models_folder }}"
-    dest: "{{ app_resources_folder }}/model"
+    dest: "{{ app_resources_folder }}"
     owner: "{{ tomcat_user }}"
     group: "{{ tomcat_user }}"
   when: update_models|bool
@@ -42,7 +42,7 @@
 - name: Copy application resources statistik
   copy:
     src: "{{ resources_statistik_folder }}"
-    dest: "{{ app_resources_folder }}/statistik"
+    dest: "{{ app_resources_folder }}"
     owner: "{{ tomcat_user }}"
     group: "{{ tomcat_user }}"
   when: update_statistik|bool

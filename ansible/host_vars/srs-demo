@@ -4,8 +4,8 @@
 environment_name: "demo"
 config_etc_folder: "{{ config_folder }}/{{ environment_name }}"
 
-resources_models_folder: "/home/jenkins/models"
-resources_statistik_folder: "/home/jenkins/statistik_jpg"
+resources_models_folder: "/home/jenkins/model"
+resources_statistik_folder: "/home/jenkins/statistik"
 
 tomcat_user: ine-app
 
