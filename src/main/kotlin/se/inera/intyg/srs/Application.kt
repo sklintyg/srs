@@ -12,7 +12,6 @@ import org.springframework.context.annotation.Bean
 import se.inera.intyg.clinicalprocess.healthcond.srs.getconsent.v1.GetConsentResponderInterface
 import se.inera.intyg.clinicalprocess.healthcond.srs.getdiagnosiscodes.v1.GetDiagnosisCodesResponderInterface
 import se.inera.intyg.clinicalprocess.healthcond.srs.getpredictionquestions.v1.GetPredictionQuestionsResponderInterface
-import se.inera.intyg.clinicalprocess.healthcond.srs.getriskpredictionforcertificate.v1.GetRiskPredictionForCertificateResponderInterface
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.GetSRSInformationResponderInterface
 import se.inera.intyg.clinicalprocess.healthcond.srs.setconsent.v1.SetConsentResponderInterface
 import se.riv.itintegration.monitoring.rivtabp21.v1.PingForConfigurationResponderInterface
@@ -30,9 +29,6 @@ class Application : SpringBootServletInitializer() {
 
     @Autowired
     lateinit var srsResponder: GetSRSInformationResponderInterface
-
-    @Autowired
-    lateinit var getRiskPredictionForCertificateResponder: GetRiskPredictionForCertificateResponderInterface
 
     @Autowired
     lateinit var getConsentResponder: GetConsentResponderInterface
@@ -74,15 +70,6 @@ class Application : SpringBootServletInitializer() {
         endpoint.schemaLocations = listOf("classpath:core_components/clinicalprocess_healthcond_certificate_types_2.0.xsd",
                 "classpath:interactions/SetConsent/SetConsentResponder_1.0.xsd")
         endpoint.publish("/set-consent")
-        return endpoint
-    }
-
-    @Bean
-    fun riskPredictionForCertificateEndpoint(): Endpoint {
-        val endpoint = EndpointImpl(bus, getRiskPredictionForCertificateResponder)
-        endpoint.schemaLocations = listOf("classpath:core_components/clinicalprocess_healthcond_certificate_types_2.0.xsd",
-                "classpath:interactions/GetRiskPredictionForCertificate/GetRiskPredictionForCertificateResponder_1.0.xsd")
-        endpoint.publish("/get-risk-prediction-for-certificate")
         return endpoint
     }
 
