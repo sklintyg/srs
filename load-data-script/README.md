@@ -14,12 +14,12 @@ The input-files required are:
 
 To run the script execute it as follows
 ```
-./load-data.sh <mysql-username> <mysql-password> <mysql-database> <diagnosis-file> <question-file> <answer-file> <qa-link-file> <atgarder-file> <atgarder-link-file>
+./load-data.sh <mysql-username> <mysql-password> <mysql-host> <mysql-database> <diagnosis-file> <question-file> <answer-file> <qa-link-file> <atgarder-file> <atgarder-link-file>
 ```
 
 As an example you can use provided input files and test run the script with the following command
 ```
-./load-data.sh <mysql-username> <mysql-password> srs example-input/diagnosis.csv example-input/questions.csv example-input/answers.csv example-input/qa-link.csv example-input/atgarder.csv example-input/atgarder-link.csv
+./load-data.sh <mysql-username> <mysql-password> localhost srs example-input/diagnosis.csv example-input/questions.csv example-input/answers.csv example-input/qa-link.csv example-input/atgarder.csv example-input/atgarder-link.csv
 ```
 
 This requires read and write access to where the system writes temporary files.
