@@ -13,7 +13,7 @@ update_statistik: false
 proxy_env: {}
 
 # Spring profiles
-profiles: runtime,remote
+profiles: runtime,remote,scheduledUpdate
 
 # Configuration repository
 config_repository: https://github.com/sklintyg/srs-konfiguration.git

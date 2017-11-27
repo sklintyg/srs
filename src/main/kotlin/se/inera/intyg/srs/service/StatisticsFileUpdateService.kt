@@ -3,6 +3,7 @@ package se.inera.intyg.srs.service
 import org.apache.logging.log4j.LogManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.Profile
 import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
@@ -23,6 +24,7 @@ import java.util.Locale
  */
 @Component
 @EnableScheduling
+@Profile("scheduledUpdate")
 class StatisticsFileUpdateService(@Value("\${statistics.image.dir}") val imageDir: String,
                                   @Value("\${base.url}") val baseUrl: String,
                                   @Autowired val repo: StatisticRepository) {
