@@ -5,4 +5,4 @@ environment_name: "test"
 
 config_etc_folder: "{{ config_folder }}/{{ environment_name }}"
 
-profiles: runtime,remote,it,bootstrap
+profiles: runtime,remote,it,bootstrap,scheduledUpdate
