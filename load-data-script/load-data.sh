@@ -30,7 +30,7 @@ TMP_MEASURE_PRIORITY_FILE=$(mktemp)
 
 mysql -u $USERNAME -p$PASSWORD -h $MYSQL_HOST $DATABASE -e "truncate table prediction_priority; truncate table prediction_response; delete from prediction_question; delete from prediction_diagnosis; truncate measure_priority; delete from recommendation; delete from measure;"
 cat $DIAGNOSIS_FILE | sed '1d' | awk 'BEGIN { FS="|" } {  print ""NR"|"$1"|"$2""}' > "$TMP_DIAGNOSIS_FILE"
-mysql -u $USERNAME -p$PASSWORD $DATABASE --local-infile=1 -e "LOAD DATA LOCAL INFILE '$TMP_DIAGNOSIS_FILE' INTO TABLE prediction_diagnosis FIELDS TERMINATED BY '|';";
+mysql -u $USERNAME -p$PASSWORD -h $MYSQL_HOST $DATABASE --local-infile=1 -e "LOAD DATA LOCAL INFILE '$TMP_DIAGNOSIS_FILE' INTO TABLE prediction_diagnosis FIELDS TERMINATED BY '|';";
 
 declare -A diagnosis_array
 while read id diagnosis
