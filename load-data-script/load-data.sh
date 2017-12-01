@@ -72,14 +72,14 @@ do
 done < <(cat $ATGARD_FILE | sed '1,2d' | awk 'BEGIN { FS="|" } {  print ""$1"|"$2"|"$3"" }')
 
 declare -A measure_diagnosis
-DIAGNOS_INDEX=1
+DIAGNOS_INDEX=0
 while read id diagnosis recommendation_id priority
 do
     if [ -z "${measure_diagnosis["$diagnosis"]}" ]
     then
+        ((DIAGNOSIS_INDEX++))
         measure_diagnosis["${diagnosis}"]=$DIAGNOSIS_INDEX
         echo "${DIAGNOSIS_INDEX}|${diagnosis}|\"\"|1.0" >> "$TMP_MEASURE_FILE"
-        ((DIAGNOSIS_INDEX++))
     fi
     echo "$id|$priority|${measure_diagnosis["$diagnosis"]}|$recommendation_id" >> "$TMP_MEASURE_PRIORITY_FILE"
 done < <(cat $ATGARD_LINK_FILE | sed '1,2d' | awk 'BEGIN { FS="|" } {  print ""NR"|"$1"|"$2"|"$3"" }')
