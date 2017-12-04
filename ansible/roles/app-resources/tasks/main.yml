@@ -23,26 +23,42 @@
   file:
       state: absent
       path: "{{ app_resources_folder }}/model"
-  when: update_models|bool
+  when: resources_models_url is defined
 
 - name: remove test resrouces images
   file:
       state: absent
       path: "{{ app_resources_folder }}/statistik"
-  when: update_statistik|bool
+  when: resources_statistik_url is defined
 
-- name: Copy application resources models
-  copy:
-    src: "{{ resources_models_folder }}"
+#- name: Copy application resources models
+  #copy:
+    #src: "{{ resources_models_folder }}"
+    #dest: "{{ app_resources_folder }}"
+    #owner: "{{ tomcat_user }}"
+    #group: "{{ tomcat_user }}"
+  #when: update_models|bool
+
+#- name: Copy application resources statistik
+  #copy:
+    #src: "{{ resources_statistik_folder }}"
+    #dest: "{{ app_resources_folder }}"
+    #owner: "{{ tomcat_user }}"
+    #group: "{{ tomcat_user }}"
+  #when: update_statistik|bool
+
+- name: download and unarchive application resources models
+  unarchive:
+    src: "{{ resources_models_url }}"
     dest: "{{ app_resources_folder }}"
     owner: "{{ tomcat_user }}"
     group: "{{ tomcat_user }}"
-  when: update_models|bool
+  when: resources_models_url is defined
 
-- name: Copy application resources statistik
-  copy:
-    src: "{{ resources_statistik_folder }}"
+- name: download and unarchive application resources statistik
+  unarchive:
+    src: "{{ resources_statistik_url }}"
     dest: "{{ app_resources_folder }}"
     owner: "{{ tomcat_user }}"
     group: "{{ tomcat_user }}"
-  when: update_statistik|bool
+  when: resources_statistik_url is defined

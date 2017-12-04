@@ -46,7 +46,7 @@ stage('deploy') {
         util.run {
             def itVersion = util.latestVersion("se/inera/intyg/srs/srs", baseVersion)
 
-            ansiblePlaybook(extraVars: [version: "${itVersion}", ansible_ssh_host: "164.40.180.108", deploy_from_repo: "true", update_models: "true", update_statistik: "true"],
+            ansiblePlaybook(extraVars: [version: "${itVersion}", ansible_ssh_host: "164.40.180.108", deploy_from_repo: "true"],
                             installation: 'ansible-yum', inventory: 'ansible/inventory/srs/demo', playbook: 'ansible/site.yml')
 
             util.waitForServer('https://demo.srs.intygstjanster.se/services', false)
