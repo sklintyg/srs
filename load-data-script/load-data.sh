@@ -82,7 +82,7 @@ do
         echo "${DIAGNOSIS_INDEX}|${diagnosis}|\"\"|1.0" >> "$TMP_MEASURE_FILE"
     fi
     echo "$id|$priority|${measure_diagnosis["$diagnosis"]}|$recommendation_id" >> "$TMP_MEASURE_PRIORITY_FILE"
-done < <(cat $ATGARD_LINK_FILE | sed '1,2d' | awk 'BEGIN { FS="|" } {  print ""NR"|"$1"|"$2"|"$3"" }')
+done < <(cat $ATGARD_LINK_FILE | sed '1,2d' | awk 'BEGIN { FS="|" } {  print ""NR"|"$1"|"$2"|"$4"" }')
 
 mysql -u $USERNAME -p$PASSWORD -h $MYSQL_HOST $DATABASE --local-infile=1 -e "LOAD DATA LOCAL INFILE '$TMP_MEASURE_FILE' INTO TABLE measure FIELDS TERMINATED BY '|' OPTIONALLY ENCLOSED BY '\"';"
 mysql -u $USERNAME -p$PASSWORD -h $MYSQL_HOST $DATABASE --local-infile=1 -e "LOAD DATA LOCAL INFILE '$TMP_RECOMMENDATION_FILE' INTO TABLE recommendation FIELDS TERMINATED BY '|' OPTIONALLY ENCLOSED BY '\"';"
