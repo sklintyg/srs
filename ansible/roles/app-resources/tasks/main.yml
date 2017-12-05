@@ -53,6 +53,7 @@
     dest: "{{ app_resources_folder }}"
     owner: "{{ tomcat_user }}"
     group: "{{ tomcat_user }}"
+    remote_src: "{{ resources_remote_src }}"
   when: resources_models_url is defined
 
 - name: download and unarchive application resources statistik
@@ -61,4 +62,5 @@
     dest: "{{ app_resources_folder }}"
     owner: "{{ tomcat_user }}"
     group: "{{ tomcat_user }}"
+    remote_src: "{{ resources_remote_src }}"
   when: resources_statistik_url is defined
