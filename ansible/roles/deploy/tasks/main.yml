@@ -22,6 +22,7 @@
     group_id: se.inera.intyg.srs
     artifact_id: srs
     extension: war
+    version: "{{ version }}"
     dest: "{{ releases_folder }}/srs-{{ version }}.war"
   when: deploy_from_repo|bool
 
