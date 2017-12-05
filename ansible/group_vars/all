@@ -42,6 +42,8 @@ webapps_folder: "{{ inera_tomcat_folder }}/webapps"
 # Database configuration
 database_server: localhost
 database_port: 3306
+database_provisioning_username: root
+database_provisioning_password: ""
 database_name: srs
 database_username: srs
 database_password: srs

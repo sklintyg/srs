@@ -3,11 +3,15 @@
 - name: Create mysql database
   mysql_db:
     name: "{{ database_name }}"
+    login_user: "{{ database_provisioning_username }}"
+    login_password: "{{ database_provisioning_password }}"
     state: present
     
 - name: Create mysql user
   mysql_user:
     name: "{{ database_username }}"
     password: "{{ database_username }}"
+    login_user: "{{ database_provisioning_username }}"
+    login_password: "{{ database_provisioning_password }}"
     priv: "*.*:ALL"
     state: present
