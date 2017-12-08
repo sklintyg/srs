@@ -26,16 +26,16 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
     override fun getInfoForDiagnosis(diagnosisId: String): Diagnosprediktion =
             throw NotImplementedError("Predictions can not be made with only diagnosis.")
 
-    override fun getInfo(persons: List<Person>, extraParams: Map<String, String>): Map<Person, List<Diagnosprediktion>> {
+    override fun getInfo(persons: List<Person>, extraParams: Map<String, String>, userHsaId: String): Map<Person, List<Diagnosprediktion>> {
         log.info(persons)
         val predictions = HashMap<Person, List<Diagnosprediktion>>()
         persons.forEach { person ->
-            predictions.put(person, createInfo(person, extraParams))
+            predictions.put(person, createInfo(person, extraParams, userHsaId))
         }
         return predictions
     }
 
-    private fun createInfo(person: Person, extraParams: Map<String, String>): List<Diagnosprediktion> {
+    private fun createInfo(person: Person, extraParams: Map<String, String>, userHsaId: String): List<Diagnosprediktion> {
         val outgoingPrediction = mutableListOf<Diagnosprediktion>()
 
         person.diagnoses.forEach { incomingDiagnosis ->
@@ -75,7 +75,7 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
 
             logPrediction(extraParams, diagnosPrediktion.diagnos?.code ?: "", diagnosis?.prevalence?.toString() ?: "", person.sex.name,
                     person.ageCategory, calculatedPrediction?.prediction?.toString() ?: "", riskSignal.riskkategori.intValueExact(),
-                    calculatedPrediction?.status?.toString() ?: "", person.certificateId)
+                    calculatedPrediction?.status?.toString() ?: "", person.certificateId, userHsaId)
 
             outgoingPrediction.add(diagnosPrediktion)
         }

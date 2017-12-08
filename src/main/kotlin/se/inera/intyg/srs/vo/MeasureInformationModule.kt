@@ -22,7 +22,7 @@ class MeasureInformationModule(val measureRepo: MeasureRepository) : Information
     override fun getInfoForDiagnosis(diagnosisId: String): Atgardsrekommendation =
             createRecommendation(Diagnosis(diagnosisId))
 
-    override fun getInfo(persons: List<Person>, extraParams: Map<String, String>): Map<Person, List<Atgardsrekommendation>> {
+    override fun getInfo(persons: List<Person>, extraParams: Map<String, String>, userHsaId: String): Map<Person, List<Atgardsrekommendation>> {
         log.info(persons)
         val measures = HashMap<Person, List<Atgardsrekommendation>>()
         persons.forEach { person ->

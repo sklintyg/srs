@@ -17,9 +17,9 @@ class StatisticModule(val statisticRepo: StatisticRepository) : InformationModul
 
     override fun getInfoForDiagnosis(diagnosisId: String): Statistikbild = getStatistikbildForDiagnosis(diagnosisId)
 
-    override fun getInfo(persons: List<Person>, extraParams: Map<String, String>): Map<Person, List<Statistikbild>> {
+    override fun getInfo(persons: List<Person>, extraParams: Map<String, String>, userHsaId: String): Map<Person, List<Statistikbild>> {
         log.info("Getting statistics for $persons")
-        val statistics: HashMap<Person, List<Statistikbild>> = HashMap<Person, List<Statistikbild>>()
+        val statistics: HashMap<Person, List<Statistikbild>> = HashMap()
         persons.forEach { person ->
             statistics.put(person, createInfo(person))
         }
