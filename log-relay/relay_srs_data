@@ -1,0 +1,16 @@
+#!/bin/bash
+
+RECIPIENT_MAIL=
+
+echo "Setting up VPN to Basefarm"
+start_openconnect.sh eorsgren pwd
+
+echo "Fetching data from misc-server"
+sshpass -f pwd scp basefarm-misc:/mnt/tomcat_logs/ine-pib-app05/srs/monitoring.csv monitoring1.csv
+sshpass -f pwd scp basefarm-misc:/mnt/tomcat_logs/ine-pib-app06/srs/monitoring.csv monitoring2.csv
+
+echo "Mailing files to recipient"
+mailx -s "Logfiler från SRS" -a monitoring1.csv -a monitoring2.csv $RECIPIENT_MAIL < body
+
+echo "Closing VPN"
+kill_openconnect.sh /tmp/oc.pid
