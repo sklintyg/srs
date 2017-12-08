@@ -53,7 +53,7 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
 
         if (request.utdatafilter.isPrediktion) {
             try {
-                predictionModule.getInfo(persons, extraInfo).forEach { (person, prediction) ->
+                predictionModule.getInfo(persons, extraInfo, request.anvandareId.extension).forEach { (person, prediction) ->
                     val underlag = response.bedomningsunderlag.find { it.personId == person.personId } ?: createUnderlag(person.personId, response)
                     underlag.prediktion = prediction
                 }

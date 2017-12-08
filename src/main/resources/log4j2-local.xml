@@ -14,8 +14,8 @@
                 onMatch="ACCEPT"
                 onMismatch="DENY"/>
             <PatternLayout>
-                <header>timestamp,diagnosisCode,prevalence,prediction,predictionLevel,region,sex,ageCategory,SA_SyssStart_fct,NoCareAtStart,SA_1_gross,edu_cat_fct,Visits_yearBefore_all,birth_cat_fct,SA_ExtentFirst,comorbidity,DP_atStart,Vtid_yeahBefore_all_r1_Median,fam_cat_4_cat_fct,statusCode,intygId\n</header>
-                <pattern>%d{HH:mm:ss.SSS},%msg%n</pattern>
+                <header>timestamp,diagnosisCode,prevalence,prediction,predictionLevel,region,sex,ageCategory,SA_SyssStart_fct,NoCareAtStart,SA_1_gross,edu_cat_fct,Visits_yearBefore_all,birth_cat_fct,SA_ExtentFirst,comorbidity,DP_atStart,Vtid_yeahBefore_all_r1_Median,fam_cat_4_cat_fct,statusCode,intygId,userId\n</header>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS},%msg%n</pattern>
             </PatternLayout>
             <TimeBasedTriggeringPolicy />
         </RollingFile>

@@ -24,7 +24,7 @@ class MeasureInformationModule(val measureRepo: MeasureRepository) : Information
 
     private val log = LogManager.getLogger()
 
-    override fun getInfo(persons: List<Person>, extraParams: Map<String, String>): Map<Person, Atgardsrekommendationer> {
+    override fun getInfo(persons: List<Person>, extraParams: Map<String, String>, userHsaId: String): Map<Person, Atgardsrekommendationer> {
         log.info(persons)
         val measures = HashMap<Person, Atgardsrekommendationer>()
         persons.forEach { person ->

@@ -26,16 +26,16 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
 
     private val log = LogManager.getLogger()
 
-    override fun getInfo(persons: List<Person>, extraParams: Map<String, String>): Map<Person, Prediktion> {
+    override fun getInfo(persons: List<Person>, extraParams: Map<String, String>, userHsaId: String): Map<Person, Prediktion> {
         log.info(persons)
         val predictions = HashMap<Person, Prediktion>()
         persons.forEach { person ->
-            predictions.put(person, createInfo(person, extraParams))
+            predictions.put(person, createInfo(person, extraParams, userHsaId))
         }
         return predictions
     }
 
-    private fun createInfo(person: Person, extraParams: Map<String, String>): Prediktion {
+    private fun createInfo(person: Person, extraParams: Map<String, String>, userHsaId: String): Prediktion {
         val outgoingPrediction = Prediktion()
 
         person.diagnoses.forEach { incomingDiagnosis ->
@@ -75,7 +75,7 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
 
             logPrediction(extraParams, diagnosPrediktion.diagnos?.code ?: "", diagnosis?.prevalence?.toString() ?: "", person.sex.name,
                     person.ageCategory, calculatedPrediction?.prediction?.toString() ?: "", riskSignal.riskkategori.intValueExact(),
-                    calculatedPrediction?.status?.toString() ?: "", person.certificateId)
+                    calculatedPrediction?.status?.toString() ?: "", person.certificateId, userHsaId)
 
             outgoingPrediction.diagnosprediktion.add(diagnosPrediktion)
         }

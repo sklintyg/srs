@@ -15,9 +15,9 @@ class StatisticModule(val statisticRepo: StatisticRepository) : InformationModul
 
     private val MIN_ID_POSITIONS = 3
 
-    override fun getInfo(persons: List<Person>, extraParams: Map<String, String>): Map<Person, Statistik> {
+    override fun getInfo(persons: List<Person>, extraParams: Map<String, String>, userHsaId: String): Map<Person, Statistik> {
         log.info("Getting statistics for $persons")
-        val statistics: HashMap<Person, Statistik> = HashMap<Person, Statistik>()
+        val statistics: HashMap<Person, Statistik> = HashMap()
         persons.forEach { person ->
             statistics.put(person, createInfo(person))
         }
