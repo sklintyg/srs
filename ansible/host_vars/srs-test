@@ -7,5 +7,5 @@ config_etc_folder: "{{ config_folder }}/{{ environment_name }}"
 
 profiles: runtime,remote,it,bootstrap,scheduledUpdate
 
-database_provisioning_username: webcert
-database_provisioning_password: webcert
+database_provisioning_username: intyg
+database_provisioning_password: intyg
