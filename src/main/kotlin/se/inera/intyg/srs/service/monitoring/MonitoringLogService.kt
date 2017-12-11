@@ -19,7 +19,7 @@ fun logPrediction(input: Map<String, String>, diagnosisCode: String, limit: Stri
             input["NoCareAtStart"] ?: "",
             input["SA_1_gross"] ?: "",
             input["edu_cat_fct"] ?: "",
-            input["Visits_yearBefore_all"] ?: "",
+            input["Visits_yearBefore_all_r1_median"] ?: "",
             input["birth_cat_fct"] ?: "",
             input["SA_ExtentFirst"] ?: "",
             input["comorbidity"] ?: "",
