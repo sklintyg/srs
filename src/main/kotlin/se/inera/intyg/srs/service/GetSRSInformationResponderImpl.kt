@@ -44,6 +44,7 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
         log.info("Received request from ${request.konsumentId.extension}")
 
         val persons = transformIndividuals(request.individer.individ)
+        val unitId = request.individer.individ.map { it.intygId.root }.first() ?: "NoUnitFound"
         val extraInfo: Map<String, String> =
                 if (request.prediktionsfaktorer != null)
                     transformPredictionFactors(request.prediktionsfaktorer)
@@ -53,7 +54,7 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
 
         if (request.utdatafilter.isPrediktion) {
             try {
-                predictionModule.getInfo(persons, extraInfo, request.anvandareId.extension).forEach { (person, prediction) ->
+                predictionModule.getInfo(persons, extraInfo, unitId).forEach { (person, prediction) ->
                     val underlag = response.bedomningsunderlag.find { it.personId == person.personId } ?: createUnderlag(person.personId, response)
                     underlag.prediktion = prediction
                 }
