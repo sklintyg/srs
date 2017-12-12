@@ -55,5 +55,5 @@ database_pool_minIdle: 10
 database_pool_initialSize: 10
 
 # R
-rjava_version: 0.9-8
+rjava_version: 0.9-9
 pch_version: 1.3
