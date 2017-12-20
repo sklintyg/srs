@@ -1,16 +1,40 @@
 #!/bin/bash
 
 RECIPIENT_MAIL=
+YEAR=`date +%Y`
+MONTH=`date +%m`
+DAY=`date +%d`
+OUTPUT=monitoring.csv
 
 echo "Setting up VPN to Basefarm"
 start_openconnect.sh eorsgren pwd
 
-echo "Fetching data from misc-server"
-sshpass -f pwd scp basefarm-misc:/mnt/tomcat_logs/ine-pib-app05/srs/monitoring.csv monitoring1.csv
-sshpass -f pwd scp basefarm-misc:/mnt/tomcat_logs/ine-pib-app06/srs/monitoring.csv monitoring2.csv
+# Do all this stuff in a sub shell so we can still close the vpn regardless of errors
+(
+    echo "timestamp,diagnosisCode,prevalence,prediction,predictionLevel,region,sex,ageCategory,SA_SyssStart_fct,NoCareAtStart,SA_1_gross,edu_cat_fct,Visits_yearBefore_all,birth_cat_fct,SA_ExtentFirst,comorbidity,DP_atStart,Vtid_yeahBefore_all_r1_Median,fam_cat_4_cat_fct,statusCode,intygId,userId" > $OUTPUT
 
-echo "Mailing files to recipient"
-mailx -s "Logfiler från SRS" -a monitoring1.csv -a monitoring2.csv $RECIPIENT_MAIL < body
+    echo "Fetching data for $YEAR-$MONTH-$DAY from misc-server"
+    sshpass -f pwd ssh basefarm-misc zless /mnt/tomcat_logs/ine-pib-app0{5,6}/srs/{,archive/**/**/**/}monitoring* | grep "^$(date +"%Y-%m-%d" -d "yesterday")" >> $OUTPUT || exit 3
 
+    if [[ $(wc -l <monitoring.csv) -le 1 ]]
+    then
+	echo "No log information found, exiting"
+	echo "Loggfiler saknades för $(date +"%Y-%m-%d" -d "yesterday")" | mailx -s "Loggfiler för $(date +"%Y-%m-%d" -d "yesterday") saknas" $RECIPIENT_MAIL
+	exit 3
+    fi
+
+    echo "Cleaning the data"
+    sed -ri "s/(\(.*])/\"\\1\"/g" $OUTPUT
+
+    echo "Mailing files to recipient"
+    echo "Loggar från SRS bifogade" | mailx -s "Logfiler från SRS" -a $OUTPUT $RECIPIENT_MAIL
+)
+
+if [ $? = 3 ]
+then
+  echo "Bail out detected"
+fi
+
+rm monitoring.csv
 echo "Closing VPN"
 kill_openconnect.sh /tmp/oc.pid
