@@ -10,6 +10,11 @@ R is used for prediction modelling, and the 'rJava' package is used as the bridg
 
 Install a recent version of R, using your package manager of choice. R packages have been tried with Mac Homebrew, Arch Linux and CentOS.
 
+If running OS X (possibly others), we need to prepare R with a JDK:
+----
+R CMD javareconf
+----
+
 Install 'rJava' and 'pch' into the R environment. This is most easily done by logging in to R (i.e. start 'R' from the command line) and then run the
 lines:
 ----
@@ -17,20 +22,35 @@ install.packages("rJava")
 install.packages("pch")
 ----
 
+To exit the R command shell, type:
+
+----
+quit()
+----
+
 Now you need to figure out things: where your R environment has been installed, and where the rJava package has been installed.
 
+==== OS X
 On Mac OS using Homebrew, it's probably:
 ----
 R_HOME=/Library/Frameworks/R.framework/Resources
 java.library.path=/Library/Frameworks/R.framework/Resources/library/rJava/jri
 ----
+or on High Sierra it was:
 
+----
+R_HOME=/usr/local/lib/R
+java.library.path=/usr/local/lib/R/3.4/site-library/rJava/jri
+----
+
+==== Arch Linux
 On Arch Linux, it's probably:
 ----
 R_HOME=/usr/lib64/R
 java.library.path="$HOME/R/x86_64-pc-linux-gnu-library/3.4/rJava/jri"
 ----
 
+==== CentOS
 On CentOS, it's probably:
 ----
 R_HOME=/usr/lib64/R
@@ -40,7 +60,7 @@ java.library.path=/usr/lib64/R/library/rJava/jri
 These values will be used when the srs application is started, but first:
 
 
-=== R models 
+=== R models
 
 R models for testing purposes are checked-in into version control, and can be found at src/main/resources/model.
 
@@ -60,6 +80,12 @@ The 'runtime' profile is necessary to make sure that a real connection to the R 
 The 'scheduledUpdate' profile is necessary to update statistics files. Only one node should be responsible for this.
 The 'it' profile is needed to enable the testability api (used in restAssured integration tests).
 The 'bootstrap' profile ensures the application is bootstrapped with example data at startup.
+
+OS X example:
+----
+R_HOME=/usr/local/lib/R java -Djava.library.path="/usr/local/lib/R/3.4/site-library/rJava/jri" -Dsrs.resources.folder="/Users/eriklupander/intyg/SRS/src/main/resources" -jar build/libs/*.war --spring.profiles.active=runtime,it,bootstrap,scheduledUpdate
+----
+
 
 Additional profiles:
 'remote' - Uses the jndi configured jdbc-resource as datasource and uses log4j-config from srs-konfiguration.

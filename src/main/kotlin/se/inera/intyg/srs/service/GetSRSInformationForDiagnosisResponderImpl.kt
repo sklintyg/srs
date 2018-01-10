@@ -27,7 +27,7 @@ class GetSRSInformationForDiagnosisResponderImpl(val measureModule: MeasureInfor
         try {
             response.atgardsrekommendation = measureModule.getInfoForDiagnosis(request.diagnos.code)
         } catch (e: Exception) {
-            log.error("Statistics could not be produced for diagnosis ${request.diagnos.code}. Please check for error.", e)
+            log.error("Measures could not be produced for diagnosis ${request.diagnos.code}. Please check for error.", e)
         }
 
         // Statistik
@@ -36,7 +36,7 @@ class GetSRSInformationForDiagnosisResponderImpl(val measureModule: MeasureInfor
             statistikDto.statistikbild.add(statisticModule.getInfoForDiagnosis(request.diagnos.code))
             response.statistik = statistikDto
         } catch (e: Exception) {
-            log.error("Measures could not be produced for diagnosis ${request.diagnos.code}. Please check for error.", e)
+            log.error("Statistics could not be produced for diagnosis ${request.diagnos.code}. Please check for error.", e)
         }
 
         response.resultCode = ResultCodeEnum.OK
