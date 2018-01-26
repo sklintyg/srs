@@ -1,4 +1,5 @@
 package se.inera.intyg.srs.controllers
+
 import org.apache.logging.log4j.LogManager
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
@@ -16,7 +17,8 @@ class VersionController {
     @Value("\${project.version}")
     lateinit var buildVersion: String
 
-    @RequestMapping(value = "/version", method = arrayOf(RequestMethod.GET), produces = arrayOf(MediaType.APPLICATION_JSON_VALUE))
+    @RequestMapping(value = ["/version"], method = [(RequestMethod.GET)],
+            produces = [(MediaType.APPLICATION_JSON_VALUE)])
     fun version(): Map<String, String> {
         LOG.info("Serving version")
         val versionMap = HashMap<String, String>()

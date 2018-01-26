@@ -20,8 +20,8 @@ class StatisticsImageFileService(@Value("\${statistics.image.dir}") val imageDir
 
     private val resourceLoader: ResourceLoader = DefaultResourceLoader()
 
-    @RequestMapping(value = "/image/{imageName}", method = arrayOf(RequestMethod.GET),
-            produces = arrayOf(MediaType.IMAGE_JPEG_VALUE))
+    @RequestMapping(value = ["/image/{imageName}"], method = [RequestMethod.GET],
+            produces = [MediaType.IMAGE_JPEG_VALUE])
     @ResponseBody
     fun getImage(@PathVariable(value = "imageName") imageName: String): ByteArray? {
         log.info("Serving: $imageDir/$imageName")

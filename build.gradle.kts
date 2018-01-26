@@ -6,14 +6,14 @@ plugins {
     war
     `maven-publish`
 
-    kotlin("jvm", "1.1.4-3")
-    kotlin("plugin.spring", "1.1.4-3")
-    kotlin("plugin.jpa", "1.1.4-3")
+    kotlin("jvm") version "1.2.21"
+    kotlin("plugin.spring") version "1.2.21"
+    kotlin("plugin.jpa") version "1.2.21"
 
-    id("se.inera.intyg.plugin.common") version "1.0.59"
+    id("se.inera.intyg.plugin.common") version "1.0.61"
     id("org.springframework.boot") version "1.5.6.RELEASE"
     id("org.ajoberstar.grgit") version "2.0.0"
-    id("org.jlleitschuh.gradle.ktlint") version "2.1.1"
+    id("org.jlleitschuh.gradle.ktlint") version "3.0.0"
 }
 
 group = "se.inera.intyg.srs"
@@ -57,7 +57,7 @@ publishing {
 }
 
 dependencies {
-    val kotlinVersion = "1.1.4-3"
+    val kotlinVersion = "1.2.21"
 
     compile(kotlin("stdlib", kotlinVersion))
     compile(kotlin("reflect", kotlinVersion))
@@ -82,7 +82,7 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-log4j2")
 
     compile("org.liquibase:liquibase-core:3.5.3")
-    compile("com.fasterxml.jackson.module:jackson-module-kotlin:2.8.4")
+    compile("com.fasterxml.jackson.module:jackson-module-kotlin:2.9.4")
     compile("org.nuiton.thirdparty:JRI:0.9-9")
     compile("org.jadira.usertype:usertype.extended:5.0.0.GA")
     compile("com.google.guava:guava:23.0")
@@ -103,3 +103,4 @@ repositories {
     maven("https://build-inera.nordicmedtest.se/nexus/repository/releases/")
     mavenCentral()
 }
+
