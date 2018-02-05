@@ -1,33 +1,34 @@
 #!/bin/bash
 
-RECIPIENT_MAIL=
+RECIPIENT_MAIL=Serge.degossondevarenne@soprasteria.com
+CC_MAIL=erik.forsgren@r2m.se,anders.ferrari@carity.se,karl-johan.andreasson@r2m.se
 YEAR=`date +%Y`
 MONTH=`date +%m`
 DAY=`date +%d`
-OUTPUT=monitoring.csv
+OUTPUT=/tmp/monitoring.csv
 
 echo "Setting up VPN to Basefarm"
-start_openconnect.sh eorsgren pwd
+/home/inera/srs/start_openconnect.sh eorsgren /home/inera/srs/pwd
 
 # Do all this stuff in a sub shell so we can still close the vpn regardless of errors
 (
     echo "timestamp,diagnosisCode,prevalence,prediction,predictionLevel,region,sex,ageCategory,SA_SyssStart_fct,NoCareAtStart,SA_1_gross,edu_cat_fct,Visits_yearBefore_all,birth_cat_fct,SA_ExtentFirst,comorbidity,DP_atStart,Vtid_yeahBefore_all_r1_Median,fam_cat_4_cat_fct,statusCode,intygId,userId" > $OUTPUT
 
     echo "Fetching data for $YEAR-$MONTH-$DAY from misc-server"
-    sshpass -f pwd ssh basefarm-misc zless /mnt/tomcat_logs/ine-pib-app0{5,6}/srs/{,archive/**/**/**/}monitoring* | grep "^$(date +"%Y-%m-%d" -d "yesterday")" >> $OUTPUT || exit 3
+    sshpass -f /home/inera/srs/pwd ssh basefarm-misc zless /mnt/tomcat_logs/ine-pib-app0{5,6}/srs/{,archive/**/**/**/}monitoring* | grep "^$(date +"%Y-%m-%d" -d "yesterday")" >> $OUTPUT
 
-    if [[ $(wc -l <monitoring.csv) -le 1 ]]
+    if [[ $(wc -l < $OUTPUT) -le 1 ]]
     then
 	echo "No log information found, exiting"
-	echo "Loggfiler saknades för $(date +"%Y-%m-%d" -d "yesterday")" | mailx -s "Loggfiler för $(date +"%Y-%m-%d" -d "yesterday") saknas" $RECIPIENT_MAIL
-	exit 3
+	echo "Loggfiler saknades för $(date +"%Y-%m-%d" -d "yesterday")" | mailx -v -s "Loggfiler för $(date +"%Y-%m-%d" -d "yesterday") saknas" -c "$CC_MAIL"  $RECIPIENT_MAIL
+    	exit 3
     fi
-
+	
     echo "Cleaning the data"
     sed -ri "s/(\(.*])/\"\\1\"/g" $OUTPUT
-
+    
     echo "Mailing files to recipient"
-    echo "Loggar från SRS bifogade" | mailx -s "Logfiler från SRS" -a $OUTPUT $RECIPIENT_MAIL
+    echo "Loggar från SRS bifogade" | /usr/bin/mailx -v -s "Logfiler från SRS" -c "$CC_MAIL" -a "$OUTPUT" "$RECIPIENT_MAIL"
 )
 
 if [ $? = 3 ]
@@ -35,6 +36,6 @@ then
   echo "Bail out detected"
 fi
 
-rm monitoring.csv
+rm $OUTPUT
 echo "Closing VPN"
-kill_openconnect.sh /tmp/oc.pid
+/home/inera/srs/kill_openconnect.sh /tmp/oc.pid
