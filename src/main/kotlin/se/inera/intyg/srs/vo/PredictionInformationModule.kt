@@ -131,8 +131,8 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
 
     private fun calculateRisk(diagnosis: PredictionDiagnosis, prediction: Double): BigInteger =
             when {
-                prediction <= (2 * diagnosis.prevalence) / (1 * diagnosis.prevalence + 1) -> BigInteger.valueOf(2)
-                prediction <= (4 * diagnosis.prevalence) / (3 * diagnosis.prevalence + 1) -> BigInteger.valueOf(3)
+                prediction <= diagnosis.threshold -> BigInteger.valueOf(2)
+                prediction <= diagnosis.thresholdElevated -> BigInteger.valueOf(3)
                 else -> BigInteger.valueOf(4)
             }
 }

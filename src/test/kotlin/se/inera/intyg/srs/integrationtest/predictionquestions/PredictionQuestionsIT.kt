@@ -16,7 +16,7 @@ class PredictionQuestionsIT : BaseIntegrationTest() {
 
     @Test
     fun testGetPredictionQuestions() {
-        addDiagnosis(DiagnosisRequest("M24", 0.54,
+        addDiagnosis(DiagnosisRequest("M24", 0.54, 0.54, 0.64,
                 listOf(PredictionQuestion("Stressad?", "abc", "Hjälptext",
                         listOf(PredictionResponse("Lite kanske", "def", true),
                                 PredictionResponse("Bara på fredagar", "ghi", false))
@@ -57,7 +57,7 @@ class PredictionQuestionsIT : BaseIntegrationTest() {
 
     @Test
     fun testGetPredictionQuestionsForHigherDiagnosis() {
-        addDiagnosis(DiagnosisRequest("M24", 0.54,
+        addDiagnosis(DiagnosisRequest("M24", 0.54, 0.54, 0.64,
                 listOf(PredictionQuestion("Stressad?", "abc", "Hjälptext",
                         listOf(PredictionResponse("Lite kanske", "def", true),
                                 PredictionResponse("Bara på fredagar", "ghi", false))

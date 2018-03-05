@@ -67,8 +67,8 @@ class TestModule(private val consentRepo: ConsentRepository,
             statisticsRepo.save(InternalStatistic(diagnosisId, pictureUrl, LocalDateTime.now(), uniqueId.incrementAndGet()))
 
     fun createPredictionQuestion(request: TestController.DiagnosisRequest): PredictionDiagnosis =
-        diagnosisRepo.save(PredictionDiagnosis(uniqueId.incrementAndGet(),
-                request.diagnosisId, request.prevalence, mapToPredictions(request.questions)))
+        diagnosisRepo.save(PredictionDiagnosis(uniqueId.incrementAndGet(), request.diagnosisId, request.prevalence,
+                request.threshold, request.thresholdElevated, mapToPredictions(request.questions)))
 
     private fun mapToPredictions(questions: List<TestController.PredictionQuestion>): List<PredictionPriority> =
         questions

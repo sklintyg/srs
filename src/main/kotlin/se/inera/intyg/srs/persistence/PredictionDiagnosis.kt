@@ -11,6 +11,8 @@ class PredictionDiagnosis(@Id
                           val id: Long,
                           val diagnosisId: String,
                           val prevalence: Double,
+                          val threshold: Double,
+                          val thresholdElevated: Double,
                           @OneToMany(fetch = FetchType.EAGER)
                           @JoinColumn(name="diagnosis_id")
                           val questions: Collection<PredictionPriority>)

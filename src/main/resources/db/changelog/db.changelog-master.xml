@@ -226,4 +226,15 @@
             </column>
         </addColumn>
     </changeSet>
+
+    <changeSet id="10" author="ef">
+        <addColumn tableName="prediction_diagnosis">
+            <column name="threshold" type="DOUBLE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="threshold_elevated" type="DOUBLE">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

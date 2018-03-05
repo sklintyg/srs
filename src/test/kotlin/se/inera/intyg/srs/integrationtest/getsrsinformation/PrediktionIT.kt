@@ -18,7 +18,7 @@ class PrediktionIT : BaseIntegrationTest() {
     @Test
     fun testPredictionModel() {
         setModels("x99v0")
-        addDiagnosis(TestController.DiagnosisRequest("X99", 1.0, emptyList()))
+        addDiagnosis(TestController.DiagnosisRequest("X99", 1.0, 1.0, 1.0, emptyList()))
 
         val response = sendPrediktionRequest("getPrediktion_Model1Request_output_0.44.xml", "X99")
         response.assertThat()
@@ -33,7 +33,7 @@ class PrediktionIT : BaseIntegrationTest() {
         // Om två prediktionsfiler för samma diagnos finns ska den med högst
         // versionsnummer användas
         setModels("x99v0", "x99v1")
-        addDiagnosis(TestController.DiagnosisRequest("X99", 1.0, emptyList()))
+        addDiagnosis(TestController.DiagnosisRequest("X99", 1.0, 1.0, 1.0, emptyList()))
 
         val response = sendPrediktionRequest("getPrediktion_Model2Request_output_0.6.xml", "X99")
         response.assertThat()
@@ -44,7 +44,7 @@ class PrediktionIT : BaseIntegrationTest() {
     @Test
     fun testShouldPickUpChangedModelFiles() {
         setModels() // Removes all models
-        addDiagnosis(TestController.DiagnosisRequest("X99", 1.0, emptyList()))
+        addDiagnosis(TestController.DiagnosisRequest("X99", 1.0, 1.0, 1.0, emptyList()))
 
         val response1 = sendPrediktionRequest("getPrediktion_Model1Request_output_0.89.xml", "X99")
         response1.assertThat()
@@ -62,7 +62,7 @@ class PrediktionIT : BaseIntegrationTest() {
         // T.ex. När prediktion efterfrågas på M751 men bara finns på M75
         // så ska prediktion för M75 returneras.
         setModels("x99v0")
-        addDiagnosis(TestController.DiagnosisRequest("X99", 1.0, emptyList()))
+        addDiagnosis(TestController.DiagnosisRequest("X99", 1.0, 1.0, 1.0, emptyList()))
 
         val response2 = sendPrediktionRequest("getPrediktion_Model1Request_output_0.89.xml", "X991")
         response2.assertThat()
@@ -75,8 +75,8 @@ class PrediktionIT : BaseIntegrationTest() {
         // Om prediktion finns för M75 och M7512 och M7512 efterfrågas
         // så är det prediktion för M7512 som ska returneras
         setModels("x99v0", "x9900v0")
-        addDiagnosis(TestController.DiagnosisRequest("X99", 1.0, emptyList()))
-        addDiagnosis(TestController.DiagnosisRequest("X9900", 1.0, emptyList()))
+        addDiagnosis(TestController.DiagnosisRequest("X99", 1.0, 1.0, 1.0, emptyList()))
+        addDiagnosis(TestController.DiagnosisRequest("X9900", 1.0, 1.0, 1.0, emptyList()))
 
         sendPrediktionRequest("getPrediktion_Model2Request_output_0.77.xml", "X9900").assertThat()
                 .body("$PREDIKTION_ROOT.sannolikhet-overgransvarde", equalTo("0.77"))
@@ -97,7 +97,7 @@ class PrediktionIT : BaseIntegrationTest() {
         // anges.
         // TODO: Ett mer beskrivande felmeddelande hade varit bättre än bara "NOT_OK".
         setModels("x99v0")
-        addDiagnosis(TestController.DiagnosisRequest("X99", 1.0,
+        addDiagnosis(TestController.DiagnosisRequest("X99", 1.0, 1.0, 1.0,
                 listOf(
                         TestController.PredictionQuestion("Question", "SA_1_gross", "Help text",
                                 listOf(
@@ -122,7 +122,7 @@ class PrediktionIT : BaseIntegrationTest() {
         // Intygs-ID
         restTemplate.delete("/intyg")
         setModels("x99v0")
-        addDiagnosis(TestController.DiagnosisRequest("X99", 1.0, emptyList()))
+        addDiagnosis(TestController.DiagnosisRequest("X99", 1.0, 1.0, 1.0, emptyList()))
 
         sendPrediktionRequest("getPrediktion_Model1Request_output_0.44.xml", "X999", "TestId")
 

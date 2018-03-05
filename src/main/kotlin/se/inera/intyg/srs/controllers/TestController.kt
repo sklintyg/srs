@@ -33,7 +33,7 @@ class TestController(val consentModule: ConsentModule,
 
     data class PredictionResponse(val answer: String, val predictionId: String, val default: Boolean)
 
-    data class DiagnosisRequest(val diagnosisId: String, val prevalence: Double, val questions: List<PredictionQuestion>)
+    data class DiagnosisRequest(val diagnosisId: String, val prevalence: Double, val threshold: Double, val thresholdElevated: Double, val questions: List<PredictionQuestion>)
 
     data class ModelRequest(val x99v0: Boolean, val x9900v0: Boolean, val x99v1: Boolean)
 
