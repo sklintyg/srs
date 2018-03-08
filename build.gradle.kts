@@ -10,7 +10,7 @@ plugins {
     kotlin("plugin.spring") version "1.2.21"
     kotlin("plugin.jpa") version "1.2.21"
 
-    id("se.inera.intyg.plugin.common") version "1.0.61"
+    id("se.inera.intyg.plugin.common") version "1.0.62"
     id("org.springframework.boot") version "1.5.6.RELEASE"
     id("org.ajoberstar.grgit") version "2.0.0"
     id("org.jlleitschuh.gradle.ktlint") version "3.0.0"
