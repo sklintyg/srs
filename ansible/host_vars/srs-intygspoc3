@@ -1,0 +1,18 @@
+---
+
+environment_name: "intygspoc3"
+config_etc_folder: "{{ config_folder }}/intygspoc3"
+
+resources_remote_src: true
+resources_models_url: "/home/inera/model.zip"
+resources_statistik_url: "/home/inera/statistik.zip"
+
+database_server: localhost
+database_port: 3306
+database_name: srs
+database_username: webcert
+database_password: webcert
+
+# Spring profiles
+profiles: runtime,remote,scheduledUpdate
+

@@ -1,0 +1,11 @@
+[apache]
+srs-intygspoc3 ansible_ssh_host=intygspoc-inera.nordicmedtest.se ansible_ssh_user=inera ansible_ssh_port=13022 ansible_ssh_private_key_file=~/.ssh/inera_rsa
+
+[tomcat]
+srs-intygspoc3 ansible_ssh_host=intygspoc-inera.nordicmedtest.se ansible_ssh_user=inera ansible_ssh_port=13022 ansible_ssh_private_key_file=~/.ssh/inera_rsa
+
+[mysql]
+srs-intygspoc3 ansible_ssh_host=intygspoc-inera.nordicmedtest.se ansible_ssh_user=inera ansible_ssh_port=13022 ansible_ssh_private_key_file=~/.ssh/inera_rsa
+
+[tools]
+srs-intygspoc3 ansible_ssh_host=intygspoc-inera.nordicmedtest.se ansible_ssh_user=inera ansible_ssh_port=13022 ansible_ssh_private_key_file=~/.ssh/inera_rsa
