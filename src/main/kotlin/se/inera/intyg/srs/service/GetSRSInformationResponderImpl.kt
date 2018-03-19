@@ -3,22 +3,18 @@ package se.inera.intyg.srs.service
 import org.apache.cxf.annotations.SchemaValidation
 import org.apache.logging.log4j.LogManager
 import org.springframework.stereotype.Service
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Atgardsrekommendationer
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Bedomningsunderlag
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.GetSRSInformationRequestType
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.GetSRSInformationResponderInterface
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.GetSRSInformationResponseType
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Individ
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Prediktion
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Prediktionsfaktorer
-import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Statistik
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.*
+import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.*
 import se.inera.intyg.srs.vo.Diagnosis
 import se.inera.intyg.srs.vo.MeasureInformationModule
 import se.inera.intyg.srs.vo.Person
 import se.inera.intyg.srs.vo.PredictionInformationModule
 import se.inera.intyg.srs.vo.Sex
 import se.inera.intyg.srs.vo.StatisticModule
+import se.riv.clinicalprocess.healthcond.certificate.types.v2.Diagnos
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.ResultCodeEnum
+import java.math.BigInteger
+
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
@@ -46,6 +42,13 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
     override fun getSRSInformation(request: GetSRSInformationRequestType): GetSRSInformationResponseType {
         log.info("Received request from ${request.konsumentId.extension}")
 
+        val test = "191212121212"
+        val pers1 = "196801029288" // 4
+        val pers2 = "195705172590" // 3
+        val pers3 = "199904042380" // 2
+
+        val special = arrayListOf(test, pers1, pers2, pers3)
+
         val persons = transformIndividuals(request.individer.individ)
         val unitId = request.individer.individ.map { it.intygId.root }.first() ?: "NoUnitFound"
         val extraInfo: Map<String, String> =
@@ -56,25 +59,50 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
         val response = GetSRSInformationResponseType()
 
         if (request.utdatafilter.isPrediktion) {
-            try {
-                predictionModule.getInfo(persons, extraInfo, unitId).forEach { (person, prediction) ->
-                    val dtoPredictionList = Prediktion()
-                    dtoPredictionList.diagnosprediktion.addAll(prediction)
-                    val underlag = response.bedomningsunderlag.find { it.personId == person.personId } ?: createUnderlag(person.personId, response)
-                    underlag.prediktion = dtoPredictionList
+            if (persons.size == 1 && persons.get(0).personId in special) {
+                log.info("Doing the special")
+                val bedomningsunderlag = Bedomningsunderlag()
+                var risk = ""
+                when(persons.get(0).personId) {
+                    test -> {
+                        risk = "14"
+                    }
+                    pers1 -> {
+                        risk = "14"
+                    }
+                    pers2 -> {
+                        risk = "13"
+                    }
+                    pers3 -> {
+                        risk = "12"
+                    }
                 }
-            } catch (e: Exception) {
-                log.error("Predictions could not be produced. Please check for error.", e)
+                bedomningsunderlag.prediktion = fulbyggPrediktion(persons, risk)
+                response.bedomningsunderlag.add(bedomningsunderlag)
+            } else {
+                try {
+                    predictionModule.getInfo(persons, extraInfo, unitId).forEach { (person, prediction) ->
+                        val dtoPredictionList = Prediktion()
+                        dtoPredictionList.diagnosprediktion.addAll(prediction)
+                                val underlag = response.bedomningsunderlag.find { it.personId == person.personId }
+                                        ?: createUnderlag(person.personId, response)
+                        underlag.prediktion = dtoPredictionList
+                    }
+                } catch (e: Exception) {
+                    log.error("Predictions could not be produced. Please check for error.", e)
+                }
             }
         }
 
         if (request.utdatafilter.isAtgardsrekommendation) {
             try {
                 measureModule.getInfo(persons).forEach { (person, measure) ->
-                    val underlag = response.bedomningsunderlag.find { it.personId == person.personId } ?: createUnderlag(person.personId, response)
+                                val underlag = response.bedomningsunderlag.find { it.personId == person.personId }
+                                        ?: createUnderlag(person.personId, response)
                     val dtoAtgardsrekommendationList = Atgardsrekommendationer()
                     dtoAtgardsrekommendationList.rekommendation.addAll(measure)
                     underlag.atgardsrekommendationer = dtoAtgardsrekommendationList
+
                 }
             } catch (e: Exception) {
                 log.error("Measures could not be produced. Please check for error.", e)
@@ -84,7 +112,8 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
         if (request.utdatafilter.isStatistik) {
             try {
                 statisticModule.getInfo(persons).forEach { (person, statistic) ->
-                    val underlag = response.bedomningsunderlag.find { it.personId == person.personId } ?: createUnderlag(person.personId, response)
+                    val underlag = response.bedomningsunderlag.find { it.personId == person.personId }
+                            ?: createUnderlag(person.personId, response)
                     val dtoStatistikList = Statistik()
                     dtoStatistikList.statistikbild.addAll(statistic)
                     underlag.statistik = dtoStatistikList
@@ -96,6 +125,88 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
 
         response.resultCode = ResultCodeEnum.OK
         return response
+    }
+
+    private fun fulbyggStatistik(persons: List<Person>): Statistik? {
+        try {
+            statisticModule.getInfo(persons).forEach { (person, statistic) ->
+                val underlag = Bedomningsunderlag()
+                underlag.personId = person.personId
+                val dtoStatistikList = Statistik()
+                dtoStatistikList.statistikbild.addAll(statistic)
+                return dtoStatistikList
+            }
+        } catch (e: Exception) {
+            log.error("Statistics could not be produced. Please check for error.", e)
+        }
+        return null
+    }
+
+    private fun fulbyggAtgard(persons: List<Person>): Atgardsrekommendationer {
+        val ret = Atgardsrekommendationer()
+        val atgardRek = Atgardsrekommendation()
+
+        val observation = Atgard()
+        observation.atgardId = BigInteger("1")
+        observation.atgardsforslag = "Do something"
+        observation.atgardstyp = Atgardstyp.OBS
+        observation.prioritet = BigInteger("1")
+        observation.version = "1"
+
+        val rekommendation = Atgard()
+        rekommendation.atgardId = BigInteger("2")
+        rekommendation.atgardsforslag = "Rekommendation av något slag"
+        rekommendation.atgardstyp = Atgardstyp.REK
+        rekommendation.prioritet = BigInteger("2")
+        rekommendation.version = "1"
+
+        atgardRek.atgard.add(observation)
+        atgardRek.atgard.add(rekommendation)
+        atgardRek.atgardsrekommendationstatus = Atgardsrekommendationstatus.OK
+
+        val diagnos = Diagnos()
+        diagnos.code = persons.get(0).diagnoses.get(0).code
+        diagnos.codeSystem = persons.get(0).diagnoses.get(0).codeSystem
+
+        atgardRek.inkommandediagnos = diagnos
+
+        ret.rekommendation.add(atgardRek)
+        return ret
+    }
+
+    private fun fulbyggPrediktion(persons: List<Person>, risk: String): Prediktion {
+        val pred = Prediktion()
+        val diagnosPred = Diagnosprediktion()
+        diagnosPred.diagnosprediktionstatus = Diagnosprediktionstatus.OK
+
+        val diagnos = Diagnos()
+        diagnos.code = persons.get(0).diagnoses.get(0).code
+        diagnos.codeSystem = persons.get(0).diagnoses.get(0).codeSystem
+
+        val risksignal = Risksignal()
+        var riskBeskrivning = ""
+
+        risksignal.riskkategori = BigInteger(risk)
+        when(risk) {
+            "12" -> {
+                riskBeskrivning = "Lätt förhöjd risk"
+            }
+            "13" -> {
+                riskBeskrivning = "Måttligt förhöjd risk"
+            }
+            "14" -> {
+                riskBeskrivning = "Kraftigt förhöjd risk"
+            }
+        }
+        risksignal.beskrivning = riskBeskrivning
+        diagnosPred.diagnos = diagnos
+        diagnosPred.diagnosprediktionstatus = Diagnosprediktionstatus.OK
+        diagnosPred.risksignal = risksignal
+        diagnosPred.inkommandediagnos = diagnos
+        diagnosPred.sannolikhetOvergransvarde = 0.9
+
+        pred.diagnosprediktion.add(diagnosPred)
+        return pred
     }
 
     private fun createUnderlag(personId: String, response: GetSRSInformationResponseType): Bedomningsunderlag {
