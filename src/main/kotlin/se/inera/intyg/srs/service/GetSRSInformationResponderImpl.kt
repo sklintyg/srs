@@ -3,8 +3,22 @@ package se.inera.intyg.srs.service
 import org.apache.cxf.annotations.SchemaValidation
 import org.apache.logging.log4j.LogManager
 import org.springframework.stereotype.Service
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.*
-import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.*
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Atgardsrekommendationer
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Bedomningsunderlag
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Diagnosprediktion
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Diagnosprediktionstatus
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.GetSRSInformationRequestType
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.GetSRSInformationResponderInterface
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.GetSRSInformationResponseType
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Individ
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Prediktion
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Prediktionsfaktorer
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Risksignal
+import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Atgard
+import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Atgardsrekommendation
+import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Atgardsrekommendationstatus
+import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Atgardstyp
+import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Statistik
 import se.inera.intyg.srs.vo.Diagnosis
 import se.inera.intyg.srs.vo.MeasureInformationModule
 import se.inera.intyg.srs.vo.Person
@@ -14,7 +28,6 @@ import se.inera.intyg.srs.vo.StatisticModule
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.Diagnos
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.ResultCodeEnum
 import java.math.BigInteger
-
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
@@ -42,12 +55,11 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
     override fun getSRSInformation(request: GetSRSInformationRequestType): GetSRSInformationResponseType {
         log.info("Received request from ${request.konsumentId.extension}")
 
-        val test = "191212121212"
         val pers1 = "196801029288" // 4
         val pers2 = "195705172590" // 3
         val pers3 = "199904042380" // 2
 
-        val special = arrayListOf(test, pers1, pers2, pers3)
+        val special = arrayListOf(pers1, pers2, pers3)
 
         val persons = transformIndividuals(request.individer.individ)
         val unitId = request.individer.individ.map { it.intygId.root }.first() ?: "NoUnitFound"
@@ -62,20 +74,11 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
             if (persons.size == 1 && persons.get(0).personId in special) {
                 log.info("Doing the special")
                 val bedomningsunderlag = Bedomningsunderlag()
-                var risk = ""
-                when(persons.get(0).personId) {
-                    test -> {
-                        risk = "14"
-                    }
-                    pers1 -> {
-                        risk = "14"
-                    }
-                    pers2 -> {
-                        risk = "13"
-                    }
-                    pers3 -> {
-                        risk = "12"
-                    }
+                val risk = when (persons.get(0).personId) {
+                    pers1 -> "4"
+                    pers2 -> "3"
+                    pers3 -> "2"
+                    else -> "1"
                 }
                 bedomningsunderlag.prediktion = fulbyggPrediktion(persons, risk)
                 response.bedomningsunderlag.add(bedomningsunderlag)
@@ -84,8 +87,8 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
                     predictionModule.getInfo(persons, extraInfo, unitId).forEach { (person, prediction) ->
                         val dtoPredictionList = Prediktion()
                         dtoPredictionList.diagnosprediktion.addAll(prediction)
-                                val underlag = response.bedomningsunderlag.find { it.personId == person.personId }
-                                        ?: createUnderlag(person.personId, response)
+                        val underlag = response.bedomningsunderlag.find { it.personId == person.personId }
+                                ?: createUnderlag(person.personId, response)
                         underlag.prediktion = dtoPredictionList
                     }
                 } catch (e: Exception) {
@@ -97,8 +100,8 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
         if (request.utdatafilter.isAtgardsrekommendation) {
             try {
                 measureModule.getInfo(persons).forEach { (person, measure) ->
-                                val underlag = response.bedomningsunderlag.find { it.personId == person.personId }
-                                        ?: createUnderlag(person.personId, response)
+                    val underlag = response.bedomningsunderlag.find { it.personId == person.personId }
+                            ?: createUnderlag(person.personId, response)
                     val dtoAtgardsrekommendationList = Atgardsrekommendationer()
                     dtoAtgardsrekommendationList.rekommendation.addAll(measure)
                     underlag.atgardsrekommendationer = dtoAtgardsrekommendationList
@@ -184,24 +187,18 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
         diagnos.codeSystem = persons.get(0).diagnoses.get(0).codeSystem
 
         val risksignal = Risksignal()
-        var riskBeskrivning = ""
 
         risksignal.riskkategori = BigInteger(risk)
-        when(risk) {
-            "12" -> {
-                riskBeskrivning = "Lätt förhöjd risk"
-            }
-            "13" -> {
-                riskBeskrivning = "Måttligt förhöjd risk"
-            }
-            "14" -> {
-                riskBeskrivning = "Kraftigt förhöjd risk"
-            }
+        risksignal.beskrivning = when (risk) {
+            "2" -> "Lätt förhöjd risk"
+            "3" -> "Måttligt förhöjd risk"
+            "4" -> "Starkt förhöjd risk"
+            else -> ""
         }
-        risksignal.beskrivning = riskBeskrivning
+        diagnosPred.risksignal = risksignal
+
         diagnosPred.diagnos = diagnos
         diagnosPred.diagnosprediktionstatus = Diagnosprediktionstatus.OK
-        diagnosPred.risksignal = risksignal
         diagnosPred.inkommandediagnos = diagnos
         diagnosPred.sannolikhetOvergransvarde = 0.9
 
