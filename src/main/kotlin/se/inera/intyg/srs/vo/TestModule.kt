@@ -22,7 +22,7 @@ import se.inera.intyg.srs.persistence.QuestionRepository
 import se.inera.intyg.srs.persistence.Recommendation
 import se.inera.intyg.srs.persistence.RecommendationRepository
 import se.inera.intyg.srs.persistence.ResponseRepository
-import se.inera.intyg.srs.persistence.StatisticRepository
+import se.inera.intyg.srs.persistence.InternalStatisticRepository
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
@@ -36,7 +36,7 @@ class TestModule(private val consentRepo: ConsentRepository,
                  private val measureRepo: MeasureRepository,
                  private val priorityRepo: MeasurePriorityRepository,
                  private val recommendationRepo: RecommendationRepository,
-                 private val statisticsRepo: StatisticRepository,
+                 private val statisticsRepo: InternalStatisticRepository,
                  private val diagnosisRepo: DiagnosisRepository,
                  private val predictPrioRepo: PredictionPriorityRepository,
                  private val questionRepo: QuestionRepository,

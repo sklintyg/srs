@@ -6,14 +6,15 @@ plugins {
     war
     `maven-publish`
 
-    kotlin("jvm") version "1.2.21"
-    kotlin("plugin.spring") version "1.2.21"
-    kotlin("plugin.jpa") version "1.2.21"
+    kotlin("jvm") version "1.3.20"
+    kotlin("plugin.spring") version "1.3.20"
+    kotlin("plugin.jpa") version "1.3.20"
 
     id("se.inera.intyg.plugin.common") version "1.0.62"
     id("org.springframework.boot") version "1.5.6.RELEASE"
     id("org.ajoberstar.grgit") version "2.0.0"
     id("org.jlleitschuh.gradle.ktlint") version "3.0.0"
+//    id("org.jlleitschuh.gradle.ktlint") version "7.2.1"
 }
 
 group = "se.inera.intyg.srs"
@@ -57,12 +58,15 @@ publishing {
 }
 
 dependencies {
-    val kotlinVersion = "1.2.21"
+//    val kotlinVersion = "1.2.21"
+//    val kotlinVersion = "1.2.50"
+    val kotlinVersion = "1.3.20"
 
     compile(kotlin("stdlib", kotlinVersion))
     compile(kotlin("reflect", kotlinVersion))
 
-    compile("se.inera.intyg.clinicalprocess.healthcond.srs:intyg-clinicalprocess-healthcond-srs-schemas:0.0.7")
+//    compile("se.inera.intyg.clinicalprocess.healthcond.srs:intyg-clinicalprocess-healthcond-srs-schemas:0.0.7")
+    compile("se.inera.intyg.clinicalprocess.healthcond.srs:intyg-clinicalprocess-healthcond-srs-schemas:0-SNAPSHOT")
     compile("se.riv.itintegration.monitoring:itintegration-monitoring-schemas:1.0.0.4")
 
     listOf("org.springframework.boot:spring-boot-starter-web",
@@ -86,6 +90,7 @@ dependencies {
     compile("org.nuiton.thirdparty:JRI:0.9-9")
     compile("org.jadira.usertype:usertype.extended:5.0.0.GA")
     compile("com.google.guava:guava:23.0")
+    compile("org.apache.poi:poi-ooxml:4.0.1")
 
     runtime("com.h2database:h2")
     runtime("mysql:mysql-connector-java")
@@ -97,10 +102,9 @@ dependencies {
     testCompile("org.exparity:hamcrest-date:2.0.1")
 }
 
-
 repositories {
     mavenLocal()
     maven("https://build-inera.nordicmedtest.se/nexus/repository/releases/")
     mavenCentral()
+    //jcenter()
 }
-

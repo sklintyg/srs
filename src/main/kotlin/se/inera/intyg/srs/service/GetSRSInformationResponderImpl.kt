@@ -3,14 +3,14 @@ package se.inera.intyg.srs.service
 import org.apache.cxf.annotations.SchemaValidation
 import org.apache.logging.log4j.LogManager
 import org.springframework.stereotype.Service
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Atgardsrekommendationer
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Bedomningsunderlag
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.GetSRSInformationRequestType
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.GetSRSInformationResponderInterface
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.GetSRSInformationResponseType
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Individ
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Prediktion
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Prediktionsfaktorer
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Atgardsrekommendationer
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Bedomningsunderlag
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.GetSRSInformationRequestType
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.GetSRSInformationResponderInterface
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.GetSRSInformationResponseType
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Individ
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Prediktion
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Prediktionsfaktorer
 import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Statistik
 import se.inera.intyg.srs.vo.Diagnosis
 import se.inera.intyg.srs.vo.MeasureInformationModule
@@ -55,17 +55,16 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
 
         val response = GetSRSInformationResponseType()
 
-        if (request.utdatafilter.isPrediktion) {
-            try {
-                predictionModule.getInfo(persons, extraInfo, unitId).forEach { (person, prediction) ->
-                    val dtoPredictionList = Prediktion()
-                    dtoPredictionList.diagnosprediktion.addAll(prediction)
-                    val underlag = response.bedomningsunderlag.find { it.personId == person.personId } ?: createUnderlag(person.personId, response)
-                    underlag.prediktion = dtoPredictionList
-                }
-            } catch (e: Exception) {
-                log.error("Predictions could not be produced. Please check for error.", e)
+        // No utdatafilter check here since we might always want to add prevalence, if applicable
+        try {
+            predictionModule.getInfo(persons, extraInfo, unitId, request.utdatafilter.isPrediktion).forEach { (person, prediction) ->
+                val dtoPredictionList = Prediktion()
+                dtoPredictionList.diagnosprediktion.addAll(prediction)
+                val underlag = response.bedomningsunderlag.find { it.personId == person.personId } ?: createUnderlag(person.personId, response)
+                underlag.prediktion = dtoPredictionList
             }
+        } catch (e: Exception) {
+            log.error("Predictions could not be produced. Please check for error.", e)
         }
 
         if (request.utdatafilter.isAtgardsrekommendation) {

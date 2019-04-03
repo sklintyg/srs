@@ -8,6 +8,7 @@ import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Atgardsrekommendat
 import se.inera.intyg.srs.persistence.Measure
 import se.inera.intyg.srs.persistence.MeasureRepository
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.Diagnos
+import java.lang.RuntimeException
 import java.math.BigInteger
 import java.util.Locale
 import kotlin.collections.HashMap
@@ -22,8 +23,11 @@ class MeasureInformationModule(val measureRepo: MeasureRepository) : Information
     override fun getInfoForDiagnosis(diagnosisId: String): Atgardsrekommendation =
             createRecommendation(Diagnosis(diagnosisId))
 
-    override fun getInfo(persons: List<Person>, extraParams: Map<String, String>, userHsaId: String): Map<Person, List<Atgardsrekommendation>> {
+    override fun getInfo(persons: List<Person>, extraParams: Map<String, String>, userHsaId: String, calculateIndividual: Boolean): Map<Person, List<Atgardsrekommendation>> {
         log.info(persons)
+        if (calculateIndividual) {
+            throw RuntimeException("calculateIndividual not supported")
+        }
         val measures = HashMap<Person, List<Atgardsrekommendation>>()
         persons.forEach { person ->
             measures.put(person, createInfo(person))

@@ -226,4 +226,32 @@
             </column>
         </addColumn>
     </changeSet>
+
+    <changeSet id="10" author="ch">
+
+        <createTable tableName="national_statistic">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="diagnosis_id" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="day_interval_min" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="day_interval_max_excl" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="interval_quantity" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="accumulated_quantity" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="timestamp" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+    </changeSet>
 </databaseChangeLog>

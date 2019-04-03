@@ -5,7 +5,7 @@ import org.rosuda.JRI.Rengine
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Diagnosprediktionstatus
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Diagnosprediktionstatus
 import se.inera.intyg.srs.service.ModelFileUpdateService
 import java.io.File
 import java.io.BufferedReader
@@ -35,17 +35,19 @@ class RAdapter(val modelService: ModelFileUpdateService, @Value("\${r.log.file.p
 
         // Load required library pch
         rengine.eval("library(pch)")
+
     }
 
     @PreDestroy
     fun shutdown() {
+        rengine.eval("sink()")
         rengine.end()
     }
 
     private fun startRLogging() {
         rengine.eval("log<-file('$rLogFilePath')")
-        rengine.eval("sink(log, append=FALSE)")
-        rengine.eval("sink(log, append=FALSE, type='message')")
+        rengine.eval("sink(log, append=TRUE)")
+        rengine.eval("sink(log, append=TRUE, type='message')")
     }
 
     // INTYG-4481: In case of execution error in R: append log contents to main log.
@@ -96,7 +98,7 @@ class RAdapter(val modelService: ModelFileUpdateService, @Value("\${r.log.file.p
             }.toString()
 
             rengine.eval(rDataFrame)
-            val rOutput = rengine.eval("output <- round(predict(model,newdata = data)\$Surv, 2)")
+            val rOutput = rengine.eval("output <- round(pch:::predict.pch(model,newdata = data)\$Surv, 2)")
 
             return if (rOutput != null) {
                 log.info("Successful prediction, result: " + rOutput.asDouble())

@@ -2,9 +2,9 @@ package se.inera.intyg.srs.vo
 
 import org.apache.logging.log4j.LogManager
 import org.springframework.stereotype.Service
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Diagnosprediktion
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Diagnosprediktionstatus
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Risksignal
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Diagnosprediktion
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Diagnosprediktionstatus
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Risksignal
 import se.inera.intyg.srs.persistence.DiagnosisRepository
 import se.inera.intyg.srs.persistence.PredictionDiagnosis
 import se.inera.intyg.srs.persistence.Probability
@@ -26,16 +26,16 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
     override fun getInfoForDiagnosis(diagnosisId: String): Diagnosprediktion =
             throw NotImplementedError("Predictions can not be made with only diagnosis.")
 
-    override fun getInfo(persons: List<Person>, extraParams: Map<String, String>, userHsaId: String): Map<Person, List<Diagnosprediktion>> {
+    override fun getInfo(persons: List<Person>, extraParams: Map<String, String>, userHsaId: String, calculateIndividual: Boolean): Map<Person, List<Diagnosprediktion>> {
         log.info(persons)
         val predictions = HashMap<Person, List<Diagnosprediktion>>()
         persons.forEach { person ->
-            predictions.put(person, createInfo(person, extraParams, userHsaId))
+            predictions.put(person, createInfo(person, extraParams, userHsaId, calculateIndividual))
         }
         return predictions
     }
 
-    private fun createInfo(person: Person, extraParams: Map<String, String>, userHsaId: String): List<Diagnosprediktion> {
+    private fun createInfo(person: Person, extraParams: Map<String, String>, userHsaId: String, predictIndividualRisk: Boolean): List<Diagnosprediktion> {
         val outgoingPrediction = mutableListOf<Diagnosprediktion>()
 
         person.diagnoses.forEach { incomingDiagnosis ->
@@ -45,7 +45,11 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
             var calculatedPrediction: Prediction? = null
             val diagnosis = diagnosisRepo.getModelForDiagnosis(incomingDiagnosis.code)
 
-            if (diagnosis != null && isCorrectPredictionParamsAgainstDiagnosis(diagnosis, extraParams)) {
+            if (diagnosis != null) {
+                diagnosPrediktion.prevalens = diagnosis.prevalence
+            }
+
+            if (diagnosis != null && isCorrectPredictionParamsAgainstDiagnosis(diagnosis, extraParams) && predictIndividualRisk) {
                 calculatedPrediction = rAdapter.getPrediction(person, incomingDiagnosis, extraParams)
                 diagnosPrediktion.diagnosprediktionstatus = calculatedPrediction.status
             } else {

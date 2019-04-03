@@ -13,7 +13,7 @@ import se.inera.intyg.clinicalprocess.healthcond.srs.getconsent.v1.GetConsentRes
 import se.inera.intyg.clinicalprocess.healthcond.srs.getdiagnosiscodes.v1.GetDiagnosisCodesResponderInterface
 import se.inera.intyg.clinicalprocess.healthcond.srs.getpredictionquestions.v1.GetPredictionQuestionsResponderInterface
 import se.inera.intyg.clinicalprocess.healthcond.srs.getriskpredictionforcertificate.v1.GetRiskPredictionForCertificateResponderInterface
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.GetSRSInformationResponderInterface
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.GetSRSInformationResponderInterface
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformationfordiagnosis.v1.GetSRSInformationForDiagnosisResponderInterface
 import se.inera.intyg.clinicalprocess.healthcond.srs.setconsent.v1.SetConsentResponderInterface
 import se.riv.itintegration.monitoring.rivtabp21.v1.PingForConfigurationResponderInterface
@@ -58,7 +58,7 @@ class Application : SpringBootServletInitializer() {
     fun getSrsEndpoint(): Endpoint {
         val endpoint = EndpointImpl(bus, srsResponder)
         endpoint.schemaLocations = listOf("classpath:core_components/clinicalprocess_healthcond_certificate_types_2.0.xsd",
-                "classpath:interactions/GetSRSInformation/GetSRSInformationResponder_1.0.xsd")
+                "classpath:interactions/GetSRSInformation/GetSRSInformationResponder_2.0.xsd")
         endpoint.publish("/getsrs")
         return endpoint
     }
@@ -119,7 +119,6 @@ class Application : SpringBootServletInitializer() {
         endpoint.publish("/diagnosiscodes")
         return endpoint
     }
-
 }
 
 fun main(args: Array<String>) {

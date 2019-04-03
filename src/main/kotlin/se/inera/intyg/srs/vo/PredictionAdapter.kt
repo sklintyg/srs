@@ -1,6 +1,6 @@
 package se.inera.intyg.srs.vo
 
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Diagnosprediktionstatus
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Diagnosprediktionstatus
 
 interface PredictionAdapter {
 
