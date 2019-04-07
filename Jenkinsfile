@@ -14,7 +14,7 @@ stage('build') {
         try {
             shgradle "--refresh-dependencies clean build -DbuildVersion=${buildVersion}"
         } finally {
-            publishHTML allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'build/reports/allTests', \
+            publishHTML allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'web/build/reports/allTests', \
                 reportFiles: 'index.html', reportName: 'JUnit results'
         }
     }
