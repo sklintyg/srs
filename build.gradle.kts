@@ -16,6 +16,9 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "3.0.0"
 }
 
+// harmonize output dir with openshift pipeline (convention)
+rootProject.buildDir = file("${rootDir}/web/build")
+
 group = "se.inera.intyg.srs"
 version = System.getProperty("buildVersion") ?: "0.0.1-SNAPSHOT"
 

@@ -20,27 +20,6 @@ stage('build') {
     }
 }
 
-
-stage('deploy') {
-    node {
-        util.run {
-            ansiblePlaybook extraVars: [version: buildVersion, ansible_ssh_port: "22", deploy_from_repo: "false"], \
-                installation: 'ansible-yum', inventory: 'ansible/inventory/srs/test', playbook: 'ansible/site.yml'
-        }
-    }
-}
-
-stage('restAssured') {
-    node {
-        try {
-            shgradle "restAssuredTest -DbaseUrl=http://srs.inera.nordicmedtest.se/"
-        } finally {
-            publishHTML allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'build/reports/tests/restAssuredTest', \
-                reportFiles: 'index.html', reportName: 'RestAssured results'
-        }
-    }
-}
-
 stage('tag and upload') {
     node {
         shgradle "publish tagRelease -DbuildVersion=${buildVersion}"
@@ -50,5 +29,18 @@ stage('tag and upload') {
 stage('notify') {
     node {
         util.notifySuccess()
+    }
+}
+
+
+stage('propagate') {
+    node {
+        gitRef = "v${buildVersion}"
+        releaseFlag = "${GIT_BRANCH.startsWith("release")}"
+        build job: "webcert-dintyg-build", wait: false, parameters: [
+                [$class: 'StringParameterValue', name: 'BUILD_VERSION', value: buildVersion],
+                [$class: 'StringParameterValue', name: 'GIT_REF', value: gitRef],
+                [$class: 'StringParameterValue', name: 'RELEASE_FLAG', value: releaseFlag]
+        ]
     }
 }
