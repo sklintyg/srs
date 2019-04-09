@@ -91,13 +91,6 @@ class TestController(val consentModule: ConsentModule,
     fun deleteAllIntyg() =
             testModule.deleteAllIntyg()
 
-    @PostMapping("/await-model-update")
-    fun forceModelUpdate() {
-        val cf = CompletableFuture<Void>()
-        fileService.listeners.add(cf)
-        cf.join()
-    }
-
     @PostMapping("/set-models")
     fun setTestModels(@RequestBody models: ModelRequest) =
             testModule.setTestModels(models)

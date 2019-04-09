@@ -70,10 +70,6 @@ open class BaseIntegrationTest {
                 "/set-models",
                 createModelRequest(models),
                 Void::class.java)
-        restTemplate.postForObject(
-                "/await-model-update",
-                null,
-                Void::class.java)
     }
 
     private fun createModelRequest(models: Array<out String>) =

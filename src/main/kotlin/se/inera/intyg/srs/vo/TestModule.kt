@@ -2,30 +2,13 @@ package se.inera.intyg.srs.vo
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
+import org.springframework.core.io.Resource
+import org.springframework.core.io.ResourceLoader
 import org.springframework.stereotype.Service
 import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Atgardstyp
 import se.inera.intyg.srs.controllers.TestController
-import se.inera.intyg.srs.persistence.ConsentRepository
-import se.inera.intyg.srs.persistence.DiagnosisRepository
-import se.inera.intyg.srs.persistence.InternalStatistic
-import se.inera.intyg.srs.persistence.Measure
-import se.inera.intyg.srs.persistence.MeasurePriority
-import se.inera.intyg.srs.persistence.MeasurePriorityRepository
-import se.inera.intyg.srs.persistence.MeasureRepository
-import se.inera.intyg.srs.persistence.PredictionDiagnosis
-import se.inera.intyg.srs.persistence.PredictionPriority
-import se.inera.intyg.srs.persistence.PredictionPriorityRepository
-import se.inera.intyg.srs.persistence.PredictionQuestion
-import se.inera.intyg.srs.persistence.PredictionResponse
-import se.inera.intyg.srs.persistence.ProbabilityRepository
-import se.inera.intyg.srs.persistence.QuestionRepository
-import se.inera.intyg.srs.persistence.Recommendation
-import se.inera.intyg.srs.persistence.RecommendationRepository
-import se.inera.intyg.srs.persistence.ResponseRepository
-import se.inera.intyg.srs.persistence.StatisticRepository
-import java.nio.file.Files
-import java.nio.file.Paths
-import java.nio.file.StandardCopyOption
+import se.inera.intyg.srs.persistence.*
+import se.inera.intyg.srs.service.ModelFileUpdateService
 import java.time.LocalDateTime
 import java.util.concurrent.atomic.AtomicLong
 
@@ -42,15 +25,11 @@ class TestModule(private val consentRepo: ConsentRepository,
                  private val questionRepo: QuestionRepository,
                  private val responseRepo: ResponseRepository,
                  private val probabilityRepo: ProbabilityRepository,
-                 @Value("\${model.dir}") private val modelDir: String) {
+                 private val modelFileUpdateService: ModelFileUpdateService,
+                 private val resourceLoader: ResourceLoader,
+                 @Value("\${resources.folder}") private val resourcesFolder: String) {
 
     private val uniqueId = AtomicLong(1000)
-
-    private val testModels = mapOf(
-            Pair("x99v0", Pair("$modelDir/../testmodel/Model1.RData", "$modelDir/PM_X99_v0.0.RData")),
-            Pair("x9900v0", Pair("$modelDir/../testmodel/Model2.RData", "$modelDir/PM_X9900_v0.0.RData")),
-            Pair("x99v1", Pair("$modelDir/../testmodel/Model2.RData", "$modelDir/PM_X99_v1.0.RData"))
-    )
 
     fun createMeasure(diagnosisId: String, diagnosisText: String, recommendations: List<String>): Measure =
             measureRepo.save(Measure(uniqueId.incrementAndGet(), diagnosisId, diagnosisText, "1.0", mapToMeasurePriorities(recommendations)))
@@ -109,17 +88,20 @@ class TestModule(private val consentRepo: ConsentRepository,
     }
 
     fun setTestModels(models: TestController.ModelRequest) {
-        Files.walk(Paths.get(modelDir))
-                .filter { it.getName(it.nameCount - 1).toString().contains("X99") }
-                .forEach { Files.delete(it) }
+        val resources = mutableListOf<Resource>()
 
-        val copyPaths = mutableListOf<Pair<String, String>>()
+        val f = "$resourcesFolder/testmodel"
+        if (models.x99v0) {
+            resources.add(resourceLoader.getResource("$f/PM_X99_v0.0.RData"))
+        }
+        if (models.x99v1) {
+            resources.add(resourceLoader.getResource("$f/PM_X99_v1.0.RData"))
+        }
+        if (models.x9900v0) {
+            resources.add(resourceLoader.getResource("$f/PM_X9900_v0.0.RData"))
+        }
 
-        if (models.x99v0) testModels["x99v0"]?.let { copyPaths.add(it) }
-        if (models.x9900v0) testModels["x9900v0"]?.let { copyPaths.add(it) }
-        if (models.x99v1) testModels["x99v1"]?.let { copyPaths.add(it) }
-
-        copyPaths.forEach { (from, to) -> Files.copy(Paths.get(from), Paths.get(to), StandardCopyOption.REPLACE_EXISTING) }
+        modelFileUpdateService.applyModels(resources)
     }
 
     fun getIntyg(intygsId: String) =
