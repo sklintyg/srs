@@ -6,9 +6,12 @@ import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Diagno
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Diagnosprediktionstatus
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Risksignal
 import se.inera.intyg.srs.persistence.DiagnosisRepository
+import se.inera.intyg.srs.persistence.PatientAnswer
+import se.inera.intyg.srs.persistence.PatientAnswerRepository
 import se.inera.intyg.srs.persistence.PredictionDiagnosis
 import se.inera.intyg.srs.persistence.Probability
 import se.inera.intyg.srs.persistence.ProbabilityRepository
+import se.inera.intyg.srs.persistence.ResponseRepository
 import se.inera.intyg.srs.service.monitoring.logPrediction
 import se.inera.intyg.srs.util.PredictionInformationUtil
 import se.inera.intyg.srs.util.getModelForDiagnosis
@@ -19,7 +22,9 @@ import java.time.LocalDateTime
 @Service
 class PredictionInformationModule(val rAdapter: PredictionAdapter,
                                   val diagnosisRepo: DiagnosisRepository,
-                                  val probabilityRepo: ProbabilityRepository) : InformationModule<Diagnosprediktion> {
+                                  val probabilityRepo: ProbabilityRepository,
+                                  val patientAnswerRepo: PatientAnswerRepository,
+                                  val responseRepo: ResponseRepository) : InformationModule<Diagnosprediktion> {
 
     private val log = LogManager.getLogger()
 
@@ -69,7 +74,7 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
                 diagnosPrediktion.diagnos = outgoingDiagnosis
                 riskSignal.riskkategori = calculateRisk(diagnosis, calculatedPrediction.prediction!!)
 
-                persistProbability(diagnosPrediktion, person.certificateId)
+                persistProbability(diagnosPrediktion, person.certificateId, extraParams)
 
             } else {
                 riskSignal.riskkategori = BigInteger.ONE
@@ -125,12 +130,31 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
 
     }
 
-    private fun persistProbability(diagnosPrediction: Diagnosprediktion, certificateId: String) {
+    private fun persistProbability(diagnosPrediction: Diagnosprediktion, certificateId: String, extraParams: Map<String, String>) {
         log.info("Persisting probability for certificateId: $certificateId")
-        val probability = Probability(certificateId, diagnosPrediction.sannolikhetOvergransvarde,
-                diagnosPrediction.risksignal.riskkategori.intValueExact(), diagnosPrediction.inkommandediagnos.code,
-                diagnosPrediction.diagnos.code, LocalDateTime.now())
-        probabilityRepo.save(probability)
+        var probability = Probability(certificateId,
+                diagnosPrediction.sannolikhetOvergransvarde,
+                diagnosPrediction.risksignal.riskkategori.intValueExact(),
+                diagnosPrediction.inkommandediagnos.code,
+                diagnosPrediction.diagnos.code,
+                LocalDateTime.now())
+        probability = probabilityRepo.save(probability)
+        log.info("extraParams: $extraParams")
+        extraParams.forEach { q, r ->
+            log.info("question: $q, response: $r")
+            val predictionResponse = responseRepo.findPredictionResponseByQuestionAndResponse(q, r)
+            log.info("Found predictionResponse $predictionResponse")
+            if (predictionResponse != null) {
+                var patientAnswer = patientAnswerRepo.findByProbabilityAndPredictionResponse(probability, predictionResponse)
+                if (patientAnswer == null) {
+                    log.info("Creating PatientAnswer probability.id: ${probability.id}, predictionResponse(question=response): ${predictionResponse.question.predictionId}=${predictionResponse.predictionId} ")
+                    patientAnswer = PatientAnswer()
+                }
+                patientAnswer.probability = probability
+                patientAnswer.predictionResponse = predictionResponse
+                patientAnswerRepo.save(patientAnswer)
+            }
+        }
     }
 
     private fun calculateRisk(diagnosis: PredictionDiagnosis, prediction: Double): BigInteger =

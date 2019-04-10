@@ -16,6 +16,7 @@ import se.inera.intyg.clinicalprocess.healthcond.srs.getriskpredictionforcertifi
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.GetSRSInformationResponderInterface
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformationfordiagnosis.v1.GetSRSInformationForDiagnosisResponderInterface
 import se.inera.intyg.clinicalprocess.healthcond.srs.setconsent.v1.SetConsentResponderInterface
+import se.inera.intyg.clinicalprocess.healthcond.srs.setownopinion.v1.SetOwnOpinionResponderInterface
 import se.riv.itintegration.monitoring.rivtabp21.v1.PingForConfigurationResponderInterface
 import javax.xml.ws.Endpoint
 
@@ -49,6 +50,9 @@ class Application : SpringBootServletInitializer() {
 
     @Autowired
     lateinit var diagnosisCodesResponder: GetDiagnosisCodesResponderInterface
+
+    @Autowired
+    lateinit var setOwnOpinionResponder: SetOwnOpinionResponderInterface
 
     override fun configure(application: SpringApplicationBuilder): SpringApplicationBuilder {
         return application.sources(Application::class.java)
@@ -96,6 +100,15 @@ class Application : SpringBootServletInitializer() {
         endpoint.schemaLocations = listOf("classpath:core_components/clinicalprocess_healthcond_certificate_types_2.0.xsd",
                 "classpath:interactions/GetRiskPredictionForCertificate/GetRiskPredictionForCertificateResponder_1.0.xsd")
         endpoint.publish("/get-risk-prediction-for-certificate/v1.0")
+        return endpoint
+    }
+
+    @Bean
+    fun setOwnOpinionEndpoint(): Endpoint {
+        val endpoint = EndpointImpl(bus, setOwnOpinionResponder)
+        endpoint.schemaLocations = listOf("classpath:core_components/clinicalprocess_healthcond_certificate_types_2.0.xsd",
+                "classpath:interactions/SetOwnOpinion/SetOwnOpinionResponder_1.0.xsd")
+        endpoint.publish("/set-own-opinion")
         return endpoint
     }
 
