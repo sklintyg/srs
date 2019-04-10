@@ -90,15 +90,15 @@ class TestModule(private val consentRepo: ConsentRepository,
     fun setTestModels(models: TestController.ModelRequest) {
         val resources = mutableListOf<Resource>()
 
-        val f = "$resourcesFolder/testmodel"
+        fun load(loc: String) = resources.add(resourceLoader.getResource("$resourcesFolder/testmodel/$loc"))
         if (models.x99v0) {
-            resources.add(resourceLoader.getResource("$f/PM_X99_v0.0.RData"))
+            load("PM_X99_v0.0.RData")
         }
         if (models.x99v1) {
-            resources.add(resourceLoader.getResource("$f/PM_X99_v1.0.RData"))
+            load("PM_X99_v1.0.RData")
         }
         if (models.x9900v0) {
-            resources.add(resourceLoader.getResource("$f/PM_X9900_v0.0.RData"))
+            load("PM_X9900_v0.0.RData")
         }
 
         modelFileUpdateService.applyModels(resources)

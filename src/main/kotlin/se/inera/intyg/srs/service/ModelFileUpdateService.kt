@@ -65,7 +65,7 @@ class ModelFileUpdateService(val resourceLoader: ResourceLoader,
         val vEndPos = name.indexOf('.')
         val diagnosis = name.substring(dStartPos + 1, dEndPos)
         val version = name.substring(dEndPos + 1, vEndPos)
-        val file = File.createTempFile(resource.filename, ".RData")
+        val file = File.createTempFile(resource.filename, DATA_FILE_EXTENSION)
         val out = file.outputStream()
         try {
             resource.inputStream.copyTo(out)
