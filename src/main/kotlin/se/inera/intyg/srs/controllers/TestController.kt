@@ -2,6 +2,7 @@ package se.inera.intyg.srs.controllers
 
 import org.springframework.context.annotation.Profile
 import org.springframework.core.io.ResourceLoader
+import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -98,7 +99,7 @@ class TestController(val consentModule: ConsentModule,
             testModule.setTestModels(models)
 
     // any resource
-    @GetMapping("/resource")
+    @GetMapping("/resource", produces = [MediaType.APPLICATION_OCTET_STREAM_VALUE])
     fun resource(@RequestParam location: String) =
         resourceLoader.getResource(location)
 

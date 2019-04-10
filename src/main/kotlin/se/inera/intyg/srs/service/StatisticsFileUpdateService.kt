@@ -1,10 +1,8 @@
 package se.inera.intyg.srs.service
 
 import org.apache.logging.log4j.LogManager
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
-import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
@@ -17,17 +15,17 @@ import java.nio.file.attribute.BasicFileAttributes
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.Locale
+import kotlin.collections.ArrayList
 
 /**
  * Scheduled service for checking for new statistics images in the dir specified with statistics.image.dir,
  * the update interval is also configurable via image.update.cron, both in application.properties.
  */
 @Component
-@EnableScheduling
 @Profile("scheduledUpdate")
 class StatisticsFileUpdateService(@Value("\${statistics.image.dir}") val imageDir: String,
                                   @Value("\${base.url}") val baseUrl: String,
-                                  @Autowired val repo: StatisticRepository) {
+                                  val repo: StatisticRepository) {
 
     private val log = LogManager.getLogger()
 
@@ -79,7 +77,7 @@ class StatisticsFileUpdateService(@Value("\${statistics.image.dir}") val imageDi
         if (diskEntries.size != dbEntries.size) {
             dbEntries.filter { it.diagnosisId !in diskEntries }.forEach {
                 log.info("Statistics image for ${it.diagnosisId} no longer available, removing from database.")
-                repo.delete(it.id)
+                repo.deleteById(it.id)
             }
         }
     }

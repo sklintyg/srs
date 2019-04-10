@@ -1,5 +1,17 @@
 package se.inera.intyg.srs
 
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.databind.module.SimpleModule
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalTimeDeserializer
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer
+import com.fasterxml.jackson.module.kotlin.KotlinModule
 import org.apache.cxf.Bus
 import org.apache.cxf.jaxws.EndpointImpl
 import org.apache.logging.log4j.LogManager
@@ -7,7 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.builder.SpringApplicationBuilder
-import org.springframework.boot.web.support.SpringBootServletInitializer
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.context.annotation.Bean
 import se.inera.intyg.clinicalprocess.healthcond.srs.getconsent.v1.GetConsentResponderInterface
 import se.inera.intyg.clinicalprocess.healthcond.srs.getdiagnosiscodes.v1.GetDiagnosisCodesResponderInterface
@@ -17,10 +29,16 @@ import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.GetSRS
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformationfordiagnosis.v1.GetSRSInformationForDiagnosisResponderInterface
 import se.inera.intyg.clinicalprocess.healthcond.srs.setconsent.v1.SetConsentResponderInterface
 import se.riv.itintegration.monitoring.rivtabp21.v1.PingForConfigurationResponderInterface
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
 import javax.xml.ws.Endpoint
 
 @SpringBootApplication
 class Application : SpringBootServletInitializer() {
+
+
     private val log = LogManager.getLogger()
 
     @Autowired
@@ -120,6 +138,32 @@ class Application : SpringBootServletInitializer() {
         return endpoint
     }
 
+
+    @Bean
+    fun objectMapper(): ObjectMapper {
+        val m = ObjectMapper()
+        m.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+        m.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        m.registerModule(Jdk8Module());
+        m.registerModule(KotlinModule())
+        m.registerModule(TemporalSerializer())
+        m.setDateFormat(SimpleDateFormat("yyyy-MM-dd"))
+        return m
+    }
+
+}
+
+private class TemporalSerializer: SimpleModule() {
+    init {
+        addSerializer(LocalDateTime::class.java, LocalDateTimeSerializer.INSTANCE)
+        addDeserializer(LocalDateTime::class.java, LocalDateTimeDeserializer.INSTANCE)
+
+        addSerializer(LocalDate::class.java, LocalDateSerializer.INSTANCE)
+        addDeserializer(LocalDate::class.java, LocalDateDeserializer.INSTANCE)
+
+        addSerializer(LocalTime::class.java, LocalTimeSerializer.INSTANCE)
+        addDeserializer(LocalTime::class.java, LocalTimeDeserializer.INSTANCE)
+    }
 }
 
 fun main(args: Array<String>) {

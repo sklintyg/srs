@@ -12,7 +12,7 @@ import se.inera.intyg.srs.persistence.Consent
 import se.inera.intyg.srs.persistence.Measure
 import se.inera.intyg.srs.persistence.PredictionDiagnosis
 import java.time.LocalDateTime
-import java.time.Month
+import java.time.format.DateTimeFormatter
 
 open class BaseIntegrationTest {
 
@@ -40,17 +40,14 @@ open class BaseIntegrationTest {
         val jsonString = restTemplate.getForObject(
                 "/consents?personnummer=$personnummer&vardenhet=$vardenhet",
                 String::class.java) ?: return null
+
         val jsonObject = JSONObject(jsonString)
-        val timeObject = jsonObject.getJSONObject("skapatTid")
+        val time =  LocalDateTime.parse(jsonObject.getString("skapatTid"), DateTimeFormatter.ISO_DATE_TIME)
 
         return Consent(
                 jsonObject.getString("personnummer"),
                 jsonObject.getString("vardgivareId"),
-                LocalDateTime.of(timeObject.getInt("year"),
-                        Month.of(timeObject.getInt("monthValue")),
-                        timeObject.getInt("dayOfMonth"),
-                        timeObject.getInt("hour"),
-                        timeObject.getInt("minute")))
+                time)
     }
 
     protected fun addStatistics(diagnosId: String, bildUrl: String): String =

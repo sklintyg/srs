@@ -66,7 +66,7 @@ class TestModule(private val consentRepo: ConsentRepository,
                     PredictionResponse(uniqueId.incrementAndGet(), answer, predictionId, default, i + 1) }
                 .map { responseRepo.save(it) }
 
-    fun deleteMeasure(diagnosisId: String) = measureRepo.delete(measureRepo.findByDiagnosisIdStartingWith(diagnosisId))
+    fun deleteMeasure(diagnosisId: String) = measureRepo.deleteAll(measureRepo.findByDiagnosisIdStartingWith(diagnosisId))
 
     fun deleteAllConsents() = consentRepo.deleteAll()
 

@@ -13,7 +13,7 @@ import se.inera.intyg.srs.integrationtest.util.whenever
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
-class SetConsentIT : BaseIntegrationTest() {
+class testMultipleConsentsOnSamePersonShouldOverwriteSetConsentIT : BaseIntegrationTest() {
     @Test
     fun testSetConsentFalse() {
         postStandardSetConsentRequest(false)

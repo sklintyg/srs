@@ -1,4 +1,5 @@
 import org.gradle.api.publish.maven.MavenPublication
+import org.springframework.boot.gradle.tasks.bundling.BootWar
 import se.inera.intyg.TagReleaseTask
 import se.inera.intyg.VersionPropertyFileTask
 
@@ -10,8 +11,9 @@ plugins {
     kotlin("plugin.spring") version "1.3.21"
     kotlin("plugin.jpa") version "1.3.21"
 
+    id("io.spring.dependency-management") version "1.0.7.RELEASE"
     id("se.inera.intyg.plugin.common") version "1.0.62"
-    id("org.springframework.boot") version "1.5.6.RELEASE"
+    id("org.springframework.boot") version "2.1.3.RELEASE"
     id("org.ajoberstar.grgit") version "2.0.0"
     // FIXME: doesn't work anymore
     //id("org.jlleitschuh.gradle.ktlint") version "3.0.0"
@@ -36,12 +38,20 @@ tasks.withType<Test> {
     exclude("**/*IT*")
 }
 
+tasks.getByName<BootWar>("bootWar"){
+    manifest {
+        attributes("Main-Class" to "org.springframework.boot.loader.PropertiesLauncher")
+        attributes("Start-Class" to "se.inera.intyg.srs.ApplicationKt")
+    }
+}
+
 task<Test>("restAssuredTest") {
     outputs.upToDateWhen { false }
     systemProperty("integration.tests.baseUrl", System.getProperty("baseUrl") ?: "http://localhost:8080/")
     include("**/*IT*")
     excludes.clear()
 }
+
 
 publishing {
     publications {
@@ -69,32 +79,20 @@ dependencies {
     compile("se.inera.intyg.clinicalprocess.healthcond.srs:intyg-clinicalprocess-healthcond-srs-schemas:0.0.7")
     compile("se.riv.itintegration.monitoring:itintegration-monitoring-schemas:1.0.0.4")
 
-    listOf("org.springframework.boot:spring-boot-starter-web",
-    "org.springframework.boot:spring-boot-starter-jdbc:",
-    "org.springframework.boot:spring-boot-starter-data-jpa",
-    "org.springframework.boot:spring-boot-starter-web-services",
-    "org.springframework.boot:spring-boot-starter-actuator",
-    "org.springframework.boot:spring-boot-starter-log4j2",
-    "org.apache.cxf:cxf-spring-boot-starter-jaxws:3.1.11")
-            .forEach {
-                compile(it) {
-                    exclude(module = "spring-boot-starter-logging")
-                    exclude(module = "logback-classic")
-                }
-            }
+    // External dependencies
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-web-services")
+    implementation("org.apache.cxf:cxf-spring-boot-starter-jaxws:3.2.5")
 
-    compile("org.springframework.boot:spring-boot-starter-log4j2")
-
-    compile("org.liquibase:liquibase-core:3.5.3")
+    compile("org.liquibase:liquibase-core:3.6.3")
     compile("com.fasterxml.jackson.module:jackson-module-kotlin:2.9.4")
     compile("org.nuiton.thirdparty:JRI:0.9-9")
-    compile("org.jadira.usertype:usertype.extended:5.0.0.GA")
     compile("com.google.guava:guava:23.0")
 
     runtime("com.h2database:h2")
     runtime("mysql:mysql-connector-java")
 
-    providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
     testCompile("org.springframework.boot:spring-boot-starter-test")
     testCompile("com.jayway.restassured:rest-assured:2.8.0")
     testCompile("com.nhaarman:mockito-kotlin-kt1.1:1.5.0")
