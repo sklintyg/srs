@@ -312,4 +312,26 @@
                                  referencedColumnNames="id"/>
 
     </changeSet>
+
+    <changeSet id="14" author="ch">
+        <addColumn tableName="probability">
+            <column name="region" type="VARCHAR(32)" />
+        </addColumn>
+        <addColumn tableName="probability">
+            <column name="zip_code" type="VARCHAR(10)" />
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="15" author="ch">
+        <addColumn tableName="probability">
+            <column name="incoming_diagnosis_code_system" type="VARCHAR(64)" />
+        </addColumn>
+        <addColumn tableName="probability">
+            <column name="diagnosis_code_system" type="VARCHAR(64)" />
+        </addColumn>
+        <addColumn tableName="probability">
+            <column name="prediction_status" type="VARCHAR(32)" />
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
