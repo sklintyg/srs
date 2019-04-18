@@ -15,10 +15,15 @@ import javax.persistence.OneToOne
 class Probability(val certificateId: String,
                   val probability: Double,
                   val riskCategory: Int,
+                  val incomingDiagnosisCodeSystem: String,
                   val incomingDiagnosis: String,
+                  val diagnosisCodeSystem: String,
                   val diagnosis: String,
+                  val predictionStatus: String,
                   @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
                   val timestamp: LocalDateTime,
+                  val region: String?,
+                  val zipCode: String?,
                   @Id @GeneratedValue(strategy = GenerationType.AUTO)
                   val id: Long = -1) {
 
@@ -30,7 +35,8 @@ class Probability(val certificateId: String,
 
     override fun toString() =
         "Probability(id=$id, certificateId=$certificateId, probability=$probability, riskCategory=$riskCategory" +
-                "incomingDiagnosis=$incomingDiagnosis, diagnosis=$diagnosis, timestamp=$timestamp, " +
-                "ownOpinion: $ownOpinion)"
+                "incomingDiagnosisCodeSystem=$incomingDiagnosisCodeSystem, incomingDiagnosis=$incomingDiagnosis, " +
+                "diagnosisCodeSystem=$diagnosisCodeSystem, diagnosis=$diagnosis, predictionStatus:$predictionStatus, " +
+                "timestamp=$timestamp, ownOpinion: $ownOpinion)"
 
 }

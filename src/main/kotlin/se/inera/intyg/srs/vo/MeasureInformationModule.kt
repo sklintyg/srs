@@ -23,7 +23,7 @@ class MeasureInformationModule(val measureRepo: MeasureRepository) : Information
     override fun getInfoForDiagnosis(diagnosisId: String): Atgardsrekommendation =
             createRecommendation(Diagnosis(diagnosisId))
 
-    override fun getInfo(persons: List<Person>, extraParams: Map<String, String>, userHsaId: String, calculateIndividual: Boolean): Map<Person, List<Atgardsrekommendation>> {
+    override fun getInfo(persons: List<Person>, extraParams: Map<String, Map<String, String>>, userHsaId: String, calculateIndividual: Boolean): Map<Person, List<Atgardsrekommendation>> {
         log.info(persons)
         if (calculateIndividual) {
             throw RuntimeException("calculateIndividual not supported")

@@ -22,7 +22,11 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v2.ResultCodeEnum
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
-val REGION = "Region"
+val LOCATION_KEY = "Location"
+val REGION_KEY = "Region"
+val ZIP_CODE_KEY = "ZipCode"
+val QUESTIONS_AND_ANSWERS_KEY = "QuestionsAndAnswers"
+
 val STHLM = "Stockholm"
 val NORD = "Nord"
 val VAST = "Vast"
@@ -48,7 +52,7 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
 
         val persons = transformIndividuals(request.individer.individ)
         val unitId = request.individer.individ.map { it.intygId.root }.first() ?: "NoUnitFound"
-        val extraInfo: Map<String, String> =
+        val extraInfo: Map<String, Map<String, String>> =
                 if (request.prediktionsfaktorer != null)
                     transformPredictionFactors(request.prediktionsfaktorer)
                 else mapOf()
@@ -133,10 +137,15 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
 
     private fun calculateSex(personId: String) = if (personId[10].toInt() % 2 == 0) Sex.WOMAN else Sex.MAN
 
-    private fun transformPredictionFactors(factors: Prediktionsfaktorer): Map<String, String> {
-        val returnMap: MutableMap<String, String> = mutableMapOf()
-        returnMap[REGION] = calculateRegion(factors.postnummer)
-        factors.fragasvar.forEach { returnMap[it.frageidSrs] = it.svarsidSrs }
+    private fun transformPredictionFactors(factors: Prediktionsfaktorer): Map<String, Map<String, String>> {
+        val returnMap: MutableMap<String, Map<String, String>> = mutableMapOf()
+        val locationMap: MutableMap<String, String> = mutableMapOf()
+        locationMap[REGION_KEY] = calculateRegion(factors.postnummer)
+        locationMap[ZIP_CODE_KEY] = factors.postnummer
+        returnMap[LOCATION_KEY] = locationMap
+        val qnaMap: MutableMap<String, String> = mutableMapOf()
+        factors.fragasvar.forEach { qnaMap[it.frageidSrs] = it.svarsidSrs }
+        returnMap[QUESTIONS_AND_ANSWERS_KEY] = qnaMap
         return returnMap
     }
 

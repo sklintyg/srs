@@ -4,6 +4,8 @@ import org.apache.logging.log4j.LogManager
 import org.springframework.stereotype.Service
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Diagnosprediktion
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Diagnosprediktionstatus
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.FragaSvar
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Prediktionsfaktorer
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Risksignal
 import se.inera.intyg.srs.persistence.DiagnosisRepository
 import se.inera.intyg.srs.persistence.PatientAnswer
@@ -12,10 +14,15 @@ import se.inera.intyg.srs.persistence.PredictionDiagnosis
 import se.inera.intyg.srs.persistence.Probability
 import se.inera.intyg.srs.persistence.ProbabilityRepository
 import se.inera.intyg.srs.persistence.ResponseRepository
+import se.inera.intyg.srs.service.LOCATION_KEY
+import se.inera.intyg.srs.service.QUESTIONS_AND_ANSWERS_KEY
+import se.inera.intyg.srs.service.REGION_KEY
+import se.inera.intyg.srs.service.ZIP_CODE_KEY
 import se.inera.intyg.srs.service.monitoring.logPrediction
 import se.inera.intyg.srs.util.PredictionInformationUtil
 import se.inera.intyg.srs.util.getModelForDiagnosis
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.Diagnos
+import se.riv.clinicalprocess.healthcond.certificate.types.v2.EgenBedomningRiskType
 import java.math.BigInteger
 import java.time.LocalDateTime
 
@@ -31,7 +38,7 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
     override fun getInfoForDiagnosis(diagnosisId: String): Diagnosprediktion =
             throw NotImplementedError("Predictions can not be made with only diagnosis.")
 
-    override fun getInfo(persons: List<Person>, extraParams: Map<String, String>, userHsaId: String, calculateIndividual: Boolean): Map<Person, List<Diagnosprediktion>> {
+    override fun getInfo(persons: List<Person>, extraParams: Map<String, Map<String, String>>, userHsaId: String, calculateIndividual: Boolean): Map<Person, List<Diagnosprediktion>> {
         log.info(persons)
         val predictions = HashMap<Person, List<Diagnosprediktion>>()
         persons.forEach { person ->
@@ -40,7 +47,10 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
         return predictions
     }
 
-    private fun createInfo(person: Person, extraParams: Map<String, String>, userHsaId: String, predictIndividualRisk: Boolean): List<Diagnosprediktion> {
+    /**
+     * Create DiagnosPrediktion from incoming Person objects and extra params
+     */
+    private fun createInfo(person: Person, extraParams: Map<String, Map<String, String>>, userHsaId: String, predictIndividualRisk: Boolean): List<Diagnosprediktion> {
         val outgoingPrediction = mutableListOf<Diagnosprediktion>()
 
         person.diagnoses.forEach { incomingDiagnosis ->
@@ -54,9 +64,51 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
                 diagnosPrediktion.prevalens = diagnosis.prevalence
             }
 
-            if (diagnosis != null && isCorrectPredictionParamsAgainstDiagnosis(diagnosis, extraParams) && predictIndividualRisk) {
+            if (!predictIndividualRisk && !person.certificateId.isBlank()) {
+                // Check if we have a historic prediction
+                val historicProbability = probabilityRepo.findFirstByCertificateIdOrderByTimestampDesc(person.certificateId)
+                if (historicProbability != null) {
+                    diagnosPrediktion.sannolikhetOvergransvarde = historicProbability.probability
+                    diagnosPrediktion.diagnos = buildDiagnos(historicProbability.diagnosisCodeSystem, historicProbability.diagnosis)
+                    diagnosPrediktion.diagnosprediktionstatus = Diagnosprediktionstatus.valueOf(historicProbability.predictionStatus)
+                    diagnosPrediktion.inkommandediagnos.codeSystem = historicProbability.incomingDiagnosisCodeSystem
+                    diagnosPrediktion.inkommandediagnos.code = historicProbability.incomingDiagnosis
+
+                    val risksignal = Risksignal()
+                    risksignal.riskkategori = calculateRisk(diagnosis!!, historicProbability.probability!!)
+                    risksignal.beskrivning = PredictionInformationUtil.categoryDescriptions[risksignal.riskkategori]
+                    diagnosPrediktion.risksignal = risksignal
+
+                    if (historicProbability.ownOpinion != null) {
+                        diagnosPrediktion.lakarbedomningRisk = EgenBedomningRiskType.fromValue(historicProbability.ownOpinion?.opinion)
+                    }
+                    if (!historicProbability.patientAnswers.isNullOrEmpty()) {
+                        diagnosPrediktion.prediktionsfaktorer = Prediktionsfaktorer()
+                        diagnosPrediktion.prediktionsfaktorer.postnummer = historicProbability.zipCode
+                        if (!historicProbability.region.isNullOrBlank()) {
+                            diagnosPrediktion.prediktionsfaktorer.fragasvar.add(
+                                FragaSvar().apply {
+                                    frageidSrs = "Region"
+                                    svarsidSrs = historicProbability.region
+                                }
+                            )
+                        }
+                        diagnosPrediktion.prediktionsfaktorer.postnummer = historicProbability.zipCode
+                        historicProbability.patientAnswers
+                                .forEach { pa->
+                                    diagnosPrediktion.prediktionsfaktorer.fragasvar.add(FragaSvar().apply {
+                                        frageidSrs = pa.predictionResponse.question.predictionId
+                                        svarsidSrs = pa.predictionResponse.predictionId
+                                    })
+                                }
+                    }
+                    diagnosPrediktion.berakningstidpunkt = historicProbability.timestamp
+
+                }
+            } else if (diagnosis != null && isCorrectPredictionParamsAgainstDiagnosis(diagnosis, extraParams) && predictIndividualRisk) {
                 calculatedPrediction = rAdapter.getPrediction(person, incomingDiagnosis, extraParams)
                 diagnosPrediktion.diagnosprediktionstatus = calculatedPrediction.status
+                diagnosPrediktion.berakningstidpunkt = calculatedPrediction.timestamp
             } else {
                 diagnosPrediktion.diagnosprediktionstatus = Diagnosprediktionstatus.NOT_OK
             }
@@ -66,12 +118,10 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
             if (diagnosis != null && calculatedPrediction != null &&
                     (calculatedPrediction.status == Diagnosprediktionstatus.OK ||
                             calculatedPrediction.status == Diagnosprediktionstatus.DIAGNOSKOD_PA_HOGRE_NIVA)) {
-                val outgoingDiagnosis = Diagnos()
-                outgoingDiagnosis.codeSystem = incomingDiagnosis.codeSystem
-                outgoingDiagnosis.code = calculatedPrediction.diagnosis
 
                 diagnosPrediktion.sannolikhetOvergransvarde = calculatedPrediction.prediction
-                diagnosPrediktion.diagnos = outgoingDiagnosis
+                diagnosPrediktion.diagnos = buildDiagnos(incomingDiagnosis.codeSystem, calculatedPrediction.diagnosis)
+
                 riskSignal.riskkategori = calculateRisk(diagnosis, calculatedPrediction.prediction!!)
 
                 persistProbability(diagnosPrediktion, person.certificateId, extraParams)
@@ -91,10 +141,24 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
         return outgoingPrediction
     }
 
-    private fun isCorrectPredictionParamsAgainstDiagnosis(diagnosis: PredictionDiagnosis, extraParams: Map<String,
-            String>): Boolean {
+    private fun buildDiagnos(codeSystem: String, code: String): Diagnos {
+        val diagnos = Diagnos()
+        diagnos.codeSystem = codeSystem
+        diagnos.code = code
+        return diagnos
+    }
+
+//    private fun getHistoricPrediction(person: Person): Prediction {
+//        val historicProbability = probabilityRepo.findFirstByCertificateIdOrderByTimestampDesc(person.certificateId)
+//        val prediction = Prediction(historicProbability.diagnosis, historicProbability.)
+//        diagnosPrediktion.diagnosprediktionstatus = historicProbability.
+//    }
+
+    private fun isCorrectPredictionParamsAgainstDiagnosis(diagnosis: PredictionDiagnosis, extraParams: Map<String, Map<String,
+            String>>): Boolean {
         val inc = HashMap<String, String>()
-        extraParams.filter { it.key != "Region" }.map { inc.put(it.key, it.value) }
+        extraParams[QUESTIONS_AND_ANSWERS_KEY]?.map { inc.put(it.key, it.value) }
+//        extraParams.filter { it.key != "Region" }.map { inc.put(it.key, it.value) }
 
         val req = HashMap<String, List<String>>()
 
@@ -130,17 +194,22 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
 
     }
 
-    private fun persistProbability(diagnosPrediction: Diagnosprediktion, certificateId: String, extraParams: Map<String, String>) {
+    private fun persistProbability(diagnosPrediction: Diagnosprediktion, certificateId: String, extraParams: Map<String, Map<String, String>>) {
         log.info("Persisting probability for certificateId: $certificateId")
         var probability = Probability(certificateId,
                 diagnosPrediction.sannolikhetOvergransvarde,
                 diagnosPrediction.risksignal.riskkategori.intValueExact(),
+                diagnosPrediction.inkommandediagnos.codeSystem,
                 diagnosPrediction.inkommandediagnos.code,
+                diagnosPrediction.diagnos.codeSystem,
                 diagnosPrediction.diagnos.code,
-                LocalDateTime.now())
+                diagnosPrediction.diagnosprediktionstatus.value(),
+                LocalDateTime.now(),
+                extraParams[LOCATION_KEY]?.get(REGION_KEY),
+                extraParams[LOCATION_KEY]?.get(ZIP_CODE_KEY))
         probability = probabilityRepo.save(probability)
         log.info("extraParams: $extraParams")
-        extraParams.forEach { q, r ->
+        extraParams[QUESTIONS_AND_ANSWERS_KEY]?.forEach { q, r ->
             log.info("question: $q, response: $r")
             val predictionResponse = responseRepo.findPredictionResponseByQuestionAndResponse(q, r)
             log.info("Found predictionResponse $predictionResponse")

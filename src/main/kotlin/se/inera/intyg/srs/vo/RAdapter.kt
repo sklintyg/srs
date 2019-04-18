@@ -6,9 +6,13 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Diagnosprediktionstatus
+import se.inera.intyg.srs.service.LOCATION_KEY
 import se.inera.intyg.srs.service.ModelFileUpdateService
+import se.inera.intyg.srs.service.QUESTIONS_AND_ANSWERS_KEY
+import se.inera.intyg.srs.service.REGION_KEY
 import java.io.File
 import java.io.BufferedReader
+import java.time.LocalDateTime
 import java.util.Locale
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
@@ -69,7 +73,7 @@ class RAdapter(val modelService: ModelFileUpdateService, @Value("\${r.log.file.p
         startRLogging()
     }
 
-    override fun getPrediction(person: Person, diagnosis: Diagnosis, extraParams: Map<String, String>): Prediction {
+    override fun getPrediction(person: Person, diagnosis: Diagnosis, extraParams: Map<String, Map<String, String>>): Prediction {
         // Synchronizing here is an obvious performance bottle neck, but we have no choice since the R engine is
         // single-threaded, and cannot cope with concurrent calls. Intygsprojektet has accepted that R be used
         // for the execution of prediction models, and there is no reason to the believe that the number of calls
@@ -79,21 +83,22 @@ class RAdapter(val modelService: ModelFileUpdateService, @Value("\${r.log.file.p
             val (model, status) = getModelForDiagnosis(diagnosis.code)
 
             if (model == null) {
-                return Prediction(diagnosis.code, null, status)
+                return Prediction(diagnosis.code, null, status, LocalDateTime.now())
             }
 
             try {
                 loadModel(model.fileName)
             } catch (e: Exception) {
                 log.error("Loading model file $model.fileName did not succeed: ", e)
-                return Prediction(diagnosis.code, null, Diagnosprediktionstatus.NOT_OK)
+                return Prediction(diagnosis.code, null, Diagnosprediktionstatus.NOT_OK, LocalDateTime.now())
             }
 
             val rDataFrame = StringBuilder("data <- data.frame(").apply {
                 append("SA_Days_tot_modified = as.integer(90), ")
                 append("Sex = '${person.sex.predictionString}', ")
                 append("age_cat_fct = '${person.ageCategory}', ")
-                append(extraParams.entries.joinToString(", ", transform = { (key, value) -> "$key = '$value'" }))
+                append("Region = '" + extraParams[LOCATION_KEY]?.get(REGION_KEY) + "', ")
+                append(extraParams[QUESTIONS_AND_ANSWERS_KEY]?.entries?.joinToString(", ", transform = { (key, value) -> "$key = '$value'" }))
                 append(")")
             }.toString()
 
@@ -102,10 +107,10 @@ class RAdapter(val modelService: ModelFileUpdateService, @Value("\${r.log.file.p
 
             return if (rOutput != null) {
                 log.info("Successful prediction, result: " + rOutput.asDouble())
-                Prediction(model.diagnosis, rOutput.asDouble(), status)
+                Prediction(model.diagnosis, rOutput.asDouble(), status, LocalDateTime.now())
             } else {
                 wipeRLogFileAndReportError()
-                Prediction(diagnosis.code, null, Diagnosprediktionstatus.NOT_OK)
+                Prediction(diagnosis.code, null, Diagnosprediktionstatus.NOT_OK, LocalDateTime.now())
             }
         }
     }
