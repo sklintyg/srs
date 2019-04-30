@@ -87,7 +87,7 @@ class RAdapter(val modelService: ModelFileUpdateService, @Value("\${r.log.file.p
             }
 
             try {
-                loadModel(model.fileName)
+                loadModel(model.file)
             } catch (e: Exception) {
                 log.error("Loading model file $model.fileName did not succeed: ", e)
                 return Prediction(diagnosis.code, null, Diagnosprediktionstatus.NOT_OK, LocalDateTime.now())
@@ -115,8 +115,9 @@ class RAdapter(val modelService: ModelFileUpdateService, @Value("\${r.log.file.p
         }
     }
 
-    private fun loadModel(dataFilePath: String) {
-        rengine.eval("load('$dataFilePath')  ", false) ?: throw RuntimeException("The prediction model does not exist!")
+    private fun loadModel(file: File) {
+        log.info("R loading from: {}", file.absolutePath)
+        rengine.eval("load('${file.absolutePath}')  ", false) ?: throw RuntimeException("The prediction model does not exist!")
     }
 
     private fun getModelForDiagnosis(diagnosisId: String): Pair<ModelFileUpdateService.Model?, Diagnosprediktionstatus> {

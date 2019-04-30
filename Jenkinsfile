@@ -1,6 +1,6 @@
 #!groovy
 
-def buildVersion = "1.2.${BUILD_NUMBER}"
+def buildVersion = "1.2.0.${BUILD_NUMBER}"
 
 stage('checkout') {
     node {
@@ -14,41 +14,33 @@ stage('build') {
         try {
             shgradle "--refresh-dependencies clean build -DbuildVersion=${buildVersion}"
         } finally {
-            publishHTML allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'build/reports/allTests', \
+            publishHTML allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'web/build/reports/allTests', \
                 reportFiles: 'index.html', reportName: 'JUnit results'
-        }
-    }
-}
-
-
-stage('deploy') {
-    node {
-        util.run {
-            ansiblePlaybook extraVars: [version: buildVersion, ansible_ssh_port: "22", deploy_from_repo: "false"], \
-                installation: 'ansible-yum', inventory: 'ansible/inventory/srs/test', playbook: 'ansible/site.yml'
-        }
-    }
-}
-
-stage('restAssured') {
-    node {
-        try {
-            shgradle "restAssuredTest -DbaseUrl=http://srs.inera.nordicmedtest.se/"
-        } finally {
-            publishHTML allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: 'build/reports/tests/restAssuredTest', \
-                reportFiles: 'index.html', reportName: 'RestAssured results'
         }
     }
 }
 
 stage('tag and upload') {
     node {
-        shgradle "publish tagRelease -DbuildVersion=${buildVersion}"
+        shgradle "tagRelease -DbuildVersion=${buildVersion}"
     }
 }
 
 stage('notify') {
     node {
         util.notifySuccess()
+    }
+}
+
+
+stage('propagate') {
+    node {
+        gitRef = "v${buildVersion}"
+        releaseFlag = "${GIT_BRANCH.startsWith("release")}"
+        build job: "srs-dintyg-build", wait: false, parameters: [
+                [$class: 'StringParameterValue', name: 'BUILD_VERSION', value: buildVersion],
+                [$class: 'StringParameterValue', name: 'GIT_REF', value: gitRef],
+                [$class: 'StringParameterValue', name: 'RELEASE_FLAG', value: releaseFlag]
+        ]
     }
 }

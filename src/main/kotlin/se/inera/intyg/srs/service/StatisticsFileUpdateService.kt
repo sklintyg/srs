@@ -8,7 +8,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
-import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
@@ -34,13 +33,12 @@ import kotlin.math.roundToInt
  * the update interval is also configurable via image.update.cron, both in application.properties.
  */
 @Component
-@EnableScheduling
 @Profile("scheduledUpdate")
 class StatisticsFileUpdateService(@Value("\${statistics.image.dir}") val imageDir: String,
                                   @Value("\${statistics.national.file}") val nationalStatisticsFile: String,
                                   @Value("\${base.url}") val baseUrl: String,
-                                  @Autowired val internalStatisticRepo: InternalStatisticRepository,
-                                  @Autowired val nationalStatisticsFileRepo: NationalStatisticRepository) {
+                                  val internalStatisticRepo: InternalStatisticRepository,
+                                  val nationalStatisticsFileRepo: NationalStatisticRepository) {
 
     private val log = LogManager.getLogger()
 
@@ -195,7 +193,7 @@ class StatisticsFileUpdateService(@Value("\${statistics.image.dir}") val imageDi
         if (diskEntries.size != dbEntries.size) {
             dbEntries.filter { it.diagnosisId !in diskEntries }.forEach {
                 log.info("Statistics image for ${it.diagnosisId} no longer available, removing from database.")
-                internalStatisticRepo.delete(it.id)
+                internalStatisticRepo.deleteById(it.id)
             }
         }
     }

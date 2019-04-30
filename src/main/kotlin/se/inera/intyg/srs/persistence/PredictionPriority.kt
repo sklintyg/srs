@@ -10,5 +10,5 @@ import javax.persistence.ManyToOne
 class PredictionPriority(val priority: Int,
                          @ManyToOne
                          val question: PredictionQuestion,
-                         @Id @GeneratedValue(strategy = GenerationType.AUTO)
+                         @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
                          val id: Long = -1)

@@ -1,6 +1,5 @@
 package se.inera.intyg.srs.persistence
 
-import org.hibernate.annotations.Type
 import java.time.LocalDateTime
 import javax.persistence.CascadeType
 import javax.persistence.Entity
@@ -20,7 +19,6 @@ class Probability(val certificateId: String,
                   val diagnosisCodeSystem: String,
                   val diagnosis: String,
                   val predictionStatus: String,
-                  @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
                   val timestamp: LocalDateTime,
                   val region: String?,
                   val zipCode: String?,

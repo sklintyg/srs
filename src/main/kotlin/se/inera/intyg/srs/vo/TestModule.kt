@@ -2,6 +2,8 @@ package se.inera.intyg.srs.vo
 
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
+import org.springframework.core.io.Resource
+import org.springframework.core.io.ResourceLoader
 import org.springframework.stereotype.Service
 import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Atgardstyp
 import se.inera.intyg.srs.controllers.TestController
@@ -23,6 +25,7 @@ import se.inera.intyg.srs.persistence.Recommendation
 import se.inera.intyg.srs.persistence.RecommendationRepository
 import se.inera.intyg.srs.persistence.ResponseRepository
 import se.inera.intyg.srs.persistence.InternalStatisticRepository
+import se.inera.intyg.srs.service.ModelFileUpdateService
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
@@ -42,15 +45,11 @@ class TestModule(private val consentRepo: ConsentRepository,
                  private val questionRepo: QuestionRepository,
                  private val responseRepo: ResponseRepository,
                  private val probabilityRepo: ProbabilityRepository,
-                 @Value("\${model.dir}") private val modelDir: String) {
+                 private val modelFileUpdateService: ModelFileUpdateService,
+                 private val resourceLoader: ResourceLoader,
+                 @Value("\${resources.folder}") private val resourcesFolder: String) {
 
     private val uniqueId = AtomicLong(1000)
-
-    private val testModels = mapOf(
-            Pair("x99v0", Pair("$modelDir/../testmodel/Model1.RData", "$modelDir/PM_X99_v0.0.RData")),
-            Pair("x9900v0", Pair("$modelDir/../testmodel/Model2.RData", "$modelDir/PM_X9900_v0.0.RData")),
-            Pair("x99v1", Pair("$modelDir/../testmodel/Model2.RData", "$modelDir/PM_X99_v1.0.RData"))
-    )
 
     fun createMeasure(diagnosisId: String, diagnosisText: String, recommendations: List<String>): Measure =
             measureRepo.save(Measure(uniqueId.incrementAndGet(), diagnosisId, diagnosisText, "1.0", mapToMeasurePriorities(recommendations)))
@@ -87,7 +86,7 @@ class TestModule(private val consentRepo: ConsentRepository,
                     PredictionResponse(uniqueId.incrementAndGet(), answer, predictionId, default, i + 1) }
                 .map { responseRepo.save(it) }
 
-    fun deleteMeasure(diagnosisId: String) = measureRepo.delete(measureRepo.findByDiagnosisIdStartingWith(diagnosisId))
+    fun deleteMeasure(diagnosisId: String) = measureRepo.deleteAll(measureRepo.findByDiagnosisIdStartingWith(diagnosisId))
 
     fun deleteAllConsents() = consentRepo.deleteAll()
 
@@ -109,17 +108,20 @@ class TestModule(private val consentRepo: ConsentRepository,
     }
 
     fun setTestModels(models: TestController.ModelRequest) {
-        Files.walk(Paths.get(modelDir))
-                .filter { it.getName(it.nameCount - 1).toString().contains("X99") }
-                .forEach { Files.delete(it) }
+        val resources = mutableListOf<Resource>()
 
-        val copyPaths = mutableListOf<Pair<String, String>>()
+        fun load(loc: String) = resources.add(resourceLoader.getResource("$resourcesFolder/testmodel/$loc"))
+        if (models.x99v0) {
+            load("PM_X99_v0.0.RData")
+        }
+        if (models.x99v1) {
+            load("PM_X99_v1.0.RData")
+        }
+        if (models.x9900v0) {
+            load("PM_X9900_v0.0.RData")
+        }
 
-        if (models.x99v0) testModels["x99v0"]?.let { copyPaths.add(it) }
-        if (models.x9900v0) testModels["x9900v0"]?.let { copyPaths.add(it) }
-        if (models.x99v1) testModels["x99v1"]?.let { copyPaths.add(it) }
-
-        copyPaths.forEach { (from, to) -> Files.copy(Paths.get(from), Paths.get(to), StandardCopyOption.REPLACE_EXISTING) }
+        modelFileUpdateService.applyModels(resources)
     }
 
     fun getIntyg(intygsId: String) =
