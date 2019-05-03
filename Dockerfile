@@ -1,9 +1,9 @@
-FROM bp91/ubuntu16.04-tomcat7-java8
+FROM tomcat:9.0
 
 LABEL maintainer="SKL SRS" \
       description="SRS Backend"
 
-ENV CATALINA_HOME /opt/tomcat
+#ENV CATALINA_HOME /opt/tomcat
 COPY ./web/build/libs/*.war /tmp/webapps/app.war
 
 #ADD tomcat/bin $CATALINA_HOME/bin/
