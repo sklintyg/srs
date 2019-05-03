@@ -1,0 +1,50 @@
+# SRS backend
+version: '3.5'
+services:
+  mysql:
+    image: mysql:5.7
+    restart: always
+    container_name: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_DATABASE=srs
+      - MYSQL_USER=srs
+      - MYSQL_PASSWORD=password
+    expose:
+      - "3306"
+    ports:
+      - "13306:3306"
+    networks:
+      - test-network
+    healthcheck:
+      test: "mysqladmin ping -u $${MYSQL_USER} -p$${MYSQL_PASSWORD}"
+      start_period: 10s
+      
+  srsbackend:
+    build: .
+    environment:
+      JAVA_OPTS: -Ddb.url=mysql -Ddb.port=3306 -Ddb.username=srs -Ddb.password=password
+      WAIT_HOSTS: mysql:3306
+    container_name: srsbackend
+    ports:
+      - "8080:8097"
+    networks:
+      - test-network
+    #tty: true
+    #entrypoint: ["/bin/sh"]
+    depends_on:
+      - mysql
+
+  rocket:
+    image: r-base
+    container_name: rocket
+    ports:
+      - "8081:8080"
+    networks:
+      - test-network
+    entrypoint: ["sh"]
+    #tty: true
+networks:
+  test-network:
+    driver: bridge
+
