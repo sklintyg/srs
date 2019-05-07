@@ -13,7 +13,7 @@ services:
     expose:
       - "3306"
     ports:
-      - "13306:3306"
+      - "3306:3306"
     networks:
       - test-network
     healthcheck:
@@ -34,16 +34,6 @@ services:
     #entrypoint: ["/bin/sh"]
     depends_on:
       - mysql
-
-  rocket:
-    image: r-base
-    container_name: rocket
-    ports:
-      - "8081:8080"
-    networks:
-      - test-network
-    entrypoint: ["sh"]
-    #tty: true
 networks:
   test-network:
     driver: bridge
