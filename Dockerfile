@@ -25,10 +25,9 @@ RUN chmod 775 $CATALINA_HOME/bin/catalina.sh && chmod 775 $CATALINA_HOME/logs
 
 #COPY ./web/build/libs/*.war /tmp/webapps/app.war
 #Build srs backend
-COPY ./ /tmp/srs/
-RUN cd /tmp/srs/ && ./gradlew clean build
-RUN cp -r /tmp/srs/web/build/libs/*.war $CATALINA_HOME/webapps/
-
+COPY ./ $CATALINA_HOME/webapps/
+RUN cd $CATALINA_HOME/webapps/ && ./gradlew clean build
+#RUN cp -r $CATALINA_HOME/webapps/web/build/libs/*.war $CATALINA_HOME/webapps/
 
 #Run container
 WORKDIR $CATALINA_HOME/bin
