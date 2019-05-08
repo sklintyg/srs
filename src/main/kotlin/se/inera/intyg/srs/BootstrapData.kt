@@ -20,20 +20,23 @@ import se.inera.intyg.srs.persistence.QuestionRepository
 import se.inera.intyg.srs.persistence.Recommendation
 import se.inera.intyg.srs.persistence.RecommendationRepository
 import se.inera.intyg.srs.persistence.ResponseRepository
-import se.inera.intyg.srs.persistence.StatisticRepository
+import se.inera.intyg.srs.persistence.InternalStatisticRepository
 
 @Configuration
 @Profile("bootstrap")
 class BootstrapData {
 
     @Bean
-    fun init(measureRepo: MeasureRepository, recommendationRepo: RecommendationRepository,
-             prioRepo: MeasurePriorityRepository, statisticRepo: StatisticRepository, responseRepo: ResponseRepository,
-             questionRepo: QuestionRepository, diagnosisRepo: DiagnosisRepository, predictPrioRepo: PredictionPriorityRepository) = CommandLineRunner {
+    fun init(
+            measureRepo: MeasureRepository, recommendationRepo: RecommendationRepository,
+            prioRepo: MeasurePriorityRepository, internalStatisticRepo: InternalStatisticRepository, responseRepo: ResponseRepository,
+            questionRepo: QuestionRepository, diagnosisRepo: DiagnosisRepository, predictPrioRepo: PredictionPriorityRepository) = CommandLineRunner {
 
-        val recommendation01 = recommendationRepo.save(Recommendation(1, REK, "patienten bör överväga att kontakta företagshälsovård och arbetsgivare för att avgränsa eller byta arbetsuppgifter, eller t.o.m. byta yrke eller arbetsplats"))
-        val recommendation02 = recommendationRepo.save(Recommendation(2, REK, "remiss till behandling med psykoterapeutiska metoder"))
-        val recommendation03 = recommendationRepo.save(Recommendation(3, REK, "ge patienten lättillgänglig information om diagnosen och behandlingsmöjligheter"))
+        val recommendation01 = recommendationRepo.save(Recommendation(1, REK, "Patienten bör överväga att kontakta företagshälsovård och arbetsgivare för att avgränsa eller byta arbetsuppgifter, eller t.o.m. byta yrke eller arbetsplats"))
+        val recommendation02 = recommendationRepo.save(Recommendation(2, REK, "Remiss till behandling med psykoterapeutiska metoder"))
+        val recommendation03 = recommendationRepo.save(Recommendation(3, REK, "Ge patienten lättillgänglig information om diagnosen och behandlingsmöjligheter. " +
+                "Förlängd text för att testa om det fungerar med den begränsning av antal rader som skall vara synliga från start i användargränssnittet. " +
+                "De rader som inte syns kan fällas ut genom att man klickar på visa mer. För att den funktionen skall aktiveras krävs att texten är lite längre än de andra texterna som ligger här."))
         val recommendation04 = recommendationRepo.save(Recommendation(4, REK, "patienten bör överväga att kontakta företagshälsovård och arbetsgivare för att undersöka möjligheter till ergonomisk rådgivning och arbetsanpassning."))
         val recommendation05 = recommendationRepo.save(Recommendation(5, REK, "förmedling av kontakt med fysioterapeut"))
         val recommendation06 = recommendationRepo.save(Recommendation(6, REK, "FaR med konditions- och styrketräning"))
@@ -45,11 +48,19 @@ class BootstrapData {
         val recommendation12 = recommendationRepo.save(Recommendation(12, REK, "FaR med regelbunden styrketräning för att förebygger nya besvär"))
         val recommendation13 = recommendationRepo.save(Recommendation(13, OBS, "Observation1 <b>Observation1 med bold-tagg</b> Observation1 Observation1 Observation1 Observation1"))
         val recommendation14 = recommendationRepo.save(Recommendation(14, OBS, "Observation2 <i>Observation2 med italics-tag</i> Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 "))
+        val recommendation15 = recommendationRepo.save(Recommendation(15, OBS,
+                "Grundlig utredning av patientens hälsa är viktig för att bedöma svårighetsgraden på besvären, ställa diagnos och för att ge adekvat behandling. " +
+                "Det är viktigt att ställa frågor om vad patienten tror är orsak till besvären, hur sömnen fungerar, hur hemsituationen och arbetssituationen ser ut och hur länge patienten har haft problem. Genom att kartlägga detta noggrant säkerställs att patienten får adekvata behandlingsinsatser."))
+        val recommendation16 = recommendationRepo.save(Recommendation(16, OBS,
+                "Grundlig utredning av patientens hälsa är viktig för att bedöma svårighetsgraden på besvären, ställa diagnos och för att ge adekvat behandling. " +
+                        "Det är viktigt att ställa frågor om vad patienten tror är orsak till besvären, hur sömnen fungerar, hur hemsituationen och arbetssituationen ser ut och hur länge patienten har haft problem. Genom att kartlägga detta noggrant säkerställs att patienten får adekvata behandlingsinsatser."))
 
         measureRepo.save(Measure(1, "F438A", "Utmattningssyndrom", "1.0",
                 listOf(prioRepo.save(MeasurePriority(1, recommendation01)),
                         prioRepo.save(MeasurePriority(2, recommendation02)),
-                        prioRepo.save(MeasurePriority(3, recommendation03)))))
+                        prioRepo.save(MeasurePriority(3, recommendation03)),
+                        prioRepo.save(MeasurePriority(4, recommendation15)),
+                        prioRepo.save(MeasurePriority(5, recommendation16)))))
 
         measureRepo.save(Measure(2, "M75", "Sjukdomstillstånd i skulderled", "1.0",
                 listOf(prioRepo.save(MeasurePriority(1, recommendation04)),
@@ -104,22 +115,22 @@ class BootstrapData {
                 "Högsta utbildningsnivå",
                 "Har du gått på universitet eller högskola? (inklusive ha gått kurser)",
                 "edu_cat_fct",
-                listOf(responseRepo.save(PredictionResponse(11, "Ja", "XXXXXXXXX", false, 1)),
-                        responseRepo.save(PredictionResponse(12, "Nej", "XXXXXXXXX", true, 2)))))
+                listOf(responseRepo.save(PredictionResponse(11, "Ja", ">12 years", false, 1)),
+                        responseRepo.save(PredictionResponse(12, "Nej", "No university", true, 2)))))
 
         val question05 = questionRepo.save(PredictionQuestion(5,
                 "Läkarbesök, sjukhus senaste 12 månaderna - ej PV",
                 "Har du haft mer än ett läkarbesök utanför primärvården de senaste 12 månaderna? (t.ex. på sjukhus)",
                 "Visits_yearBefore_all_r1_median",
-                listOf(responseRepo.save(PredictionResponse(13, "Ja", "XXXXXXXXX", false, 1)),
-                        responseRepo.save(PredictionResponse(14, "Nej", "XXXXXXXXX", true, 2)))))
+                listOf(responseRepo.save(PredictionResponse(13, "Ja", "aboveMedian", false, 1)),
+                        responseRepo.save(PredictionResponse(14, "Nej", "LessT2V", true, 2)))))
 
         val question06 = questionRepo.save(PredictionQuestion(6,
                 "Född i Sv",
                 "Är du född i Sverige?",
                 "birth_cat_fct",
-                listOf(responseRepo.save(PredictionResponse(15, "Ja", "XXXXXXXXX", true, 1)),
-                        responseRepo.save(PredictionResponse(16, "Nej", "XXXXXXXXX", false, 2)))))
+                listOf(responseRepo.save(PredictionResponse(15, "Ja", "SW", true, 1)),
+                        responseRepo.save(PredictionResponse(16, "Nej", "World", false, 2)))))
 
         val question07 = questionRepo.save(PredictionQuestion(7,
                 "Grad av sjukskrivning tidigare i fallet?",
@@ -148,15 +159,16 @@ class BootstrapData {
                 "Inlagd sjukhus",
                 "Har du varit inlagd på sjukhus mer än en dag de senaste 12 månaderna? (räkna ej pga okomplicerad förlossning)",
                 "Vtid_yearBefore_all_r1_median",
-                listOf(responseRepo.save(PredictionResponse(25, "Nej", "XXXXXXXXX", true, 1)),
-                        responseRepo.save(PredictionResponse(26, "Ja", "XXXXXXXXX", false, 2)))))
+                listOf(responseRepo.save(PredictionResponse(25, "Nej", "LessT2V", true, 1)),
+                        responseRepo.save(PredictionResponse(26, "Ja", "aboveMedian", false, 2)))))
 
         val question11 = questionRepo.save(PredictionQuestion(11,
                 "Familjesituation",
                 "Är du ensamstående (Alt:  är du sambo/gift)?",
-                "fam_cat_split",
-                listOf(responseRepo.save(PredictionResponse(27, "sambo/gift", "XXXXXXXXX", true, 1)),
-                        responseRepo.save(PredictionResponse(28, "Singel", "XXXXXXXXX", false, 2)))))
+//                "fam_cat_split",
+                "fam_cat_4_cat_fct",
+                listOf(responseRepo.save(PredictionResponse(27, "sambo/gift", "Married", true, 1)),
+                        responseRepo.save(PredictionResponse(28, "Singel", "Unmarried", false, 2)))))
 
         diagnosisRepo.save(PredictionDiagnosis(1, "M75", 0.25,
                 listOf(predictPrioRepo.save(PredictionPriority(1, question01)),

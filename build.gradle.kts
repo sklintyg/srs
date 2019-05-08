@@ -76,7 +76,8 @@ dependencies {
     compile(kotlin("stdlib", kotlinVersion))
     compile(kotlin("reflect", kotlinVersion))
 
-    compile("se.inera.intyg.clinicalprocess.healthcond.srs:intyg-clinicalprocess-healthcond-srs-schemas:0.0.7")
+//    compile("se.inera.intyg.clinicalprocess.healthcond.srs:intyg-clinicalprocess-healthcond-srs-schemas:0.0.7")
+    compile("se.inera.intyg.clinicalprocess.healthcond.srs:intyg-clinicalprocess-healthcond-srs-schemas:0-SNAPSHOT")
     compile("se.riv.itintegration.monitoring:itintegration-monitoring-schemas:1.0.0.4")
 
     // External dependencies
@@ -89,6 +90,7 @@ dependencies {
     compile("com.fasterxml.jackson.module:jackson-module-kotlin:2.9.4")
     compile("org.nuiton.thirdparty:JRI:0.9-9")
     compile("com.google.guava:guava:23.0")
+    compile("org.apache.poi:poi-ooxml:4.0.1")
 
     runtime("com.h2database:h2")
     runtime("mysql:mysql-connector-java")
@@ -98,7 +100,6 @@ dependencies {
     testCompile("com.nhaarman:mockito-kotlin-kt1.1:1.5.0")
     testCompile("org.exparity:hamcrest-date:2.0.1")
 }
-
 
 repositories {
     mavenLocal()

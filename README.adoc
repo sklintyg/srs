@@ -83,7 +83,7 @@ The 'bootstrap' profile ensures the application is bootstrapped with example dat
 
 OS X example:
 ----
-R_HOME=/usr/local/lib/R java -Djava.library.path="/usr/local/lib/R/3.4/site-library/rJava/jri" -Dresources.folder="/Users/eriklupander/intyg/SRS/src/main/resources" -jar build/libs/*.war --spring.profiles.active=runtime,it,bootstrap,scheduledUpdate
+R_HOME=/usr/local/lib/R java -Djava.library.path="/usr/local/lib/R/3.5/site-library/rJava/jri" -Dresources.folder="/Users/eriklupander/intyg/SRS/src/main/resources" -jar build/libs/*.war --spring.profiles.active=runtime,it,bootstrap,scheduledUpdate
 ----
 
 

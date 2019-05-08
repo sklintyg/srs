@@ -8,7 +8,8 @@ import org.junit.Test
 import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Statistikbild
 import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Statistikstatus
 import se.inera.intyg.srs.persistence.InternalStatistic
-import se.inera.intyg.srs.persistence.StatisticRepository
+import se.inera.intyg.srs.persistence.InternalStatisticRepository
+import se.inera.intyg.srs.persistence.NationalStatisticRepository
 import se.inera.intyg.srs.service.YOUTHS
 import se.inera.intyg.srs.vo.Diagnosis
 import se.inera.intyg.srs.vo.Person
@@ -26,13 +27,15 @@ class StatisticModuleTest {
     private val DIAGNOSIS_B12 = "B12"
     private val aDate = LocalDateTime.of(2017, 1, 1, 1, 1)
 
-    lateinit var repo: StatisticRepository
+    lateinit var nationalStatisticsRepo: NationalStatisticRepository
+    lateinit var repo: InternalStatisticRepository
     lateinit var module: StatisticModule
 
     @Before
     fun setup() {
         repo = mock()
-        module = StatisticModule(repo)
+        nationalStatisticsRepo = mock()
+        module = StatisticModule(repo, nationalStatisticsRepo)
         initData()
     }
 

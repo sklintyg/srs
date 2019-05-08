@@ -3,22 +3,28 @@ package se.inera.intyg.srs.vo
 import org.apache.logging.log4j.LogManager
 import org.springframework.stereotype.Service
 import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Statistikbild
+import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Statistikdata
 import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Statistikstatus
 import se.inera.intyg.srs.persistence.InternalStatistic
-import se.inera.intyg.srs.persistence.StatisticRepository
+import se.inera.intyg.srs.persistence.InternalStatisticRepository
+import se.inera.intyg.srs.persistence.NationalStatisticRepository
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.Diagnos
+import java.math.BigInteger
 import java.util.Locale
 import kotlin.collections.HashMap
 
 @Service
-class StatisticModule(val statisticRepo: StatisticRepository) : InformationModule<Statistikbild> {
+class StatisticModule(val internalStatisticRepo: InternalStatisticRepository, val nationalStatisticRepo: NationalStatisticRepository) : InformationModule<Statistikbild> {
 
     private val MIN_ID_POSITIONS = 3
 
     override fun getInfoForDiagnosis(diagnosisId: String): Statistikbild = getStatistikbildForDiagnosis(diagnosisId)
 
-    override fun getInfo(persons: List<Person>, extraParams: Map<String, String>, userHsaId: String): Map<Person, List<Statistikbild>> {
+    override fun getInfo(persons: List<Person>, extraParams: Map<String, Map<String, String>>, userHsaId: String, calculateIndividual: Boolean): Map<Person, List<Statistikbild>> {
         log.info("Getting statistics for $persons")
+        if (calculateIndividual) {
+            throw RuntimeException("calculateIndividual not supported")
+        }
         val statistics: HashMap<Person, List<Statistikbild>> = HashMap()
         persons.forEach { person ->
             statistics.put(person, createInfo(person))
@@ -38,7 +44,8 @@ class StatisticModule(val statisticRepo: StatisticRepository) : InformationModul
 
     private fun getStatistikbildForDiagnosis(diagnosisId: String): Statistikbild {
         var currentId = cleanDiagnosisCode(diagnosisId)
-        val possibleStatistics = statisticRepo.findByDiagnosisId(currentId.substring(0, MIN_ID_POSITIONS))
+        val possibleStatistics = internalStatisticRepo.findByDiagnosisId(currentId.substring(0, MIN_ID_POSITIONS))
+        val nationalStatistics = nationalStatisticRepo.findByDiagnosisIdOrderByDayIntervalMaxExcl(currentId.substring(0, MIN_ID_POSITIONS))
 
         var status: Statistikstatus = Statistikstatus.OK
         var statistikbild = Statistikbild()
@@ -55,7 +62,14 @@ class StatisticModule(val statisticRepo: StatisticRepository) : InformationModul
             // Once we have shortened the code, we need to indicate that the info is not on the original level
             status = Statistikstatus.DIAGNOSKOD_PA_HOGRE_NIVA
         }
-
+        nationalStatistics.forEach { natStat ->
+                val statistikData = Statistikdata()
+                statistikData.dagintervallMin = BigInteger.valueOf(natStat.dayIntervalMin.toLong())
+                statistikData.dagintervallMaxExkl = BigInteger.valueOf(natStat.dayIntervalMaxExcl.toLong())
+                statistikData.individer = BigInteger.valueOf(natStat.intervalQuantity.toLong())
+                statistikData.individerAckumulerat = BigInteger.valueOf(natStat.accumulatedQuantity.toLong())
+                statistikbild.data.add(statistikData)
+        }
         statistikbild.inkommandediagnos = buildDiagnosis(diagnosisId)
         statistikbild.statistikstatus = Statistikstatus.STATISTIK_SAKNAS
         return statistikbild

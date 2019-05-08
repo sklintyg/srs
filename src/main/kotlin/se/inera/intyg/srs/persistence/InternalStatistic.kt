@@ -14,6 +14,6 @@ class InternalStatistic(val diagnosisId: String,
                         val id: Long = -1) {
 
     override fun toString() =
-            "Measure(id=$id, diagnosisId='$diagnosisId', pictureUrl='$pictureUrl', timestamp='$timestamp')"
+            "InternalStatistic(id=$id, diagnosisId='$diagnosisId', pictureUrl='$pictureUrl', timestamp='$timestamp')"
 
 }

@@ -3,14 +3,14 @@ package se.inera.intyg.srs.service
 import org.apache.cxf.annotations.SchemaValidation
 import org.apache.logging.log4j.LogManager
 import org.springframework.stereotype.Service
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Atgardsrekommendationer
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Bedomningsunderlag
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.GetSRSInformationRequestType
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.GetSRSInformationResponderInterface
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.GetSRSInformationResponseType
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Individ
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Prediktion
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v1.Prediktionsfaktorer
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Atgardsrekommendationer
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Bedomningsunderlag
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.GetSRSInformationRequestType
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.GetSRSInformationResponderInterface
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.GetSRSInformationResponseType
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Individ
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Prediktion
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Prediktionsfaktorer
 import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Statistik
 import se.inera.intyg.srs.vo.Diagnosis
 import se.inera.intyg.srs.vo.MeasureInformationModule
@@ -22,7 +22,11 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v2.ResultCodeEnum
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
-val REGION = "Region"
+val LOCATION_KEY = "Location"
+val REGION_KEY = "Region"
+val ZIP_CODE_KEY = "ZipCode"
+val QUESTIONS_AND_ANSWERS_KEY = "QuestionsAndAnswers"
+
 val STHLM = "Stockholm"
 val NORD = "Nord"
 val VAST = "Vast"
@@ -48,24 +52,23 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
 
         val persons = transformIndividuals(request.individer.individ)
         val unitId = request.individer.individ.map { it.intygId.root }.first() ?: "NoUnitFound"
-        val extraInfo: Map<String, String> =
+        val extraInfo: Map<String, Map<String, String>> =
                 if (request.prediktionsfaktorer != null)
                     transformPredictionFactors(request.prediktionsfaktorer)
                 else mapOf()
 
         val response = GetSRSInformationResponseType()
 
-        if (request.utdatafilter.isPrediktion) {
-            try {
-                predictionModule.getInfo(persons, extraInfo, unitId).forEach { (person, prediction) ->
-                    val dtoPredictionList = Prediktion()
-                    dtoPredictionList.diagnosprediktion.addAll(prediction)
-                    val underlag = response.bedomningsunderlag.find { it.personId == person.personId } ?: createUnderlag(person.personId, response)
-                    underlag.prediktion = dtoPredictionList
-                }
-            } catch (e: Exception) {
-                log.error("Predictions could not be produced. Please check for error.", e)
+        // No utdatafilter check here since we might always want to add prevalence, if applicable
+        try {
+            predictionModule.getInfo(persons, extraInfo, unitId, request.utdatafilter.isPrediktion).forEach { (person, prediction) ->
+                val dtoPredictionList = Prediktion()
+                dtoPredictionList.diagnosprediktion.addAll(prediction)
+                val underlag = response.bedomningsunderlag.find { it.personId == person.personId } ?: createUnderlag(person.personId, response)
+                underlag.prediktion = dtoPredictionList
             }
+        } catch (e: Exception) {
+            log.error("Predictions could not be produced. Please check for error.", e)
         }
 
         if (request.utdatafilter.isAtgardsrekommendation) {
@@ -134,10 +137,15 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
 
     private fun calculateSex(personId: String) = if (personId[10].toInt() % 2 == 0) Sex.WOMAN else Sex.MAN
 
-    private fun transformPredictionFactors(factors: Prediktionsfaktorer): Map<String, String> {
-        val returnMap: MutableMap<String, String> = mutableMapOf()
-        returnMap[REGION] = calculateRegion(factors.postnummer)
-        factors.fragasvar.forEach { returnMap[it.frageidSrs] = it.svarsidSrs }
+    private fun transformPredictionFactors(factors: Prediktionsfaktorer): Map<String, Map<String, String>> {
+        val returnMap: MutableMap<String, Map<String, String>> = mutableMapOf()
+        val locationMap: MutableMap<String, String> = mutableMapOf()
+        locationMap[REGION_KEY] = calculateRegion(factors.postnummer)
+        locationMap[ZIP_CODE_KEY] = factors.postnummer
+        returnMap[LOCATION_KEY] = locationMap
+        val qnaMap: MutableMap<String, String> = mutableMapOf()
+        factors.fragasvar.forEach { qnaMap[it.frageidSrs] = it.svarsidSrs }
+        returnMap[QUESTIONS_AND_ANSWERS_KEY] = qnaMap
         return returnMap
     }
 

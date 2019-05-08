@@ -7,8 +7,28 @@ import org.springframework.core.io.ResourceLoader
 import org.springframework.stereotype.Service
 import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Atgardstyp
 import se.inera.intyg.srs.controllers.TestController
-import se.inera.intyg.srs.persistence.*
+import se.inera.intyg.srs.persistence.ConsentRepository
+import se.inera.intyg.srs.persistence.DiagnosisRepository
+import se.inera.intyg.srs.persistence.InternalStatistic
+import se.inera.intyg.srs.persistence.Measure
+import se.inera.intyg.srs.persistence.MeasurePriority
+import se.inera.intyg.srs.persistence.MeasurePriorityRepository
+import se.inera.intyg.srs.persistence.MeasureRepository
+import se.inera.intyg.srs.persistence.PredictionDiagnosis
+import se.inera.intyg.srs.persistence.PredictionPriority
+import se.inera.intyg.srs.persistence.PredictionPriorityRepository
+import se.inera.intyg.srs.persistence.PredictionQuestion
+import se.inera.intyg.srs.persistence.PredictionResponse
+import se.inera.intyg.srs.persistence.ProbabilityRepository
+import se.inera.intyg.srs.persistence.QuestionRepository
+import se.inera.intyg.srs.persistence.Recommendation
+import se.inera.intyg.srs.persistence.RecommendationRepository
+import se.inera.intyg.srs.persistence.ResponseRepository
+import se.inera.intyg.srs.persistence.InternalStatisticRepository
 import se.inera.intyg.srs.service.ModelFileUpdateService
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.nio.file.StandardCopyOption
 import java.time.LocalDateTime
 import java.util.concurrent.atomic.AtomicLong
 
@@ -19,7 +39,7 @@ class TestModule(private val consentRepo: ConsentRepository,
                  private val measureRepo: MeasureRepository,
                  private val priorityRepo: MeasurePriorityRepository,
                  private val recommendationRepo: RecommendationRepository,
-                 private val statisticsRepo: StatisticRepository,
+                 private val statisticsRepo: InternalStatisticRepository,
                  private val diagnosisRepo: DiagnosisRepository,
                  private val predictPrioRepo: PredictionPriorityRepository,
                  private val questionRepo: QuestionRepository,
