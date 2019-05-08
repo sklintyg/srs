@@ -76,8 +76,7 @@ dependencies {
     compile(kotlin("stdlib", kotlinVersion))
     compile(kotlin("reflect", kotlinVersion))
 
-//    compile("se.inera.intyg.clinicalprocess.healthcond.srs:intyg-clinicalprocess-healthcond-srs-schemas:0.0.7")
-    compile("se.inera.intyg.clinicalprocess.healthcond.srs:intyg-clinicalprocess-healthcond-srs-schemas:0-SNAPSHOT")
+    compile("se.inera.intyg.clinicalprocess.healthcond.srs:intyg-clinicalprocess-healthcond-srs-schemas:0.0.8")
     compile("se.riv.itintegration.monitoring:itintegration-monitoring-schemas:1.0.0.4")
 
     // External dependencies
