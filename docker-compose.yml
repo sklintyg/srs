@@ -27,7 +27,7 @@ services:
       WAIT_HOSTS: mysql:3306
     container_name: srsbackend
     ports:
-      - "8080:8097"
+      - "8080:8080"
     networks:
       - test-network
     #tty: true

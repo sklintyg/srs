@@ -12,6 +12,7 @@ RUN apt-get -y install r-base
 #Env variables
 #ENV R_HOME=/usr/lib/R
 RUN echo $R_HOME
+ENV TZ=Europe/Stockholm
 
 #Install rJava
 RUN R CMD javareconf JAVA_HOME=/docker-java-home/jre
@@ -25,9 +26,10 @@ RUN chmod 775 $CATALINA_HOME/bin/catalina.sh && chmod 775 $CATALINA_HOME/logs
 
 #COPY ./web/build/libs/*.war /tmp/webapps/app.war
 #Build srs backend
+ARG CACHEBUST=1
 COPY ./ $CATALINA_HOME/webapps/
 RUN cd $CATALINA_HOME/webapps/ && ./gradlew clean build
-#RUN cp -r $CATALINA_HOME/webapps/web/build/libs/*.war $CATALINA_HOME/webapps/
+RUN cp -r $CATALINA_HOME/webapps/web/build/libs/*.war $CATALINA_HOME/webapps/
 
 #Run container
 WORKDIR $CATALINA_HOME/bin
@@ -40,4 +42,4 @@ RUN chmod +x $CATALINA_HOME/wait
 ENV JAVA_OPTS "-Djava.library.path=/usr/lib/R/library/rJava/jri -Dspring.profiles.active=runtime,it,bootstrap,scheduledUpdate"
 CMD $CATALINA_HOME/wait && $CATALINA_HOME/bin/catalina.sh run $JAVA_OPTS && touch $CATALINA_HOME/logs/myapp.log && tail -f $CATALINA_HOME/logs/myapp.log
 
-EXPOSE 8097
+EXPOSE 8080
