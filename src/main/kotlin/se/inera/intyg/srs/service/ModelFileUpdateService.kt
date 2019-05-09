@@ -19,7 +19,7 @@ class ModelFileUpdateService(val resourceLoader: ResourceLoader,
 
     private val log = LogManager.getLogger()
 
-    private val DATA_FILE_EXTENSION = ".rdata"
+    private val DATA_FILE_EXTENSION = ".rds"
 
     private var models = mapOf<String, List<Model>>()
 
@@ -43,11 +43,12 @@ class ModelFileUpdateService(val resourceLoader: ResourceLoader,
         models = collect(Sequence { resources.iterator() })
     }
 
-    private final fun doUpdate(pattern: String) {
-        log.info("Performing model update...")
+    private final fun doUpdate(locationPattern: String) {
+        log.info("Performing model update... locationPattern: {}", locationPattern)
         models = collect(Sequence {
-            ResourcePatternUtils.getResourcePatternResolver(resourceLoader).getResources(pattern).iterator()
+            ResourcePatternUtils.getResourcePatternResolver(resourceLoader).getResources(locationPattern).iterator()
         })
+        log.info("Models found {}", models?.map {(k,v) -> k })
     }
 
     private fun collect(sequence: Sequence<Resource>): Map<String, List<Model>> {

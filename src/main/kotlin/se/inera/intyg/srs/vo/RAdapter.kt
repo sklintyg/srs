@@ -117,12 +117,12 @@ class RAdapter(val modelService: ModelFileUpdateService, @Value("\${r.log.file.p
 
     private fun loadModel(file: File) {
         log.info("R loading from: {}", file.absolutePath)
-        rengine.eval("load('${file.absolutePath}')  ", false) ?: throw RuntimeException("The prediction model does not exist!")
+        rengine.eval("model <- readRDS('${file.absolutePath}')  ", false) ?: throw RuntimeException("The prediction model does not exist!")
     }
 
     private fun getModelForDiagnosis(diagnosisId: String): Pair<ModelFileUpdateService.Model?, Diagnosprediktionstatus> {
         var currentId = cleanDiagnosisCode(diagnosisId)
-
+        log.debug("getModelForDiagnosis diagnosisId: {}, cleanDiagnosisId: {)", diagnosisId, currentId)
         if (currentId.length > MAX_ID_POSITIONS) {
             return Pair(null, Diagnosprediktionstatus.NOT_OK)
         }
@@ -130,6 +130,8 @@ class RAdapter(val modelService: ModelFileUpdateService, @Value("\${r.log.file.p
         var status: Diagnosprediktionstatus = Diagnosprediktionstatus.OK
         while (currentId.length >= MIN_ID_POSITIONS) {
             val model = modelService.modelForCode(currentId)
+            log.debug("modelForCode currentId: {}, gave: {}", currentId, model)
+
             if (model != null) {
                 return Pair(model, status)
             }

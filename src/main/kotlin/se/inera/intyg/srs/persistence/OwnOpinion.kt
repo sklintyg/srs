@@ -16,7 +16,6 @@ class OwnOpinion(val careGiverId: String,
                  @JoinColumn(name="probability_id", referencedColumnName = "id")
                  val probability: Probability,
                  var opinion: String,
-                 @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
                  var createdTime: LocalDateTime,
                  @Id @GeneratedValue(strategy = GenerationType.AUTO)
                  val id: Long = -1) {

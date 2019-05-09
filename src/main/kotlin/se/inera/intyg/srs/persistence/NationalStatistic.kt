@@ -13,7 +13,6 @@ class NationalStatistic(val diagnosisId: String,
                         var dayIntervalMaxExcl: Int, // the upper limit of the closed day interval, the lower day limit is the upper limit of the limit below + 1
                         var intervalQuantity: Int, // the quantity of the given interval
                         var accumulatedQuantity: Int, // the accumulated quantity of this day interval plus the day intervals below this
-                        @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
                         var timestamp: LocalDateTime,
                         @Id @GeneratedValue(strategy = GenerationType.AUTO)
                         val id: Long = -1) {

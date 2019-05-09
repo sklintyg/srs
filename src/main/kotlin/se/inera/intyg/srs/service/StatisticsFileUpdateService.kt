@@ -5,27 +5,30 @@ import org.apache.poi.ss.usermodel.CellType
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.xssf.usermodel.XSSFSheet
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.context.annotation.Profile
-import org.springframework.scheduling.annotation.Scheduled
+import org.springframework.core.io.ResourceLoader
+import org.springframework.core.io.support.ResourcePatternUtils
 import org.springframework.stereotype.Component
-import org.springframework.transaction.annotation.Transactional
 import org.springframework.util.StringUtils
 import se.inera.intyg.srs.persistence.InternalStatistic
 import se.inera.intyg.srs.persistence.InternalStatisticRepository
 import se.inera.intyg.srs.persistence.NationalStatistic
 import se.inera.intyg.srs.persistence.NationalStatisticRepository
 import java.io.File
-import java.io.FileInputStream
-import java.lang.IllegalArgumentException
-import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.attribute.BasicFileAttributes
 import java.time.LocalDateTime
-import java.time.ZoneId
+import java.time.ZoneOffset
 import java.util.Locale
 import kotlin.collections.ArrayList
+import kotlin.collections.LinkedHashMap
+import kotlin.collections.List
+import kotlin.collections.MutableMap
+import kotlin.collections.filter
+import kotlin.collections.find
+import kotlin.collections.forEach
+import kotlin.collections.map
+import kotlin.collections.mapNotNull
+import kotlin.collections.mutableMapOf
+import kotlin.collections.toList
 import kotlin.math.roundToInt
 
 /**
@@ -33,12 +36,12 @@ import kotlin.math.roundToInt
  * the update interval is also configurable via image.update.cron, both in application.properties.
  */
 @Component
-@Profile("scheduledUpdate")
-class StatisticsFileUpdateService(@Value("\${statistics.image.dir}") val imageDir: String,
+class StatisticsFileUpdateService(@Value("\${statistics.image.location-pattern}") val imageLocationPattern: String,
                                   @Value("\${statistics.national.file}") val nationalStatisticsFile: String,
                                   @Value("\${base.url}") val baseUrl: String,
                                   val internalStatisticRepo: InternalStatisticRepository,
-                                  val nationalStatisticsFileRepo: NationalStatisticRepository) {
+                                  val nationalStatisticsFileRepo: NationalStatisticRepository,
+                                  val resourceLoader: ResourceLoader) {
 
     private val log = LogManager.getLogger()
 
@@ -50,12 +53,6 @@ class StatisticsFileUpdateService(@Value("\${statistics.image.dir}") val imageDi
     private val fileNameRegex = Regex("""\w\d{2}""")
 
     init {
-        doUpdate()
-    }
-
-    @Transactional
-    @Scheduled(cron = "\${image.update.cron}")
-    fun update() {
         doUpdate()
     }
 
@@ -114,11 +111,11 @@ class StatisticsFileUpdateService(@Value("\${statistics.image.dir}") val imageDi
     }
 
     private final fun doUpdateNationalStatistics() {
-        log.info("Performing scheduled update of national statistics...")
+        log.info("Performing update of national statistics...")
         log.info("Importing from $nationalStatisticsFile")
         val excelFile = File(nationalStatisticsFile)
-        val fileModified = getModifiedTime(excelFile.toPath())
-        val excelFileStream = FileInputStream(excelFile)
+        val fileModified = LocalDateTime.now()
+        val excelFileStream = resourceLoader.getResource(nationalStatisticsFile).inputStream
         excelFileStream.use {
             val workbook = XSSFWorkbook(excelFileStream)
             workbook.use {
@@ -163,58 +160,49 @@ class StatisticsFileUpdateService(@Value("\${statistics.image.dir}") val imageDi
     }
 
     private final fun doUpdateImages() {
-        log.info("Performing scheduled image update...")
+        log.info("Performing image update... using imageLocationPattern: $imageLocationPattern")
 
         val dbEntries: List<InternalStatistic> = internalStatisticRepo.findAll().toList()
-        val diskEntries = ArrayList<String>()
+        val imageResourceEntries = ArrayList<String>()
 
-        File(imageDir).walk()
-                .map { it.toPath() }
-                .filterNotNull()
-                .filter { file -> isRequiredFileType(file) && isVaildFileName(file) }
-                .forEach { file ->
-                    val fileName = fixFileName(file)
-                    val fileModifiedTime = getModifiedTime(file)
+        ResourcePatternUtils.getResourcePatternResolver(resourceLoader).getResources(imageLocationPattern)
+                .mapNotNull { Pair(it.filename, it.lastModified()) }
+                .filter { (fileName, _) -> isRequiredFileType(fileName) && isVaildFileName(fileName) }
+                .map { (fileName, lastModified) -> Pair(fixFileName(fileName), lastModified) }
+                .forEach { (fileName, lastModified) ->
                     val existingImage = dbEntries.find { cleanDiagnosisCode(it.diagnosisId) == fileName }
-
+                    val imageLastModifiedTime = LocalDateTime.ofEpochSecond(lastModified, 0, ZoneOffset.UTC)
                     if (existingImage == null) {
                         log.info("New file found, saving as: $fileName")
-                        internalStatisticRepo.save(InternalStatistic(fileName, buildUrl(fileName), fileModifiedTime))
-                    } else if (!existingImage.timestamp.equals(fileModifiedTime)) {
+                        internalStatisticRepo.save(InternalStatistic(fileName, buildUrl(fileName), imageLastModifiedTime))
+                    } else if (!existingImage.timestamp.equals(imageLastModifiedTime)) {
                         log.info("Existing but modified file found, updating $fileName")
-                        existingImage.timestamp = fileModifiedTime
+                        existingImage.timestamp = imageLastModifiedTime
                         internalStatisticRepo.save(existingImage)
                     }
 
-                    diskEntries.add(fileName)
+                    imageResourceEntries.add(fileName)
                 }
 
         // Cleanup removed files
-        if (diskEntries.size != dbEntries.size) {
-            dbEntries.filter { it.diagnosisId !in diskEntries }.forEach {
+        if (imageResourceEntries.size != dbEntries.size) {
+            dbEntries.filter { it.diagnosisId !in imageResourceEntries }.forEach {
                 log.info("Statistics image for ${it.diagnosisId} no longer available, removing from database.")
                 internalStatisticRepo.deleteById(it.id)
             }
         }
     }
 
-    private fun fixFileName(file: Path): String = file.fileName.toString().dropLast(4)
+    private fun fixFileName(fileName: String): String = fileName.dropLast(4)
 
-    private fun isVaildFileName(file: Path): Boolean = fileNameRegex.matches(fixFileName(file))
+    private fun isVaildFileName(fileName: String): Boolean = fileNameRegex.matches(fixFileName(fileName))
 
     private fun buildUrl(fileName: String): String = "$baseUrl$urlExtension$fileName"
 
     private fun cleanDiagnosisCode(diagnosisId: String): String = diagnosisId.toUpperCase(Locale.ENGLISH).replace(".", "")
 
-    private fun getModifiedTime(file: Path): LocalDateTime {
-        return LocalDateTime.ofInstant(
-                Files.readAttributes(file, BasicFileAttributes::class.java)
-                        .lastModifiedTime().toInstant(), ZoneId.systemDefault())
-    }
-
-    private fun isRequiredFileType(file: Path): Boolean {
-        return Files.isRegularFile(file)
-                && file.getName(file.getNameCount() - 1).toString().toLowerCase().endsWith(imageFileExtension)
+    private fun isRequiredFileType(fileName: String): Boolean {
+        return fileName.toLowerCase().endsWith(imageFileExtension)
     }
 
 }
