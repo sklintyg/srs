@@ -61,6 +61,7 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
 
         // No utdatafilter check here since we might always want to add prevalence, if applicable
         try {
+            log.debug("Getting prediction info")
             predictionModule.getInfo(persons, extraInfo, unitId, request.utdatafilter.isPrediktion).forEach { (person, prediction) ->
                 val dtoPredictionList = Prediktion()
                 dtoPredictionList.diagnosprediktion.addAll(prediction)
@@ -73,6 +74,7 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
 
         if (request.utdatafilter.isAtgardsrekommendation) {
             try {
+                log.debug("Getting measure info")
                 measureModule.getInfo(persons).forEach { (person, measure) ->
                     val underlag = response.bedomningsunderlag.find { it.personId == person.personId } ?: createUnderlag(person.personId, response)
                     val dtoAtgardsrekommendationList = Atgardsrekommendationer()
@@ -86,6 +88,7 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
 
         if (request.utdatafilter.isStatistik) {
             try {
+                log.debug("Getting statistic info")
                 statisticModule.getInfo(persons).forEach { (person, statistic) ->
                     val underlag = response.bedomningsunderlag.find { it.personId == person.personId } ?: createUnderlag(person.personId, response)
                     val dtoStatistikList = Statistik()
@@ -96,8 +99,8 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
                 log.error("Statistics could not be produced. Please check for error.", e)
             }
         }
-
         response.resultCode = ResultCodeEnum.OK
+        log.debug("Successfully collected GetSrsInformation, returning $response")
         return response
     }
 

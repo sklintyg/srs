@@ -101,6 +101,7 @@ class RAdapter(val modelService: ModelFileUpdateService, @Value("\${r.log.file.p
                 append(extraParams[QUESTIONS_AND_ANSWERS_KEY]?.entries?.joinToString(", ", transform = { (key, value) -> "$key = '$value'" }))
                 append(")")
             }.toString()
+            log.trace("Evaluating rDataFrame: $rDataFrame")
 
             rengine.eval(rDataFrame)
             val rOutput = rengine.eval("output <- round(pch:::predict.pch(model,newdata = data)\$Surv, 2)")
@@ -109,6 +110,7 @@ class RAdapter(val modelService: ModelFileUpdateService, @Value("\${r.log.file.p
                 log.info("Successful prediction, result: " + rOutput.asDouble())
                 Prediction(model.diagnosis, rOutput.asDouble(), status, LocalDateTime.now())
             } else {
+                log.debug("R produced no output")
                 wipeRLogFileAndReportError()
                 Prediction(diagnosis.code, null, Diagnosprediktionstatus.NOT_OK, LocalDateTime.now())
             }
@@ -122,7 +124,7 @@ class RAdapter(val modelService: ModelFileUpdateService, @Value("\${r.log.file.p
 
     private fun getModelForDiagnosis(diagnosisId: String): Pair<ModelFileUpdateService.Model?, Diagnosprediktionstatus> {
         var currentId = cleanDiagnosisCode(diagnosisId)
-        log.debug("getModelForDiagnosis diagnosisId: {}, cleanDiagnosisId: {)", diagnosisId, currentId)
+        log.debug("getModelForDiagnosis diagnosisId: {}, cleanDiagnosisId: {}", diagnosisId, currentId)
         if (currentId.length > MAX_ID_POSITIONS) {
             return Pair(null, Diagnosprediktionstatus.NOT_OK)
         }

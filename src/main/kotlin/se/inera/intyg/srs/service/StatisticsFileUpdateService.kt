@@ -113,7 +113,6 @@ class StatisticsFileUpdateService(@Value("\${statistics.image.location-pattern}"
     private final fun doUpdateNationalStatistics() {
         log.info("Performing update of national statistics...")
         log.info("Importing from $nationalStatisticsFile")
-        val excelFile = File(nationalStatisticsFile)
         val fileModified = LocalDateTime.now()
         val excelFileStream = resourceLoader.getResource(nationalStatisticsFile).inputStream
         excelFileStream.use {

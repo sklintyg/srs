@@ -51,9 +51,11 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
      * Create DiagnosPrediktion from incoming Person objects and extra params
      */
     private fun createInfo(person: Person, extraParams: Map<String, Map<String, String>>, userHsaId: String, predictIndividualRisk: Boolean): List<Diagnosprediktion> {
+        log.debug("createInfo(person: $person, extraParams: $extraParams, userHsaId: $userHsaId, predictIndividualRisk: $predictIndividualRisk)")
         val outgoingPrediction = mutableListOf<Diagnosprediktion>()
 
         person.diagnoses.forEach { incomingDiagnosis ->
+            log.trace("working with incomingDiagnosis: $incomingDiagnosis")
             val diagnosPrediktion = Diagnosprediktion()
             diagnosPrediktion.inkommandediagnos = originalDiagnosis(incomingDiagnosis)
 
@@ -65,9 +67,11 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
             }
 
             if (!predictIndividualRisk && !person.certificateId.isBlank()) {
+                log.trace("Do not predict individual risk, looking for historic entries on the certificate")
                 // Check if we have a historic prediction
                 val historicProbability = probabilityRepo.findFirstByCertificateIdOrderByTimestampDesc(person.certificateId)
                 if (historicProbability != null) {
+                    log.trace("Found historic entry")
                     diagnosPrediktion.sannolikhetOvergransvarde = historicProbability.probability
                     diagnosPrediktion.diagnos = buildDiagnos(historicProbability.diagnosisCodeSystem, historicProbability.diagnosis)
                     diagnosPrediktion.diagnosprediktionstatus = Diagnosprediktionstatus.valueOf(historicProbability.predictionStatus)
@@ -106,10 +110,12 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
 
                 }
             } else if (diagnosis != null && isCorrectPredictionParamsAgainstDiagnosis(diagnosis, extraParams) && predictIndividualRisk) {
+                log.trace("Predict individual risk, we got a diagnosis and got correct prediction params")
                 calculatedPrediction = rAdapter.getPrediction(person, incomingDiagnosis, extraParams)
                 diagnosPrediktion.diagnosprediktionstatus = calculatedPrediction.status
                 diagnosPrediktion.berakningstidpunkt = calculatedPrediction.timestamp
             } else {
+                log.trace("Incorrect combination of parameters, responding with NOT_OK")
                 diagnosPrediktion.diagnosprediktionstatus = Diagnosprediktionstatus.NOT_OK
             }
 
@@ -118,7 +124,7 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
             if (diagnosis != null && calculatedPrediction != null &&
                     (calculatedPrediction.status == Diagnosprediktionstatus.OK ||
                             calculatedPrediction.status == Diagnosprediktionstatus.DIAGNOSKOD_PA_HOGRE_NIVA)) {
-
+                log.trace("Have diagnosis and a calculated prediction")
                 diagnosPrediktion.sannolikhetOvergransvarde = calculatedPrediction.prediction
                 diagnosPrediktion.diagnos = buildDiagnos(incomingDiagnosis.codeSystem, calculatedPrediction.diagnosis)
 
@@ -127,6 +133,7 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
                 persistProbability(diagnosPrediktion, person.certificateId, extraParams)
 
             } else {
+                log.trace("Either no diagnosis or no calculated prediction, using risk category 1")
                 riskSignal.riskkategori = BigInteger.ONE
             }
 

@@ -1,4 +1,4 @@
-<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:riv:clinicalprocess:healthcond:srs:GetSRSInformationResponder:1" xmlns:urn1="urn:riv:clinicalprocess:healthcond:certificate:types:2">
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:riv:clinicalprocess:healthcond:srs:GetSRSInformationResponder:2" xmlns:urn1="urn:riv:clinicalprocess:healthcond:certificate:types:2">
    <soapenv:Header/>
    <soapenv:Body>
       <urn:GetSRSInformationRequest>

@@ -112,13 +112,13 @@ class TestModule(private val consentRepo: ConsentRepository,
 
         fun load(loc: String) = resources.add(resourceLoader.getResource("$resourcesFolder/testmodel/$loc"))
         if (models.x99v0) {
-            load("PM_X99_v0.0.RData")
+            load("PM_X99_v0.0.rds")
         }
         if (models.x99v1) {
-            load("PM_X99_v1.0.RData")
+            load("PM_X99_v1.0.rds")
         }
         if (models.x9900v0) {
-            load("PM_X9900_v0.0.RData")
+            load("PM_X9900_v0.0.rds")
         }
 
         modelFileUpdateService.applyModels(resources)
