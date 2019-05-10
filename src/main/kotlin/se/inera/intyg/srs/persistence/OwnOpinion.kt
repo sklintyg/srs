@@ -17,7 +17,7 @@ class OwnOpinion(val careGiverId: String,
                  val probability: Probability,
                  var opinion: String,
                  var createdTime: LocalDateTime,
-                 @Id @GeneratedValue(strategy = GenerationType.AUTO)
+                 @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
                  val id: Long = -1) {
 
     override fun toString() = "OwnOpinion(careGiverId: $careGiverId, careUnitId: $careUnitId, " +

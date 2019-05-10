@@ -9,7 +9,7 @@ import javax.persistence.ManyToOne
 
 @Entity
 class PatientAnswer(
-        @Id @GeneratedValue(strategy = GenerationType.AUTO)
+        @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
         val id: Long = -1) {
     // See: https://dev.to/livioribeiro/mapping-jpa-entities-with-kotlin-36d
 

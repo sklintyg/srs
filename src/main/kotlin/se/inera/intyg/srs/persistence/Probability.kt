@@ -22,7 +22,7 @@ class Probability(val certificateId: String,
                   val timestamp: LocalDateTime,
                   val region: String?,
                   val zipCode: String?,
-                  @Id @GeneratedValue(strategy = GenerationType.AUTO)
+                  @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
                   val id: Long = -1) {
 
     @OneToOne(mappedBy = "probability", cascade = [CascadeType.ALL])

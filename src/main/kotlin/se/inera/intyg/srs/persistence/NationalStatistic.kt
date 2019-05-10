@@ -14,7 +14,7 @@ class NationalStatistic(val diagnosisId: String,
                         var intervalQuantity: Int, // the quantity of the given interval
                         var accumulatedQuantity: Int, // the accumulated quantity of this day interval plus the day intervals below this
                         var timestamp: LocalDateTime,
-                        @Id @GeneratedValue(strategy = GenerationType.AUTO)
+                        @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
                         val id: Long = -1) {
 
     override fun toString() =
