@@ -39,7 +39,7 @@ ADD https://github.com/ufoscout/docker-compose-wait/releases/download/2.5.0/wait
 RUN chmod +x $CATALINA_HOME/wait
 
 #Catalina run
-ENV JAVA_OPTS "-Djava.library.path=/usr/lib/R/library/rJava/jri -Dspring.profiles.active=runtime,it,bootstrap,scheduledUpdate"
+ENV JAVA_OPTS "-Djava.library.path=/usr/lib/R/library/rJava/jri -Dloader.path=WEB-INF/lib-provided,WEB-INF/lib,WEB-INF/classes -Dspring.profiles.active=runtime,it,bootstrap,scheduledUpdate"
 CMD $CATALINA_HOME/wait && $CATALINA_HOME/bin/catalina.sh run $JAVA_OPTS && touch $CATALINA_HOME/logs/myapp.log && tail -f $CATALINA_HOME/logs/myapp.log
 
 EXPOSE 8080
