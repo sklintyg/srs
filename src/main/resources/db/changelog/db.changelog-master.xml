@@ -283,7 +283,8 @@
     </changeSet>
 
     <changeSet id="12" author="ch">
-        <renameColumn tableName="probability" oldColumnName="incomming_diagnosis" newColumnName="incoming_diagnosis" />
+        <renameColumn tableName="probability" oldColumnName="incomming_diagnosis" newColumnName="incoming_diagnosis"
+                      columnDataType="VARCHAR(10)"/>
     </changeSet>
 
     <changeSet id="13" author="ch">
