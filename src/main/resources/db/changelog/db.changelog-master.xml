@@ -264,7 +264,7 @@
             <column name="care_unit_id" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="probability_id" type="LONG">
+            <column name="probability_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
             <column name="opinion" type="VARCHAR(50)">
