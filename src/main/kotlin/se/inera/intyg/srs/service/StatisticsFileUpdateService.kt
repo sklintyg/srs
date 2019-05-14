@@ -15,7 +15,9 @@ import se.inera.intyg.srs.persistence.InternalStatisticRepository
 import se.inera.intyg.srs.persistence.NationalStatistic
 import se.inera.intyg.srs.persistence.NationalStatisticRepository
 import java.io.File
+import java.time.Instant
 import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.ZoneOffset
 import java.util.Locale
 import kotlin.collections.ArrayList
@@ -170,7 +172,7 @@ class StatisticsFileUpdateService(@Value("\${statistics.image.location-pattern}"
                 .map { (fileName, lastModified) -> Pair(fixFileName(fileName), lastModified) }
                 .forEach { (fileName, lastModified) ->
                     val existingImage = dbEntries.find { cleanDiagnosisCode(it.diagnosisId) == fileName }
-                    val imageLastModifiedTime = LocalDateTime.ofEpochSecond(lastModified, 0, ZoneOffset.UTC)
+                    val imageLastModifiedTime = Instant.ofEpochMilli(lastModified).atZone(ZoneId.systemDefault()).toLocalDateTime()
                     if (existingImage == null) {
                         log.info("New file found, saving as: $fileName")
                         internalStatisticRepo.save(InternalStatistic(fileName, buildUrl(fileName), imageLastModifiedTime))
