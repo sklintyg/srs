@@ -17,7 +17,8 @@ class AtgardsforslagIT : BaseIntegrationTest() {
         // En request som frågar efter åtgärdsförslag för en diagnos
         // som har åtgärdsförslag ska returnera dessa. Diagnos som inte
         // har åtgärdsförslag ska indikera detta.
-        addMeasure("M75", "Riktigt stressad", listOf("Ta det lugnt", "Hetsa inte upp dig"))
+        addMeasure("M75", "Riktigt stressad",
+                listOf(Pair("Relaxa","Ta det lugnt"), Pair("Chilla","Hetsa inte upp dig")))
 
         RestAssured.given()
             .contentType(ContentType.XML)
@@ -44,7 +45,8 @@ class AtgardsforslagIT : BaseIntegrationTest() {
         // En request som frågar efter åtgärdsförslag för en diagnos
         // som har åtgärdsförslag fast på högre nivå ska returnera dessa.
         // Status ska indikera att åtgärdsförslagen fanns på högre nivå.
-        addMeasure("M75", "Riktigt stressad", listOf("Ta det lugnt", "Hetsa inte upp dig"))
+        addMeasure("M75", "Riktigt stressad",
+                listOf(Pair("Relaxa","Ta det lugnt"), Pair("Chilla","Hetsa inte upp dig")))
 
         RestAssured.given()
             .contentType(ContentType.XML)

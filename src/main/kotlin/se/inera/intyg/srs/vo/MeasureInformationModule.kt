@@ -56,6 +56,7 @@ class MeasureInformationModule(val measureRepo: MeasureRepository) : Information
                 val atgard = Atgard()
                 atgard.atgardId = BigInteger.ONE
                 atgard.atgardstyp = it.recommendation.type
+                atgard.atgardsrubrik = it.recommendation.recommendationTitle
                 atgard.atgardsforslag = it.recommendation.recommendationText
                 atgard.prioritet = BigInteger.valueOf(it.priority.toLong())
                 // Temp version

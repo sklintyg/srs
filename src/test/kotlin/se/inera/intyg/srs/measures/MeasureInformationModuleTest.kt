@@ -38,9 +38,9 @@ class MeasureInformationModuleTest {
 
     fun insertMeasureData() {
         whenever(measureRepo.findByDiagnosisIdStartingWith(DIAGNOSIS_A12)).thenReturn(listOf(Measure(1, DIAGNOSIS_A12, "Depression", "1.0",
-                listOf(MeasurePriority(1, Recommendation(1, Atgardstyp.REK, "Softa"))))))
+                listOf(MeasurePriority(1, Recommendation(1, Atgardstyp.REK, "Chilla","Softa"))))))
         whenever(measureRepo.findByDiagnosisIdStartingWith(DIAGNOSIS_B12)).thenReturn(listOf(Measure(2, DIAGNOSIS_B12, "Benbrott", "1.0",
-                listOf(MeasurePriority(1, Recommendation(2, Atgardstyp.OBS, "Hoppa på ett ben"))))))
+                listOf(MeasurePriority(1, Recommendation(2, Atgardstyp.OBS, "Linka","Hoppa på ett ben"))))))
     }
 
     @Test

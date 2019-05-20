@@ -30,7 +30,7 @@ open class BaseIntegrationTest {
             TestController.ConsentRequest(personnummer, samtycke, vardenhet),
             String::class.java)
 
-    protected fun addMeasure(diagnosId: String, diagnosText: String, rekommendationer: List<String>): Measure =
+    protected fun addMeasure(diagnosId: String, diagnosText: String, rekommendationer: List<Pair<String,String>>): Measure =
         restTemplate.postForObject(
             "/measures",
             TestController.MeasureRequest(diagnosId, diagnosText, rekommendationer),
@@ -87,7 +87,7 @@ open class BaseIntegrationTest {
 
     companion object SetUp {
 
-        private val baseURI = System.getProperty("integration.tests.baseUrl") ?: "http://localhost:8080"
+        private val baseURI = System.getProperty("integration.tests.baseUrl") ?: "http://localhost:8081"
 
         val restTemplate: RestTemplate = RestTemplateBuilder().rootUri(baseURI).build()
 

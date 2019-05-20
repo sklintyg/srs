@@ -28,7 +28,7 @@ class TestController(val consentModule: ConsentModule,
                               val samtycke: Boolean,
                               val vardenhet: String)
 
-    data class MeasureRequest(val diagnosId: String, val diagnosText: String, val rekommendationer: List<String>)
+    data class MeasureRequest(val diagnosId: String, val diagnosText: String, val rekommendationer: List<Pair<String,String>>)
 
     data class StatisticsRequest(val diagnosId: String, val bildUrl: String)
 

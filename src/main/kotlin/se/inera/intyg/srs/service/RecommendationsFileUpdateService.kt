@@ -74,6 +74,7 @@ class RecommendationsFileUpdateService(@Value("\${recommendations.file}") val re
                 val recommendationId = row.getCell(2).numericCellValue.toLong()
                 val category = row.getCell(3).stringCellValue
                 val priority = row.getCell(4).numericCellValue.toInt()
+                val title = row.getCell(7).stringCellValue
                 val text = row.getCell(8).stringCellValue
 
                 if (!diagnosisId.isNullOrBlank() && !diagnosisText.isNullOrBlank() && !category.isNullOrBlank()) {
@@ -85,9 +86,10 @@ class RecommendationsFileUpdateService(@Value("\${recommendations.file}") val re
 //                    val existingRecommendation = recommendationsRepo.(recommendationId)
 
                     recommendationsRepo.findById(recommendationId).map { existingRecommendation ->
-                        recommendationsRepo.save(existingRecommendation.copy(recommendationText = text))
+                        recommendationsRepo.save(existingRecommendation.copy(
+                                recommendationTitle = title, recommendationText = text))
                     }.orElse(
-                        recommendationsRepo.save(Recommendation(recommendationId, Atgardstyp.fromValue(category), text))
+                        recommendationsRepo.save(Recommendation(recommendationId, Atgardstyp.fromValue(category), title, text))
                     )
 //
 //                    if (existingRecommendation.isPresent) {

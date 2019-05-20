@@ -14,6 +14,7 @@ data class Recommendation(
 //        @get: NotBlank
         @Enumerated(EnumType.STRING) val type: Atgardstyp,
 
+        val recommendationTitle: String,
 //        @get: NotBlank
         val recommendationText: String
 )
