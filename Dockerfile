@@ -25,7 +25,7 @@ RUN chown root:root $CATALINA_HOME/bin/catalina.sh && chown root:root $CATALINA_
 RUN chmod 775 $CATALINA_HOME/bin/catalina.sh && chmod 775 $CATALINA_HOME/logs
 
 #Build srs backend
-ARG CACHEBUST=1
+#ARG CACHEBUST=1
 COPY ./ $CATALINA_HOME/webapps/
 RUN cd $CATALINA_HOME/webapps/ && ./gradlew clean build
 

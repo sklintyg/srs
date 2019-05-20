@@ -19,9 +19,8 @@ services:
     healthcheck:
       test: "mysqladmin ping -u $${MYSQL_USER} -p$${MYSQL_PASSWORD}"
       start_period: 10s
-      
   srsbackend:
-    build: .
+    build: ../../
     environment:
       JAVA_OPTS: -Ddb.url=mysql -Ddb.port=3306 -Ddb.username=srs -Ddb.password=password
       WAIT_HOSTS: mysql:3306
@@ -34,7 +33,18 @@ services:
     #entrypoint: ["/bin/sh"]
     depends_on:
       - mysql
+  #frontend:
+  #  build: frontend
+    #environment:
+      #JAVA_OPTS: -Ddb.url=mysql -Ddb.port=3306 -Ddb.username=srs -Ddb.password=password
+      #WAIT_HOSTS: mysql:3306
+   # container_name: wc
+  #  ports:
+   #   - "9088:9088"
+  #  networks:
+  #    - test-network
+    #tty: true
+    #entrypoint: ["/bin/sh"]
 networks:
   test-network:
     driver: bridge
-
