@@ -335,4 +335,9 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="16" author="ch">
+        <renameColumn tableName="consent" oldColumnName="vardgivare_id" newColumnName="vardenhet_id"
+                      columnDataType="VARCHAR(36)"/>
+    </changeSet>
+
 </databaseChangeLog>

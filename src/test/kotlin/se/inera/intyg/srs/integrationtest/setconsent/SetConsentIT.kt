@@ -38,7 +38,7 @@ class testMultipleConsentsOnSamePersonShouldOverwriteSetConsentIT : BaseIntegrat
         val consent = getConsent("191212121212", "abc")
         assertThat(consent, notNullValue())
         assertThat(consent?.personnummer, equalTo("191212121212"))
-        assertThat(consent?.vardgivareId, equalTo("abc"))
+        assertThat(consent?.vardenhetId, equalTo("abc"))
     }
 
     @Test

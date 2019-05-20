@@ -32,7 +32,7 @@ class ConsentModuleTest {
     }
 
     private fun initData() {
-        whenever(repo.findConsentByPersonnummerAndVardgivareId(PERSONNUMMER_WITH_CONSENT, HSAID))
+        whenever(repo.findConsentByPersonnummerAndVardenhetId(PERSONNUMMER_WITH_CONSENT, HSAID))
                 .thenReturn(createConsent(PERSONNUMMER_WITH_CONSENT, HSAID))
         whenever(repo.save( Mockito.anyObject<Consent>())).thenReturn(consent)
     }

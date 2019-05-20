@@ -5,12 +5,20 @@ import javax.persistence.Entity
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
 import javax.persistence.Id
+import javax.validation.constraints.NotBlank
 
 @Entity
-class Recommendation(@Id val id: Long,
-                     @Enumerated(EnumType.STRING) val type: Atgardstyp,
-                     val recommendationText: String) {
+data class Recommendation(
+        @Id val id: Long,
 
-    override fun toString() =
-            "Recommendation(id=$id, type=$type, recommendationText='$recommendationText')"
-}
+//        @get: NotBlank
+        @Enumerated(EnumType.STRING) val type: Atgardstyp,
+
+//        @get: NotBlank
+        val recommendationText: String
+)
+//{
+//
+//    override fun toString() =
+//            "Recommendation(id=$id, type=$type, recommendationText='$recommendationText')"
+//}

@@ -7,6 +7,8 @@ import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Diagno
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.FragaSvar
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Prediktionsfaktorer
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Risksignal
+import se.inera.intyg.srs.persistence.Consent
+import se.inera.intyg.srs.persistence.ConsentRepository
 import se.inera.intyg.srs.persistence.DiagnosisRepository
 import se.inera.intyg.srs.persistence.PatientAnswer
 import se.inera.intyg.srs.persistence.PatientAnswerRepository
@@ -31,6 +33,7 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
                                   val diagnosisRepo: DiagnosisRepository,
                                   val probabilityRepo: ProbabilityRepository,
                                   val patientAnswerRepo: PatientAnswerRepository,
+                                  val consentRepository: ConsentRepository,
                                   val responseRepo: ResponseRepository) : InformationModule<Diagnosprediktion> {
 
     private val log = LogManager.getLogger()
@@ -38,11 +41,11 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
     override fun getInfoForDiagnosis(diagnosisId: String): Diagnosprediktion =
             throw NotImplementedError("Predictions can not be made with only diagnosis.")
 
-    override fun getInfo(persons: List<Person>, extraParams: Map<String, Map<String, String>>, userHsaId: String, calculateIndividual: Boolean): Map<Person, List<Diagnosprediktion>> {
+    override fun getInfo(persons: List<Person>, extraParams: Map<String, Map<String, String>>, unitHsaId: String, calculateIndividual: Boolean): Map<Person, List<Diagnosprediktion>> {
         log.info(persons)
         val predictions = HashMap<Person, List<Diagnosprediktion>>()
         persons.forEach { person ->
-            predictions.put(person, createInfo(person, extraParams, userHsaId, calculateIndividual))
+            predictions.put(person, createInfo(person, extraParams, unitHsaId, calculateIndividual))
         }
         return predictions
     }
@@ -50,12 +53,14 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
     /**
      * Create DiagnosPrediktion from incoming Person objects and extra params
      */
-    private fun createInfo(person: Person, extraParams: Map<String, Map<String, String>>, userHsaId: String, predictIndividualRisk: Boolean): List<Diagnosprediktion> {
-        log.debug("createInfo(person: $person, extraParams: $extraParams, userHsaId: $userHsaId, predictIndividualRisk: $predictIndividualRisk)")
+    private fun createInfo(person: Person, extraParams: Map<String, Map<String, String>>, careUnitHsaId: String, predictIndividualRisk: Boolean): List<Diagnosprediktion> {
+        log.debug("createInfo(person: $person, extraParams: $extraParams, careUnitHsaId: " +
+                "$careUnitHsaId, predictIndividualRisk: $predictIndividualRisk)")
         val outgoingPrediction = mutableListOf<Diagnosprediktion>()
 
         person.diagnoses.forEach { incomingDiagnosis ->
             log.trace("working with incomingDiagnosis: $incomingDiagnosis")
+
             val diagnosPrediktion = Diagnosprediktion()
             diagnosPrediktion.inkommandediagnos = originalDiagnosis(incomingDiagnosis)
 
@@ -63,13 +68,17 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
             val diagnosis = diagnosisRepo.getModelForDiagnosis(incomingDiagnosis.code)
 
             if (diagnosis != null) {
+                diagnosPrediktion.diagnos = buildDiagnos(incomingDiagnosis.codeSystem, incomingDiagnosis.code)
                 diagnosPrediktion.prevalens = diagnosis.prevalence
             }
 
-            if (!predictIndividualRisk && !person.certificateId.isBlank()) {
+            val consent = consentRepository.findConsentByPersonnummerAndVardenhetId(person.personId, careUnitHsaId)
+
+            if (!predictIndividualRisk && !person.certificateId.isBlank() && diagnosis != null && consent != null) {
                 log.trace("Do not predict individual risk, looking for historic entries on the certificate")
                 // Check if we have a historic prediction
-                val historicProbability = probabilityRepo.findFirstByCertificateIdOrderByTimestampDesc(person.certificateId)
+                val historicProbability = probabilityRepo.findFirstByCertificateIdAndDiagnosisOrderByTimestampDesc(
+                        person.certificateId, diagnosis.diagnosisId)
                 if (historicProbability != null) {
                     log.trace("Found historic entry")
                     diagnosPrediktion.sannolikhetOvergransvarde = historicProbability.probability
@@ -141,7 +150,7 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
 
             logPrediction(extraParams, diagnosPrediktion.diagnos?.code ?: "", diagnosis?.prevalence?.toString() ?: "", person.sex.name,
                     person.ageCategory, calculatedPrediction?.prediction?.toString() ?: "", riskSignal.riskkategori.intValueExact(),
-                    calculatedPrediction?.status?.toString() ?: "", person.certificateId, userHsaId)
+                    calculatedPrediction?.status?.toString() ?: "", person.certificateId, careUnitHsaId)
 
             outgoingPrediction.add(diagnosPrediktion)
         }

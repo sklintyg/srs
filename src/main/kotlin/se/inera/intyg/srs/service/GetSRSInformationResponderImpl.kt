@@ -62,6 +62,7 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
         // No utdatafilter check here since we might always want to add prevalence, if applicable
         try {
             log.debug("Getting prediction info")
+
             predictionModule.getInfo(persons, extraInfo, unitId, request.utdatafilter.isPrediktion).forEach { (person, prediction) ->
                 val dtoPredictionList = Prediktion()
                 dtoPredictionList.diagnosprediktion.addAll(prediction)

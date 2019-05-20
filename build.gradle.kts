@@ -1,5 +1,6 @@
 import org.gradle.api.publish.maven.MavenPublication
 import org.springframework.boot.gradle.tasks.bundling.BootWar
+//import org.springframework.boot.gradle.tasks.run.BootRun
 import se.inera.intyg.TagReleaseTask
 import se.inera.intyg.VersionPropertyFileTask
 
@@ -52,6 +53,21 @@ task<Test>("restAssuredTest") {
     excludes.clear()
 }
 
+// Lab settings for spring boot
+//run {
+//    systemProperties(System.getProperties())
+//}
+//task<BootRun>("bootRun") {
+//    systemProperties(systemProperties)
+//    systemProperty("spring.active.profiles", "runtime,it,bootstrap,scheduledUpdate")
+//}
+//tasks.withType<BootRun> {
+//    systemProperty("spring.active.profiles", "runtime,it,bootstrap,scheduledUpdate")
+//    systemProperty("java.library.path", "/usr/local/lib/R/3.5/site-library/rJava/jri")
+//    systemProperty("server.port","8081")
+//    systemProperty("srs.resources.folder", "classpath:")
+//    systemProperty("loader.path", "WEB-INF/lib-provided,WEB-INF/lib,WEB-INF/classes")
+//}
 
 publishing {
     publications {
@@ -76,7 +92,7 @@ dependencies {
     compile(kotlin("stdlib", kotlinVersion))
     compile(kotlin("reflect", kotlinVersion))
 
-    compile("se.inera.intyg.clinicalprocess.healthcond.srs:intyg-clinicalprocess-healthcond-srs-schemas:0.0.8")
+    compile("se.inera.intyg.clinicalprocess.healthcond.srs:intyg-clinicalprocess-healthcond-srs-schemas:0.0.9")
     compile("se.riv.itintegration.monitoring:itintegration-monitoring-schemas:1.0.0.4")
 
     // External dependencies
@@ -105,4 +121,3 @@ repositories {
     maven("https://build-inera.nordicmedtest.se/nexus/repository/releases/")
     mavenCentral()
 }
-

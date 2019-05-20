@@ -8,15 +8,15 @@ import java.time.LocalDateTime
 
 @Service
 class ConsentModule(private val consentRepo: ConsentRepository) {
-    fun getConsent(personnummer: String, hsaId: String) : Consent? {
-        return consentRepo.findConsentByPersonnummerAndVardgivareId(personnummer, hsaId)
+    fun getConsent(personnummer: String, vardenhetHsaId: String) : Consent? {
+        return consentRepo.findConsentByPersonnummerAndVardenhetId(personnummer, vardenhetHsaId)
     }
 
-    fun setConsent(personnummer: String, samtycke: Boolean, vardgivarId: String): ResultCodeEnum {
-        var consent = consentRepo.findConsentByPersonnummerAndVardgivareId(personnummer, vardgivarId)
+    fun setConsent(personnummer: String, samtycke: Boolean, vardenhetHsaId: String): ResultCodeEnum {
+        var consent = consentRepo.findConsentByPersonnummerAndVardenhetId(personnummer, vardenhetHsaId)
         if (samtycke) {
             if (consent == null) {
-                consent = Consent(personnummer, vardgivarId, LocalDateTime.now())
+                consent = Consent(personnummer, vardenhetHsaId, LocalDateTime.now())
             }
             // Update consent
             consent.skapatTid = LocalDateTime.now()
