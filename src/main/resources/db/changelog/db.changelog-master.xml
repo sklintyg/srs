@@ -347,11 +347,20 @@
     </changeSet>
 
     <changeSet id="18" author="ch">
+
+        <dropForeignKeyConstraint baseTableName="measure_priority" constraintName="priority_measure_fk" />
+
         <addAutoIncrement columnDataType="BIGINT"
                           columnName="id"
                           incrementBy="1"
                           startWith="1"
                           tableName="measure"/>
+
+        <addForeignKeyConstraint constraintName="priority_measure_fk"
+                                 baseTableName="measure_priority"
+                                 baseColumnNames="measure_id"
+                                 referencedTableName="measure"
+                                 referencedColumnNames="id"/>
     </changeSet>
 
 </databaseChangeLog>
