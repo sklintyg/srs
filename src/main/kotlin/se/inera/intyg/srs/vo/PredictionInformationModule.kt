@@ -88,7 +88,7 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
                     diagnosPrediktion.inkommandediagnos.code = historicProbability.incomingDiagnosis
 
                     val risksignal = Risksignal()
-                    risksignal.riskkategori = calculateRisk(diagnosis!!, historicProbability.probability!!)
+                    risksignal.riskkategori = calculateRisk(historicProbability.probability!!)
                     risksignal.beskrivning = PredictionInformationUtil.categoryDescriptions[risksignal.riskkategori]
                     diagnosPrediktion.risksignal = risksignal
 
@@ -137,7 +137,7 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
                 diagnosPrediktion.sannolikhetOvergransvarde = calculatedPrediction.prediction
                 diagnosPrediktion.diagnos = buildDiagnos(incomingDiagnosis.codeSystem, calculatedPrediction.diagnosis)
 
-                riskSignal.riskkategori = calculateRisk(diagnosis, calculatedPrediction.prediction!!)
+                riskSignal.riskkategori = calculateRisk(calculatedPrediction.prediction!!)
 
                 persistProbability(diagnosPrediktion, person.certificateId, extraParams)
 
@@ -242,12 +242,13 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
         }
     }
 
-    private fun calculateRisk(diagnosis: PredictionDiagnosis, prediction: Double): BigInteger =
-            when {
-                prediction <= (2 * diagnosis.prevalence) / (1 * diagnosis.prevalence + 1) -> BigInteger.valueOf(2)
-                prediction <= (4 * diagnosis.prevalence) / (3 * diagnosis.prevalence + 1) -> BigInteger.valueOf(3)
-                else -> BigInteger.valueOf(4)
-            }
+    fun calculateRisk(prediction: Double): BigInteger =
+        when {
+            prediction < 0.39 -> BigInteger.ONE
+            prediction in 0.39..0.62 -> BigInteger.valueOf(2)
+            prediction > 0.62 -> BigInteger.valueOf(3)
+            else -> BigInteger.ZERO
+        }
 }
 
 fun originalDiagnosis(incoming: Diagnosis): Diagnos {

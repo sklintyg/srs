@@ -340,4 +340,18 @@
                       columnDataType="VARCHAR(36)"/>
     </changeSet>
 
+    <changeSet id="17" author="ch">
+        <addColumn tableName="recommendation">
+            <column name="recommendation_title" type="VARCHAR(255)" />
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="18" author="ch">
+        <addAutoIncrement columnDataType="BIGINT"
+                          columnName="id"
+                          incrementBy="1"
+                          startWith="1"
+                          tableName="measure"/>
+    </changeSet>
+
 </databaseChangeLog>

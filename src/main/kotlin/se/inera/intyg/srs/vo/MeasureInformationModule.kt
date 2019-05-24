@@ -70,8 +70,13 @@ class MeasureInformationModule(val measureRepo: MeasureRepository) : Information
     }
 
     private fun getMeasuresForDiagnosis(diagnosisId: String): Pair<Measure?, Atgardsrekommendationstatus> {
+        // remove dots end spaces e.g. "f 438.a" -> "f438a"
         var currentId = cleanDiagnosisCode(diagnosisId)
+
+        // search based on the the 3 first characters
         val possibleMeasures = measureRepo.findByDiagnosisIdStartingWith(currentId.substring(0, MIN_ID_POSITIONS))
+
+        log.debug("Found possible measures for $currentId: {}", possibleMeasures)
         var status: Atgardsrekommendationstatus = Atgardsrekommendationstatus.OK
         while (currentId.length >= MIN_ID_POSITIONS) {
             val measure = measureForCode(possibleMeasures, currentId)

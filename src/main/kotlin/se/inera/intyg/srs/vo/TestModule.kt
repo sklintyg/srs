@@ -52,11 +52,11 @@ class TestModule(private val consentRepo: ConsentRepository,
     private val uniqueId = AtomicLong(1000)
 
     fun createMeasure(diagnosisId: String, diagnosisText: String, recommendations: List<Pair<String,String>>): Measure =
-            measureRepo.save(Measure(uniqueId.incrementAndGet(), diagnosisId, diagnosisText, "1.0", mapToMeasurePriorities(recommendations)))
+            measureRepo.save(Measure(diagnosisId, diagnosisText, "1.0", mapToMeasurePriorities(recommendations), uniqueId.incrementAndGet()))
 
     private fun mapToMeasurePriorities(recommendations: List<Pair<String, String>>) =
             recommendations
-                    .map { (recTitle, recText) -> Recommendation(uniqueId.incrementAndGet(), Atgardstyp.REK, recTitle, recText) }
+                    .map { (recTitle, recText) -> Recommendation(Atgardstyp.REK, recTitle, recText, uniqueId.incrementAndGet()) }
                     .map { rec -> recommendationRepo.save(rec) }
                     .mapIndexed { i, rec -> MeasurePriority(i + 1, rec) }
                     .map { priority -> priorityRepo.save(priority) }

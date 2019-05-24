@@ -10,6 +10,8 @@ build/
 out/
 *.iml
 logs/
+.RData
+.Rhistory
 
 # Test model files generated during IT
 *X99*.RData 

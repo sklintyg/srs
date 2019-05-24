@@ -32,59 +32,65 @@ class BootstrapData {
             prioRepo: MeasurePriorityRepository, internalStatisticRepo: InternalStatisticRepository, responseRepo: ResponseRepository,
             questionRepo: QuestionRepository, diagnosisRepo: DiagnosisRepository, predictPrioRepo: PredictionPriorityRepository) = CommandLineRunner {
 
-        val recommendation01 = recommendationRepo.save(Recommendation(1, REK, "Test: patientens övervägande", "Patienten bör överväga att kontakta företagshälsovård och arbetsgivare för att avgränsa eller byta arbetsuppgifter, eller t.o.m. byta yrke eller arbetsplats"))
-        val recommendation02 = recommendationRepo.save(Recommendation(2, REK, "Test: remiss behandling", "Remiss till behandling med psykoterapeutiska metoder"))
-        val recommendation03 = recommendationRepo.save(Recommendation(3, REK, "Test: Information till patienten", "Ge patienten lättillgänglig information om diagnosen och behandlingsmöjligheter. " +
-                "Förlängd text för att testa om det fungerar med den begränsning av antal rader som skall vara synliga från start i användargränssnittet. " +
-                "De rader som inte syns kan fällas ut genom att man klickar på visa mer. För att den funktionen skall aktiveras krävs att texten är lite längre än de andra texterna som ligger här."))
-        val recommendation04 = recommendationRepo.save(Recommendation(4, REK, "Test: Företagshälsovård","patienten bör överväga att kontakta företagshälsovård och arbetsgivare för att undersöka möjligheter till ergonomisk rådgivning och arbetsanpassning."))
-        val recommendation05 = recommendationRepo.save(Recommendation(5, REK, "Test: Kontaktförmedling","förmedling av kontakt med fysioterapeut"))
-        val recommendation06 = recommendationRepo.save(Recommendation(6, REK, "Test: Träning","FaR med konditions- och styrketräning"))
-        val recommendation07 = recommendationRepo.save(Recommendation(7, REK, "Test: KBT","remiss till behandling med KBT"))
-        val recommendation08 = recommendationRepo.save(Recommendation(8, REK, "Test: rTMS","remiss till behandling med rTMS"))
-        val recommendation09 = recommendationRepo.save(Recommendation(9, REK, "Test: Nätterapi","Remiss till Internetförmedlad KBT via Internetbaserat stöd och behandling"))
-        val recommendation10 = recommendationRepo.save(Recommendation(10, REK, "Test: SSRI","SSRI-läkemedel"))
-        val recommendation11 = recommendationRepo.save(Recommendation(11, REK, "Test: deltidssjukskrivning", "partiell sjukskrivning ".repeat(16)))
-        val recommendation12 = recommendationRepo.save(Recommendation(12, REK, "Test: Gymma","FaR med regelbunden styrketräning för att förebygger nya besvär"))
-        val recommendation13 = recommendationRepo.save(Recommendation(13, OBS, "Test: Obs","Observation1 <b>Observation1 med bold-tagg</b> Observation1 Observation1 Observation1 Observation1"))
-        val recommendation14 = recommendationRepo.save(Recommendation(14, OBS, "Test: Obs2","Observation2 <i>Observation2 med italics-tag</i> Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 "))
-        val recommendation15 = recommendationRepo.save(Recommendation(15, OBS, "Test: Grundlig utredning",
-                "Grundlig utredning av patientens hälsa är viktig för att bedöma svårighetsgraden på besvären, ställa diagnos och för att ge adekvat behandling. " +
-                "Det är viktigt att ställa frågor om vad patienten tror är orsak till besvären, hur sömnen fungerar, hur hemsituationen och arbetssituationen ser ut och hur länge patienten har haft problem. Genom att kartlägga detta noggrant säkerställs att patienten får adekvata behandlingsinsatser."))
-        val recommendation16 = recommendationRepo.save(Recommendation(16, OBS, "Test: Grundlig utredning två",
-                "Grundlig utredning av patientens hälsa är viktig för att bedöma svårighetsgraden på besvären, ställa diagnos och för att ge adekvat behandling. " +
-                        "Det är viktigt att ställa frågor om vad patienten tror är orsak till besvären, hur sömnen fungerar, hur hemsituationen och arbetssituationen ser ut och hur länge patienten har haft problem. Genom att kartlägga detta noggrant säkerställs att patienten får adekvata behandlingsinsatser."))
-
-        measureRepo.save(Measure(1, "F438A", "Utmattningssyndrom", "1.0",
-                listOf(prioRepo.save(MeasurePriority(1, recommendation01)),
-                        prioRepo.save(MeasurePriority(2, recommendation02)),
-                        prioRepo.save(MeasurePriority(3, recommendation03)),
-                        prioRepo.save(MeasurePriority(4, recommendation15)),
-                        prioRepo.save(MeasurePriority(5, recommendation16)))))
-
-        measureRepo.save(Measure(2, "M75", "Sjukdomstillstånd i skulderled", "1.0",
-                listOf(prioRepo.save(MeasurePriority(1, recommendation04)),
-                        prioRepo.save(MeasurePriority(2, recommendation05)))))
-
-        measureRepo.save(Measure(3, "F32", "Depressiv episod", "1.0",
-                listOf(prioRepo.save(MeasurePriority(1, recommendation06)),
-                        prioRepo.save(MeasurePriority(2, recommendation07)),
-                        prioRepo.save(MeasurePriority(3, recommendation08)))))
-
-        measureRepo.save(Measure(4, "F41", "Andra ångestsyndrom", "1.0",
-                listOf(prioRepo.save(MeasurePriority(1, recommendation07)),
-                        prioRepo.save(MeasurePriority(2, recommendation09)),
-                        prioRepo.save(MeasurePriority(3, recommendation10)))))
-
-        measureRepo.save(Measure(5, "M54", "Ryggvärk", "1.0",
-                listOf(prioRepo.save(MeasurePriority(1, recommendation11)),
-                        prioRepo.save(MeasurePriority(2, recommendation12)))))
-
-        measureRepo.save(Measure(6, "M79", "Reumatism, ospecificerad", "1.0",
-                listOf(prioRepo.save(MeasurePriority(1, recommendation11)),
-                        prioRepo.save(MeasurePriority(2, recommendation12)),
-                        prioRepo.save(MeasurePriority(1, recommendation13)),
-                        prioRepo.save(MeasurePriority(2, recommendation14)))))
+//        val recommendation01 = recommendationRepo.save(Recommendation(1, REK, "Test: patientens övervägande, testar att ha en ganska lång rubrik här för att se hur applikationen beter sig. Det är inte något som patienten egentligen behöver bry sig om men kan vara bra för användaren.", "Patienten bör överväga att kontakta företagshälsovård och arbetsgivare för att avgränsa eller byta arbetsuppgifter, eller t.o.m. byta yrke eller arbetsplats"))
+//        val recommendation02 = recommendationRepo.save(Recommendation(2, REK, "Test: remiss behandling", "Remiss till behandling med psykoterapeutiska metoder"))
+//        val recommendation03 = recommendationRepo.save(Recommendation(3, REK, "Test: Information till patienten", "Ge patienten lättillgänglig information om diagnosen och behandlingsmöjligheter. " +
+//                "Förlängd text för att testa om det fungerar med den begränsning av antal rader som skall vara synliga från start i användargränssnittet. " +
+//                "De rader som inte syns kan fällas ut genom att man klickar på visa mer. För att den funktionen skall aktiveras krävs att texten är lite längre än de andra texterna som ligger här."))
+//        val recommendation04 = recommendationRepo.save(Recommendation(4, REK, "Test: Företagshälsovård","patienten bör överväga att kontakta företagshälsovård och arbetsgivare för att undersöka möjligheter till ergonomisk rådgivning och arbetsanpassning."))
+//        val recommendation05 = recommendationRepo.save(Recommendation(5, REK, "Test: Kontaktförmedling","förmedling av kontakt med fysioterapeut"))
+//        val recommendation06 = recommendationRepo.save(Recommendation(6, REK, "Test: Träning","FaR med konditions- och styrketräning"))
+//        val recommendation07 = recommendationRepo.save(Recommendation(7, REK, "Test: KBT","remiss till behandling med KBT"))
+//        val recommendation08 = recommendationRepo.save(Recommendation(8, REK, "Test: rTMS","remiss till behandling med rTMS"))
+//        val recommendation09 = recommendationRepo.save(Recommendation(9, REK, "Test: Nätterapi","Remiss till Internetförmedlad KBT via Internetbaserat stöd och behandling"))
+//        val recommendation10 = recommendationRepo.save(Recommendation(10, REK, "Test: SSRI","SSRI-läkemedel"))
+//        val recommendation11 = recommendationRepo.save(Recommendation(11, REK, "Test: deltidssjukskrivning", "partiell sjukskrivning ".repeat(16)))
+//        val recommendation12 = recommendationRepo.save(Recommendation(12, REK, "Test: Gymma","FaR med regelbunden styrketräning för att förebygger nya besvär"))
+//        val recommendation13 = recommendationRepo.save(Recommendation(13, OBS, "Test: Obs","Observation1 <b>Observation1 med bold-tagg</b> Observation1 Observation1 Observation1 Observation1"))
+//        val recommendation14 = recommendationRepo.save(Recommendation(14, OBS, "Test: Obs2","Observation2 <i>Observation2 med italics-tag</i> Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 Observation2 "))
+//        val recommendation15 = recommendationRepo.save(Recommendation(15, OBS, "Test: Grundlig utredning",
+//                "Grundlig utredning av patientens hälsa är viktig för att bedöma svårighetsgraden på besvären, ställa diagnos och för att ge adekvat behandling. " +
+//                "Det är viktigt att ställa frågor om vad patienten tror är orsak till besvären, hur sömnen fungerar, hur hemsituationen och arbetssituationen ser ut och hur länge patienten har haft problem. Genom att kartlägga detta noggrant säkerställs att patienten får adekvata behandlingsinsatser."))
+//        val recommendation16 = recommendationRepo.save(Recommendation(16, OBS, "Test: Grundlig utredning två",
+//                "Grundlig utredning av patientens hälsa är viktig för att bedöma svårighetsgraden på besvären, ställa diagnos och för att ge adekvat behandling. " +
+//                        "Det är viktigt att ställa frågor om vad patienten tror är orsak till besvären, hur sömnen fungerar, hur hemsituationen och arbetssituationen ser ut och hur länge patienten har haft problem. Genom att kartlägga detta noggrant säkerställs att patienten får adekvata behandlingsinsatser."))
+//        val recommendation17 = recommendationRepo.save(Recommendation(17, REK, "Test: Ha de gött", "Ät gott, lev gott, må bra"))
+//        val recommendation18 = recommendationRepo.save(Recommendation(18, REK, "Test: Sov", "Patienten behöver sova"))
+//
+//
+//        measureRepo.save(Measure(1, "F438A", "Utmattningssyndrom", "1.0",
+//                listOf(prioRepo.save(MeasurePriority(1, recommendation01)),
+//                        prioRepo.save(MeasurePriority(2, recommendation02)),
+//                        prioRepo.save(MeasurePriority(3, recommendation03)),
+//                        prioRepo.save(MeasurePriority(4, recommendation15)),
+//                        prioRepo.save(MeasurePriority(5, recommendation16)),
+//                        prioRepo.save(MeasurePriority(5, recommendation17)),
+//                        prioRepo.save(MeasurePriority(5, recommendation18))
+//                )))
+//
+//        measureRepo.save(Measure(2, "M75", "Sjukdomstillstånd i skulderled", "1.0",
+//                listOf(prioRepo.save(MeasurePriority(1, recommendation04)),
+//                        prioRepo.save(MeasurePriority(2, recommendation05)))))
+//
+//        measureRepo.save(Measure(3, "F32", "Depressiv episod", "1.0",
+//                listOf(prioRepo.save(MeasurePriority(1, recommendation06)),
+//                        prioRepo.save(MeasurePriority(2, recommendation07)),
+//                        prioRepo.save(MeasurePriority(3, recommendation08)))))
+//
+//        measureRepo.save(Measure(4, "F41", "Andra ångestsyndrom", "1.0",
+//                listOf(prioRepo.save(MeasurePriority(1, recommendation07)),
+//                        prioRepo.save(MeasurePriority(2, recommendation09)),
+//                        prioRepo.save(MeasurePriority(3, recommendation10)))))
+//
+//        measureRepo.save(Measure(5, "M54", "Ryggvärk", "1.0",
+//                listOf(prioRepo.save(MeasurePriority(1, recommendation11)),
+//                        prioRepo.save(MeasurePriority(2, recommendation12)))))
+//
+//        measureRepo.save(Measure(6, "M79", "Reumatism, ospecificerad", "1.0",
+//                listOf(prioRepo.save(MeasurePriority(1, recommendation11)),
+//                        prioRepo.save(MeasurePriority(2, recommendation12)),
+//                        prioRepo.save(MeasurePriority(1, recommendation13)),
+//                        prioRepo.save(MeasurePriority(2, recommendation14)))))
 
         val question01 = questionRepo.save(PredictionQuestion(1,
                 "Sysselsättningsstatus",

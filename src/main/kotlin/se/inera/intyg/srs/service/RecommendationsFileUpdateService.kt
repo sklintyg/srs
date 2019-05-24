@@ -6,6 +6,7 @@ import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.xssf.usermodel.XSSFSheet
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.Profile
 import org.springframework.core.io.ResourceLoader
 import org.springframework.core.io.support.ResourcePatternUtils
 import org.springframework.stereotype.Component
@@ -42,80 +43,70 @@ import kotlin.math.roundToInt
  * Updates the recommendations from file
  */
 @Component
+@Profile("runtime")
 class RecommendationsFileUpdateService(@Value("\${recommendations.file}") val recommendationsFile: String,
                                        val recommendationsRepo: RecommendationRepository,
                                        val measureRepo: MeasureRepository,
+                                       val measurePriorityRepo: MeasurePriorityRepository,
                                        val prioRepo: MeasurePriorityRepository,
                                        val resourceLoader: ResourceLoader) {
 
     private val log = LogManager.getLogger()
 
     init {
-//        doUpdate()
+        doUpdate()
     }
 
     private final fun doUpdate() {
+        doRemoveOldRecommendations()
         doUpdateRecommendations()
+    }
+
+    private final fun doRemoveOldRecommendations() {
+        measurePriorityRepo.deleteAll()
+        recommendationsRepo.deleteAll()
+        measureRepo.deleteAll()
     }
 
     private final fun doUpdateRecommendations() {
         log.info("Performing update of recommendations from file $recommendationsFile")
-        val fileModified = LocalDateTime.now()
+        val importTimestamp = LocalDateTime.now()
         val excelFileStream = resourceLoader.getResource(recommendationsFile).inputStream
         XSSFWorkbook(excelFileStream).use { workbook ->
-            val sheet = workbook.getSheet("Per diagnos")
+            val sheet = workbook.getSheet("Kopplingstabell")
             var readMoreRows = true
-            var rowNumber = 1
+            var rowNumber = 2
             var unimportableRows = 0
             while (readMoreRows && unimportableRows < 4) {
                 val row = sheet.getRow(rowNumber) ?: break
                 val diagnosisId = row.getCell(0).stringCellValue.replace(".","")
-                val diagnosisText = row.getCell(1).stringCellValue
-                val recommendationId = row.getCell(2).numericCellValue.toLong()
-                val category = row.getCell(3).stringCellValue
-                val priority = row.getCell(4).numericCellValue.toInt()
-                val title = row.getCell(7).stringCellValue
-                val text = row.getCell(8).stringCellValue
+                if (!diagnosisId.isNullOrBlank()) {
+                    log.debug("cell 0, diagnosisId: $diagnosisId")
+                    log.debug("cell 1, recommendationId: {}", row.getCell(1))
+                    val recommendationId = row.getCell(1).numericCellValue.toLong()
 
-                if (!diagnosisId.isNullOrBlank() && !diagnosisText.isNullOrBlank() && !category.isNullOrBlank()) {
-                    log.debug("Found recommendation in import file {}, {}, {}, {}, {}, {}, {},",
-                            diagnosisId, diagnosisText, recommendationId, category, priority, text)
-
-//                    val existingMeasure = measureRepo.findByDiagnosisId(diagnosisId)
-//
-//                    val existingRecommendation = recommendationsRepo.(recommendationId)
-
-                    recommendationsRepo.findById(recommendationId).map { existingRecommendation ->
-                        recommendationsRepo.save(existingRecommendation.copy(
-                                recommendationTitle = title, recommendationText = text))
-                    }.orElse(
-                        recommendationsRepo.save(Recommendation(recommendationId, Atgardstyp.fromValue(category), title, text))
-                    )
-//
-//                    if (existingRecommendation.isPresent) {
-//                        existingRecommendation = recommendationsRepo.save(
-//                                existingRecommendation.get().copy(
-//                                        recommendationText = text
-//                                )
-//                        )
-//                    } else {
-//
-//                    }
-//                    existingRecommendation.ifPresent(())
-//
-//                    measureRepo.save(Measure(1, "F438A", "Utmattningssyndrom", "1.0",
-//                            listOf(prioRepo.save(MeasurePriority(1, recommendation01)),
-//
-//                    if (existingMeasure != null) {
-//                        // Update the measure
-////                        existingMeasure.diagnosisId = diagnosisId
-//                        existingMeasure.diagnosisText = diagnosisText
-////                        existingMeasure.version = existingMeasure.version+1
-//
-//                    } else {
-//                        val measure = Measure(diagnosisId = diagnosisId, diagnosisText = diagnosisText)
-//                    }
-////                    importedApartments.add(a)
+                    val category = row.getCell(2).stringCellValue
+                    val priority = row.getCell(3).numericCellValue.toInt()
+                    val diagnosisText = row.getCell(4).stringCellValue
+                    val title = row.getCell(5).stringCellValue
+                    val text = row.getCell(6).stringCellValue
+                    if (!diagnosisText.isNullOrBlank() && (!title.isNullOrBlank() || !text.isNullOrBlank()) && !category.isNullOrBlank()) {
+                        log.debug("Found recommendation in import file {}, {}, {}, {}, {}, {}, {},",
+                                diagnosisId, diagnosisText, recommendationId, category, priority, text)
+                        var measure = measureRepo.findByDiagnosisId(diagnosisId).orElse(null)
+                        if (measure == null) {
+                            log.debug("didnt find measure with diagnosisId $diagnosisId in db, saving new entity")
+                            measure = measureRepo.save(Measure(diagnosisId, diagnosisText, importTimestamp.toString()))
+                        }
+                        var recommendation = recommendationsRepo.findById(recommendationId).orElse(null)
+                        if (recommendation == null) {
+                            log.debug("didnt find recommendation with id $recommendationId in db, saving new entity")
+                            recommendation = recommendationsRepo.save(Recommendation(Atgardstyp.fromValue(category), title, text, recommendationId))
+                        }
+                        measurePriorityRepo.save(MeasurePriority(priority, recommendation, measure))
+                    } else {
+                        unimportableRows++
+                    }
                 } else {
                     unimportableRows++
                 }

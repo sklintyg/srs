@@ -6,6 +6,7 @@ import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.xssf.usermodel.XSSFSheet
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.Profile
 import org.springframework.core.io.ResourceLoader
 import org.springframework.core.io.support.ResourcePatternUtils
 import org.springframework.stereotype.Component
@@ -38,6 +39,7 @@ import kotlin.math.roundToInt
  * the update interval is also configurable via image.update.cron, both in application.properties.
  */
 @Component
+@Profile("runtime")
 class StatisticsFileUpdateService(@Value("\${statistics.image.location-pattern}") val imageLocationPattern: String,
                                   @Value("\${statistics.national.file}") val nationalStatisticsFile: String,
                                   @Value("\${base.url}") val baseUrl: String,
