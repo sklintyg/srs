@@ -142,8 +142,8 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
                 persistProbability(diagnosPrediktion, person.certificateId, extraParams)
 
             } else {
-                log.trace("Either no diagnosis or no calculated prediction, using risk category 1")
-                riskSignal.riskkategori = BigInteger.ONE
+                log.trace("Either no diagnosis or no calculated prediction, using risk category 0")
+                riskSignal.riskkategori = BigInteger.ZERO
             }
 
             riskSignal.beskrivning = PredictionInformationUtil.categoryDescriptions[riskSignal.riskkategori]

@@ -17,12 +17,14 @@ import java.time.format.DateTimeFormatter
 open class BaseIntegrationTest {
 
     @Before
-    fun clearAllTables() {
+    fun clearAllTablesAndSetupLogging() {
         restTemplate.delete("/measures")
         restTemplate.delete("/consents")
         restTemplate.delete("/statistics")
         restTemplate.delete("/diagnosis")
+        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails()
     }
+
 
     protected fun addConsent(personnummer: String, samtycke: Boolean, vardenhet: String): String =
         restTemplate.postForObject(
@@ -46,7 +48,7 @@ open class BaseIntegrationTest {
 
         return Consent(
                 jsonObject.getString("personnummer"),
-                jsonObject.getString("vardgivareId"),
+                jsonObject.getString("vardenhetId"),
                 time)
     }
 

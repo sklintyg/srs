@@ -1,5 +1,6 @@
 package se.inera.intyg.srs.vo
 
+import org.apache.logging.log4j.LogManager
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
 import org.springframework.core.io.Resource
@@ -49,16 +50,22 @@ class TestModule(private val consentRepo: ConsentRepository,
                  private val resourceLoader: ResourceLoader,
                  @Value("\${resources.folder}") private val resourcesFolder: String) {
 
+    private val log = LogManager.getLogger();
     private val uniqueId = AtomicLong(1000)
 
-    fun createMeasure(diagnosisId: String, diagnosisText: String, recommendations: List<Pair<String,String>>): Measure =
-            measureRepo.save(Measure(diagnosisId, diagnosisText, "1.0", mapToMeasurePriorities(recommendations), uniqueId.incrementAndGet()))
+    fun createMeasure(diagnosisId: String, diagnosisText: String, recommendations: List<Pair<String,String>>): Measure {
+        val m = measureRepo.save(Measure(diagnosisId, diagnosisText, "1.0"))
+        mapToMeasurePriorities(recommendations, m)
+        return m
+    }
 
-    private fun mapToMeasurePriorities(recommendations: List<Pair<String, String>>) =
+    private fun mapToMeasurePriorities(recommendations: List<Pair<String, String>>, m: Measure) =
             recommendations
                     .map { (recTitle, recText) -> Recommendation(Atgardstyp.REK, recTitle, recText, uniqueId.incrementAndGet()) }
                     .map { rec -> recommendationRepo.save(rec) }
-                    .mapIndexed { i, rec -> MeasurePriority(i + 1, rec) }
+                    .mapIndexed { i, rec ->
+                        MeasurePriority(i + 1, rec, m)
+                    }
                     .map { priority -> priorityRepo.save(priority) }
                     .toMutableList()
 

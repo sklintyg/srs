@@ -1,9 +1,11 @@
 package se.inera.intyg.srs.integrationtest.getsrsinformation
 
+import com.jayway.restassured.RestAssured
 import com.jayway.restassured.RestAssured.given
 import com.jayway.restassured.http.ContentType
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
+import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
 import org.slf4j.LoggerFactory
@@ -26,7 +28,7 @@ class PrediktionIT : BaseIntegrationTest() {
         response.assertThat()
                 .body("$PREDIKTION_ROOT.sannolikhet-overgransvarde", equalTo("0.44"))
                 .body("$PREDIKTION_ROOT.risksignal.riskkategori", equalTo("2"))
-                .body("$PREDIKTION_ROOT.risksignal.beskrivning", equalTo("Lätt förhöjd risk"))
+                .body("$PREDIKTION_ROOT.risksignal.beskrivning", equalTo("Hög risk"))
                 .body("$PREDIKTION_ROOT.diagnosprediktionstatus", equalTo("OK"))
     }
 
@@ -40,7 +42,7 @@ class PrediktionIT : BaseIntegrationTest() {
         val response = sendPrediktionRequest("getPrediktion_Model2Request_output_0.6.xml", "X99")
         response.assertThat()
                 .body("$PREDIKTION_ROOT.sannolikhet-overgransvarde", equalTo("0.06"))
-                .body("$PREDIKTION_ROOT.risksignal.riskkategori", equalTo("2"))
+                .body("$PREDIKTION_ROOT.risksignal.riskkategori", equalTo("1"))
     }
 
     @Test

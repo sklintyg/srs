@@ -43,7 +43,7 @@ import kotlin.math.roundToInt
  * Updates the recommendations from file
  */
 @Component
-@Profile("runtime")
+@Profile("!bootstrap")
 class RecommendationsFileUpdateService(@Value("\${recommendations.file}") val recommendationsFile: String,
                                        val recommendationsRepo: RecommendationRepository,
                                        val measureRepo: MeasureRepository,

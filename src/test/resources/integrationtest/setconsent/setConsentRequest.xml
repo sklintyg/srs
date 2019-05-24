@@ -2,10 +2,10 @@
    <soapenv:Header/>
    <soapenv:Body>
       <urn:SetConsentRequest>
-         <urn:vardgivare-id>
+         <urn:vardenhet-id>
             <urn1:root>1.2.752.129.2.1.4.1</urn1:root>
             <urn1:extension>abc</urn1:extension>
-         </urn:vardgivare-id>
+         </urn:vardenhet-id>
          <urn:person-id>191212121212</urn:person-id>
          <urn:samtycke>samtycke_placeholder</urn:samtycke>
       </urn:SetConsentRequest>
