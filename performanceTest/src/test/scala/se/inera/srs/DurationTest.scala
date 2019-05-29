@@ -27,8 +27,39 @@ class DurationTest extends Simulation {
   val getRisk = new GetRiskPredictionForCertificate
   val getSRSinfo = new GetSRSInformationForDiagnosis
   val getPredictionQuestions = new GetPredictionQuestions
+  val getSRSOne = new GetSRSInformationOne
+  val getSRSTwo = new GetSRSInformationTwo
+  val getSRSThree = new GetSRSInformationThree
 
   setUp(
+  
+    getSRSOne.scn.inject(rampUsers(10) over (60 seconds),
+      constantUsersPerSec(2) during(3 minutes) randomized,
+      rampUsersPerSec(1) to 4 during (10 minutes), // from easy to hard, scale up to at least two replicas
+      constantUsersPerSec(3) during(3 minutes) randomized, // keep on peak 1
+      constantUsersPerSec(1) during(10 minutes), // easy, scale down to one pod
+      rampUsersPerSec(1) to 3 during (10 minutes), // ramp up again
+      constantUsersPerSec(3) during(3 minutes) randomized // keep on peak 2
+    ).protocols(Conf.httpConf),
+
+    getSRSTwo.scn.inject(rampUsers(10) over (60 seconds),
+      constantUsersPerSec(2) during(3 minutes) randomized,
+      rampUsersPerSec(1) to 4 during (10 minutes), // from easy to hard, scale up to at least two replicas
+      constantUsersPerSec(3) during(3 minutes) randomized, // keep on peak 1
+      constantUsersPerSec(1) during(10 minutes), // easy, scale down to one pod
+      rampUsersPerSec(1) to 3 during (10 minutes), // ramp up again
+      constantUsersPerSec(3) during(3 minutes) randomized // keep on peak 2
+    ).protocols(Conf.httpConf),
+
+    getSRSThree.scn.inject(rampUsers(10) over (60 seconds),
+      constantUsersPerSec(2) during(3 minutes) randomized,
+      rampUsersPerSec(1) to 4 during (10 minutes), // from easy to hard, scale up to at least two replicas
+      constantUsersPerSec(3) during(3 minutes) randomized, // keep on peak 1
+      constantUsersPerSec(1) during(10 minutes), // easy, scale down to one pod
+      rampUsersPerSec(1) to 3 during (10 minutes), // ramp up again
+      constantUsersPerSec(3) during(3 minutes) randomized // keep on peak 2
+    ).protocols(Conf.httpConf),
+	
     getRisk.scn.inject(rampUsers(10) over (60 seconds),
       constantUsersPerSec(2) during(3 minutes) randomized,
       rampUsersPerSec(1) to 4 during (10 minutes), // from easy to hard, scale up to at least two replicas

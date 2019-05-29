@@ -1,0 +1,82 @@
+<!--
+  ~ Copyright (C) 2016 Inera AB (http://www.inera.se)
+  ~
+  ~ This file is part of sklintyg (https://github.com/sklintyg).
+  ~
+  ~ sklintyg is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ sklintyg is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:riv:clinicalprocess:healthcond:srs:GetSRSInformationResponder:2" xmlns:urn1="urn:riv:clinicalprocess:healthcond:certificate:types:2">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <urn:GetSRSInformationRequest>
+         <urn:version>1</urn:version>
+         <urn:konsument-id>
+            <urn1:root>1.2.752.129.2.1.4.1</urn1:root>
+            <urn1:extension>123456</urn1:extension>
+         </urn:konsument-id>
+         <urn:anvandare-id>
+            <urn1:root>1.2.752.129.2.1.4.1</urn1:root>
+            <urn1:extension>98765</urn1:extension>
+         </urn:anvandare-id>
+         <!--Optional:-->
+         <urn:prediktionsfaktorer>
+            <urn:postnummer>80000</urn:postnummer>
+            <!--1 or more repetitions:-->            
+            		<urn:fragasvar>
+            <urn:frageid-srs>SA_SyssStart_fct</urn:frageid-srs>
+            <urn:svarsid-srs>work</urn:svarsid-srs>
+		</urn:fragasvar>
+        <urn:fragasvar>
+            <urn:frageid-srs>SA_1_gross</urn:frageid-srs>
+            <urn:svarsid-srs>0</urn:svarsid-srs>
+		</urn:fragasvar>
+        <urn:fragasvar>
+            <urn:frageid-srs>SA_ExtentFirst</urn:frageid-srs>
+            <urn:svarsid-srs>1</urn:svarsid-srs>
+		</urn:fragasvar>
+        <urn:fragasvar>
+            <urn:frageid-srs>edu_cat_fct</urn:frageid-srs>
+            <urn:svarsid-srs>>12 years</urn:svarsid-srs>
+		</urn:fragasvar>
+        <urn:fragasvar>
+            <urn:frageid-srs>Visits_yearBefore_all_r1_median</urn:frageid-srs>
+            <urn:svarsid-srs>aboveMedian</urn:svarsid-srs>
+		</urn:fragasvar>
+        <urn:fragasvar>
+            <urn:frageid-srs>birth_cat_fct</urn:frageid-srs>
+            <urn:svarsid-srs>SW</urn:svarsid-srs>
+		</urn:fragasvar>
+         </urn:prediktionsfaktorer>
+         <urn:individer>
+            <urn:individ>
+               <urn:person-id>191212121212</urn:person-id>
+               <urn:diagnos>
+                  <urn1:code>F43.8A</urn1:code>
+                  <urn1:codeSystem>1.2.752.116.1.1.1.1.3</urn1:codeSystem>
+               </urn:diagnos>
+               <urn:intyg-id>
+                  <urn1:root>root</urn1:root>
+                  <urn1:extension>33333333333333</urn1:extension>
+               </urn:intyg-id>
+            </urn:individ>
+         </urn:individer>
+         <urn:utdatafilter>
+            <urn:prediktion>true</urn:prediktion>
+            <urn:atgardsrekommendation>false</urn:atgardsrekommendation>
+            <urn:statistik>false</urn:statistik>
+         </urn:utdatafilter>
+      </urn:GetSRSInformationRequest>
+   </soapenv:Body>
+</soapenv:Envelope>
