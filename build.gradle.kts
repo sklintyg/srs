@@ -8,13 +8,13 @@ plugins {
     war
     `maven-publish`
 
-    kotlin("jvm") version "1.3.21"
-    kotlin("plugin.spring") version "1.3.21"
-    kotlin("plugin.jpa") version "1.3.21"
+    kotlin("jvm") version "1.3.31"
+    kotlin("plugin.spring") version "1.3.31"
+    kotlin("plugin.jpa") version "1.3.31"
 
     id("io.spring.dependency-management") version "1.0.7.RELEASE"
     id("se.inera.intyg.plugin.common") version "1.0.62"
-    id("org.springframework.boot") version "2.1.3.RELEASE"
+    id("org.springframework.boot") version "2.1.5.RELEASE"
     id("org.ajoberstar.grgit") version "2.0.0"
     // FIXME: doesn't work anymore
     //id("org.jlleitschuh.gradle.ktlint") version "3.0.0"
@@ -92,7 +92,7 @@ dependencies {
     compile(kotlin("stdlib", kotlinVersion))
     compile(kotlin("reflect", kotlinVersion))
 
-    compile("se.inera.intyg.clinicalprocess.healthcond.srs:intyg-clinicalprocess-healthcond-srs-schemas:0.0.9")
+    compile("se.inera.intyg.clinicalprocess.healthcond.srs:intyg-clinicalprocess-healthcond-srs-schemas:0.0.10")
     compile("se.riv.itintegration.monitoring:itintegration-monitoring-schemas:1.0.0.4")
 
     // External dependencies

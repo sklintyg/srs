@@ -1,10 +1,8 @@
 package se.inera.intyg.srs.util
 
-import java.math.BigInteger
-
 object PredictionInformationUtil {
-    val categoryDescriptions = mapOf(BigInteger.ZERO to "Prediktion saknas.",
-            BigInteger.valueOf(1) to "Måttlig risk",
-            BigInteger.valueOf(2) to "Hög risk",
-            BigInteger.valueOf(3) to "Mycket hög risk")
+    val categoryDescriptions = mapOf(0 to "Prediktion saknas.",
+            1 to "Måttlig risk",
+            2 to "Hög risk",
+            3 to "Mycket hög risk")
 }

@@ -6,6 +6,7 @@ import org.hamcrest.Matchers
 import org.junit.Test
 import se.inera.intyg.srs.integrationtest.BaseIntegrationTest
 import se.inera.intyg.srs.integrationtest.util.whenever
+import java.math.BigInteger
 
 class StatistikIT : BaseIntegrationTest() {
 
@@ -14,7 +15,7 @@ class StatistikIT : BaseIntegrationTest() {
 
     @Test
     fun testExistingImageShouldBeReturnedAndNonExistingShouldYieldErrorMessage() {
-        addStatistics("M75", "http://i.imgur.com/q0qXPgz.gif")
+        addStatistics("M75", 30, 90, 100, 100)
 
         given()
             .contentType(ContentType.XML)
@@ -25,9 +26,10 @@ class StatistikIT : BaseIntegrationTest() {
             .statusCode(200)
             .assertThat()
                 .body("$SOAP_ROOT.resultCode", Matchers.equalTo("OK"))
-                .body("$STATISTIK_ROOT.statistikbild[0].statistikstatus", Matchers.equalTo("STATISTIK_SAKNAS"))
-                .body("$STATISTIK_ROOT.statistikbild[1].statistikstatus", Matchers.equalTo("OK"))
-                .body("$STATISTIK_ROOT.statistikbild[1].bildadress", Matchers.equalTo("http://i.imgur.com/q0qXPgz.gif"))
+                .body("$STATISTIK_ROOT.diagnosstatistik[0].statistikstatus", Matchers.equalTo("STATISTIK_SAKNAS"))
+                .body("$STATISTIK_ROOT.diagnosstatistik[1].statistikstatus", Matchers.equalTo("OK"))
+                .body("$STATISTIK_ROOT.diagnosstatistik[1].data[0].dagintervall_min", Matchers.equalTo("30"))
+                .body("$STATISTIK_ROOT.diagnosstatistik[1].data[0].individer", Matchers.equalTo("100"))
     }
 
     @Test
@@ -35,7 +37,7 @@ class StatistikIT : BaseIntegrationTest() {
         // Om M751 inte finns men M75 finns så ska statistik för denna returneras,
         // dessutom ska flaggan för högre diagnoskodnivå vara satt.
 
-        addStatistics("M75", "http://i.imgur.com/q0qXPgz.gif")
+        addStatistics("M75", 30, 90, 150, 150)
 
         given()
             .contentType(ContentType.XML)
@@ -46,7 +48,8 @@ class StatistikIT : BaseIntegrationTest() {
             .statusCode(200)
             .assertThat()
                 .body("$SOAP_ROOT.resultCode", Matchers.equalTo("OK"))
-                .body("$STATISTIK_ROOT.statistikbild[0].statistikstatus", Matchers.equalTo("DIAGNOSKOD_PA_HOGRE_NIVA"))
-                .body("$STATISTIK_ROOT.statistikbild[0].bildadress", Matchers.equalTo("http://i.imgur.com/q0qXPgz.gif"))
+                .body("$STATISTIK_ROOT.diagnosstatistik[0].statistikstatus", Matchers.equalTo("DIAGNOSKOD_PA_HOGRE_NIVA"))
+                .body("$STATISTIK_ROOT.diagnosstatistik[0].data[0].dagintervall_min", Matchers.equalTo("30"))
+                .body("$STATISTIK_ROOT.diagnosstatistik[0].data[0].individer", Matchers.equalTo("150"))
     }
 }

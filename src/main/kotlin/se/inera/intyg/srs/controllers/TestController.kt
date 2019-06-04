@@ -30,7 +30,11 @@ class TestController(val consentModule: ConsentModule,
 
     data class MeasureRequest(val diagnosId: String, val diagnosText: String, val rekommendationer: List<Pair<String,String>>)
 
-    data class StatisticsRequest(val diagnosId: String, val bildUrl: String)
+    data class StatisticsRequest(val diagnosId: String,
+                                 var dayIntervalMin: Int,
+                                 var dayIntervalMaxExcl: Int,
+                                 var intervalQuantity: Int,
+                                 var accumulatedQuantity: Int)
 
     data class PredictionQuestion(val question: String, val predictionId: String, val helpText: String, val responses: Collection<PredictionResponse>)
 
@@ -80,11 +84,12 @@ class TestController(val consentModule: ConsentModule,
 
     @DeleteMapping("/statistics")
     fun deleteAllStatistics() =
-            testModule.deleteAllStatistics()
+            testModule.deleteAllNationalStatistics()
 
     @PostMapping("/statistics")
     fun createStatistics(@RequestBody statistics: StatisticsRequest) =
-            testModule.createStatistic(statistics.diagnosId, statistics.bildUrl)
+            testModule.createNationalStatistic(statistics.diagnosId, statistics.dayIntervalMin, statistics.dayIntervalMaxExcl,
+                    statistics.intervalQuantity, statistics.accumulatedQuantity)
 
     @GetMapping("intyg/{id}")
     fun getIntyg(@PathVariable("id") intygsId: String) =

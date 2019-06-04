@@ -3,6 +3,7 @@ package se.inera.intyg.srs.service
 import org.apache.logging.log4j.LogManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import riv.clinicalprocess.healthcond.srs.types._1.EgenBedomningRiskType
 
 import se.inera.intyg.clinicalprocess.healthcond.srs.getriskpredictionforcertificate.v1.GetRiskPredictionForCertificateRequestType
 import se.inera.intyg.clinicalprocess.healthcond.srs.getriskpredictionforcertificate.v1.GetRiskPredictionForCertificateResponderInterface
@@ -11,7 +12,6 @@ import se.inera.intyg.clinicalprocess.healthcond.srs.getriskpredictionforcertifi
 import se.inera.intyg.clinicalprocess.healthcond.srs.getriskpredictionforcertificate.v1.Risksignal
 import se.inera.intyg.srs.persistence.ProbabilityRepository
 import se.inera.intyg.srs.util.PredictionInformationUtil
-import java.math.BigInteger
 
 @Service
 @org.apache.cxf.annotations.SchemaValidation(type = org.apache.cxf.annotations.SchemaValidation.SchemaValidationType.BOTH)
@@ -38,9 +38,11 @@ class GetRiskPredictionForCertificateResponderImpl(@Autowired val probabilityRep
                 val rp = RiskPrediktion()
                 rp.intygsId = probability.certificateId
                 val riskSignal = Risksignal()
-                riskSignal.riskkategori = BigInteger.valueOf(probability.riskCategory.toLong())
+                riskSignal.riskkategori = probability.riskCategory
                 riskSignal.beskrivning = PredictionInformationUtil.categoryDescriptions[riskSignal.riskkategori]
-
+                if (probability.ownOpinion != null) {
+                    riskSignal.lakarbedomningRisk = EgenBedomningRiskType.fromValue(probability.ownOpinion?.opinion)
+                }
                 rp.risksignal = riskSignal
                 response.riskPrediktioner.add(rp)
             }

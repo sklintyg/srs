@@ -93,7 +93,7 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
                 statisticModule.getInfo(persons).forEach { (person, statistic) ->
                     val underlag = response.bedomningsunderlag.find { it.personId == person.personId } ?: createUnderlag(person.personId, response)
                     val dtoStatistikList = Statistik()
-                    dtoStatistikList.statistikbild.addAll(statistic)
+                    dtoStatistikList.diagnosstatistik.addAll(statistic)
                     underlag.statistik = dtoStatistikList
                 }
             } catch (e: Exception) {

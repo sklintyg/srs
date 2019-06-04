@@ -26,6 +26,8 @@ import se.inera.intyg.srs.persistence.Recommendation
 import se.inera.intyg.srs.persistence.RecommendationRepository
 import se.inera.intyg.srs.persistence.ResponseRepository
 import se.inera.intyg.srs.persistence.InternalStatisticRepository
+import se.inera.intyg.srs.persistence.NationalStatistic
+import se.inera.intyg.srs.persistence.NationalStatisticRepository
 import se.inera.intyg.srs.service.ModelFileUpdateService
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -40,7 +42,8 @@ class TestModule(private val consentRepo: ConsentRepository,
                  private val measureRepo: MeasureRepository,
                  private val priorityRepo: MeasurePriorityRepository,
                  private val recommendationRepo: RecommendationRepository,
-                 private val statisticsRepo: InternalStatisticRepository,
+//                 private val statisticsRepo: InternalStatisticRepository,
+                 private val nationalStatisticRepo: NationalStatisticRepository,
                  private val diagnosisRepo: DiagnosisRepository,
                  private val predictPrioRepo: PredictionPriorityRepository,
                  private val questionRepo: QuestionRepository,
@@ -69,8 +72,14 @@ class TestModule(private val consentRepo: ConsentRepository,
                     .map { priority -> priorityRepo.save(priority) }
                     .toMutableList()
 
-    fun createStatistic(diagnosisId: String, pictureUrl: String): InternalStatistic =
-            statisticsRepo.save(InternalStatistic(diagnosisId, pictureUrl, LocalDateTime.now(), uniqueId.incrementAndGet()))
+//    fun createStatistic(diagnosisId: String, pictureUrl: String): InternalStatistic =
+//            statisticsRepo.save(InternalStatistic(diagnosisId, pictureUrl, LocalDateTime.now(), uniqueId.incrementAndGet()))
+
+    fun createNationalStatistic(diagnosisId: String, dayIntervalMin: Int,
+                                dayIntervalMaxExcl: Int, intervalQuantity: Int,
+                                accumulatedQuantity: Int): NationalStatistic =
+            nationalStatisticRepo.save(NationalStatistic(diagnosisId, dayIntervalMin, dayIntervalMaxExcl,
+                                        intervalQuantity, accumulatedQuantity, LocalDateTime.now()))
 
     fun createPredictionQuestion(request: TestController.DiagnosisRequest): PredictionDiagnosis =
         diagnosisRepo.save(PredictionDiagnosis(uniqueId.incrementAndGet(),
@@ -103,7 +112,9 @@ class TestModule(private val consentRepo: ConsentRepository,
 
     fun deleteAllPriorities() = priorityRepo.deleteAll()
 
-    fun deleteAllStatistics() = statisticsRepo.deleteAll()
+//    fun deleteAllStatistics() = statisticsRepo.deleteAll()
+
+    fun deleteAllNationalStatistics() = nationalStatisticRepo.deleteAll()
 
     fun deleteAllIntyg() = probabilityRepo.deleteAll()
 

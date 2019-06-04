@@ -52,10 +52,12 @@ open class BaseIntegrationTest {
                 time)
     }
 
-    protected fun addStatistics(diagnosId: String, bildUrl: String): String =
+    protected fun addStatistics(diagnosId: String,
+                                dayIntervalMin: Int, dayIntervalMaxExcl: Int,
+                                intervalQuantity: Int, accumulatedQuantity: Int): String =
         restTemplate.postForObject(
             "/statistics",
-            TestController.StatisticsRequest(diagnosId, bildUrl),
+            TestController.StatisticsRequest(diagnosId, dayIntervalMin, dayIntervalMaxExcl, intervalQuantity, accumulatedQuantity),
             String::class.java)
 
     protected fun addDiagnosis(request: TestController.DiagnosisRequest): PredictionDiagnosis =

@@ -33,7 +33,7 @@ class GetSRSInformationForDiagnosisResponderImpl(val measureModule: MeasureInfor
         // Statistik
         try {
             val statistikDto = Statistik()
-            statistikDto.statistikbild.add(statisticModule.getInfoForDiagnosis(request.diagnos.code))
+            statistikDto.diagnosstatistik.add(statisticModule.getInfoForDiagnosis(request.diagnos.code))
             response.statistik = statistikDto
         } catch (e: Exception) {
             log.error("Statistics could not be produced for diagnosis ${request.diagnos.code}. Please check for error.", e)

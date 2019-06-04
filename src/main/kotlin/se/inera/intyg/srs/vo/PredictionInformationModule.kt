@@ -7,7 +7,7 @@ import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Diagno
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.FragaSvar
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Prediktionsfaktorer
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Risksignal
-import se.inera.intyg.srs.persistence.Consent
+import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.EgenBedomningRiskType
 import se.inera.intyg.srs.persistence.ConsentRepository
 import se.inera.intyg.srs.persistence.DiagnosisRepository
 import se.inera.intyg.srs.persistence.PatientAnswer
@@ -24,7 +24,6 @@ import se.inera.intyg.srs.service.monitoring.logPrediction
 import se.inera.intyg.srs.util.PredictionInformationUtil
 import se.inera.intyg.srs.util.getModelForDiagnosis
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.Diagnos
-import se.riv.clinicalprocess.healthcond.certificate.types.v2.EgenBedomningRiskType
 import java.math.BigInteger
 import java.time.LocalDateTime
 
@@ -143,13 +142,13 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
 
             } else {
                 log.trace("Either no diagnosis or no calculated prediction, using risk category 0")
-                riskSignal.riskkategori = BigInteger.ZERO
+                riskSignal.riskkategori = 0
             }
 
             riskSignal.beskrivning = PredictionInformationUtil.categoryDescriptions[riskSignal.riskkategori]
 
             logPrediction(extraParams, diagnosPrediktion.diagnos?.code ?: "", diagnosis?.prevalence?.toString() ?: "", person.sex.name,
-                    person.ageCategory, calculatedPrediction?.prediction?.toString() ?: "", riskSignal.riskkategori.intValueExact(),
+                    person.ageCategory, calculatedPrediction?.prediction?.toString() ?: "", riskSignal.riskkategori,
                     calculatedPrediction?.status?.toString() ?: "", person.certificateId, careUnitHsaId)
 
             outgoingPrediction.add(diagnosPrediktion)
@@ -214,7 +213,7 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
         log.info("Persisting probability for certificateId: $certificateId")
         var probability = Probability(certificateId,
                 diagnosPrediction.sannolikhetOvergransvarde,
-                diagnosPrediction.risksignal.riskkategori.intValueExact(),
+                diagnosPrediction.risksignal.riskkategori,
                 diagnosPrediction.inkommandediagnos.codeSystem,
                 diagnosPrediction.inkommandediagnos.code,
                 diagnosPrediction.diagnos.codeSystem,
@@ -242,12 +241,12 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
         }
     }
 
-    fun calculateRisk(prediction: Double): BigInteger =
+    fun calculateRisk(prediction: Double): Int =
         when {
-            prediction < 0.39 -> BigInteger.ONE
-            prediction in 0.39..0.62 -> BigInteger.valueOf(2)
-            prediction > 0.62 -> BigInteger.valueOf(3)
-            else -> BigInteger.ZERO
+            prediction < 0.39 -> 1
+            (prediction >= 0.39 && prediction <= 0.62) -> 2
+            prediction > 0.62 -> 3
+            else -> 0
         }
 }
 
