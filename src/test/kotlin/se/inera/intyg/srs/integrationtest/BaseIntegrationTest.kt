@@ -91,7 +91,7 @@ open class BaseIntegrationTest {
 
     companion object SetUp {
 
-        private val baseURI = System.getProperty("integration.tests.baseUrl") ?: "http://localhost:8081"
+        private val baseURI = System.getProperty("integration.tests.baseUrl") ?: "http://localhost:8080"
 
         val restTemplate: RestTemplate = RestTemplateBuilder().rootUri(baseURI).build()
 

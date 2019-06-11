@@ -67,7 +67,7 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
             val diagnosis = diagnosisRepo.getModelForDiagnosis(incomingDiagnosis.code)
 
             if (diagnosis != null) {
-                diagnosPrediktion.diagnos = buildDiagnos(incomingDiagnosis.codeSystem, incomingDiagnosis.code)
+                diagnosPrediktion.diagnos = buildDiagnos(diagnosis.diagnosisId)
                 diagnosPrediktion.prevalens = diagnosis.prevalence
             }
 
@@ -81,7 +81,7 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
                 if (historicProbability != null) {
                     log.trace("Found historic entry")
                     diagnosPrediktion.sannolikhetOvergransvarde = historicProbability.probability
-                    diagnosPrediktion.diagnos = buildDiagnos(historicProbability.diagnosisCodeSystem, historicProbability.diagnosis)
+                    diagnosPrediktion.diagnos = buildDiagnos(historicProbability.diagnosis, historicProbability.diagnosisCodeSystem)
                     diagnosPrediktion.diagnosprediktionstatus = Diagnosprediktionstatus.valueOf(historicProbability.predictionStatus)
                     diagnosPrediktion.inkommandediagnos.codeSystem = historicProbability.incomingDiagnosisCodeSystem
                     diagnosPrediktion.inkommandediagnos.code = historicProbability.incomingDiagnosis
@@ -134,7 +134,7 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
                             calculatedPrediction.status == Diagnosprediktionstatus.DIAGNOSKOD_PA_HOGRE_NIVA)) {
                 log.trace("Have diagnosis and a calculated prediction")
                 diagnosPrediktion.sannolikhetOvergransvarde = calculatedPrediction.prediction
-                diagnosPrediktion.diagnos = buildDiagnos(incomingDiagnosis.codeSystem, calculatedPrediction.diagnosis)
+                diagnosPrediktion.diagnos = buildDiagnos(calculatedPrediction.diagnosis)
 
                 riskSignal.riskkategori = calculateRisk(calculatedPrediction.prediction!!)
 
@@ -156,7 +156,7 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
         return outgoingPrediction
     }
 
-    private fun buildDiagnos(codeSystem: String, code: String): Diagnos {
+    private fun buildDiagnos(code: String, codeSystem: String = "1.2.752.116.1.1.1.1.3"): Diagnos {
         val diagnos = Diagnos()
         diagnos.codeSystem = codeSystem
         diagnos.code = code

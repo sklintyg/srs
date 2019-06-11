@@ -62,7 +62,6 @@ class StatisticsFileUpdateService(@Value("\${statistics.image.location-pattern}"
 
     private final fun doUpdate() {
         doUpdateNationalStatistics()
-        doUpdateImages()
     }
 
     private final fun logDataRow(currentRow: Row) {
@@ -162,6 +161,7 @@ class StatisticsFileUpdateService(@Value("\${statistics.image.location-pattern}"
         }
     }
 
+    // TODO: Remove since we no longer use static images
     private final fun doUpdateImages() {
         log.info("Performing image update... using imageLocationPattern: $imageLocationPattern")
 

@@ -43,8 +43,8 @@ import kotlin.math.roundToInt
  * Updates the recommendations from file
  */
 @Component
-@Profile("!bootstrap")
 class RecommendationsFileUpdateService(@Value("\${recommendations.file}") val recommendationsFile: String,
+                                       @Value("\${recommendations.importMaxLines: 1000}") val importMaxLines: Int,
                                        val recommendationsRepo: RecommendationRepository,
                                        val measureRepo: MeasureRepository,
                                        val measurePriorityRepo: MeasurePriorityRepository,
@@ -83,13 +83,17 @@ class RecommendationsFileUpdateService(@Value("\${recommendations.file}") val re
                 if (!diagnosisId.isNullOrBlank()) {
                     log.debug("cell 0, diagnosisId: $diagnosisId")
                     log.debug("cell 1, recommendationId: {}", row.getCell(1))
-                    val recommendationId = row.getCell(1).numericCellValue.toLong()
-
                     val category = row.getCell(2).stringCellValue
+                    var recommendationId = when (category) {
+                        "FRL" -> row.getCell(1).stringCellValue.replace("F","9999").toLong()
+                        "REH" -> row.getCell(1).stringCellValue.replace("R","8888").toLong()
+                        else -> row.getCell(1).numericCellValue.toLong()
+                    }
                     val priority = row.getCell(3).numericCellValue.toInt()
                     val diagnosisText = row.getCell(4).stringCellValue
                     val title = row.getCell(5).stringCellValue
                     val text = row.getCell(6).stringCellValue
+
                     if (!diagnosisText.isNullOrBlank() && (!title.isNullOrBlank() || !text.isNullOrBlank()) && !category.isNullOrBlank()) {
                         log.debug("Found recommendation in import file {}, {}, {}, {}, {}, {}, {},",
                                 diagnosisId, diagnosisText, recommendationId, category, priority, text)
@@ -111,7 +115,7 @@ class RecommendationsFileUpdateService(@Value("\${recommendations.file}") val re
                     unimportableRows++
                 }
                 rowNumber++
-                if (rowNumber > 500) {
+                if (rowNumber > importMaxLines) {
                     readMoreRows = false
                 }
             }

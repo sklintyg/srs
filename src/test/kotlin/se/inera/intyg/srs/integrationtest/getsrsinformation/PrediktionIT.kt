@@ -28,7 +28,7 @@ class PrediktionIT : BaseIntegrationTest() {
         response.assertThat()
                 .body("$PREDIKTION_ROOT.sannolikhet-overgransvarde", equalTo("0.44"))
                 .body("$PREDIKTION_ROOT.risksignal.riskkategori", equalTo("2"))
-                .body("$PREDIKTION_ROOT.risksignal.beskrivning", equalTo("Hög risk"))
+                .body("$PREDIKTION_ROOT.risksignal.beskrivning", equalTo("Hög risk att sjukfallet varar i mer än 90 dagar"))
                 .body("$PREDIKTION_ROOT.diagnosprediktionstatus", equalTo("OK"))
     }
 
