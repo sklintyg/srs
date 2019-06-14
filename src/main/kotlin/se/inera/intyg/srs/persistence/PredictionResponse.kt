@@ -2,17 +2,19 @@ package se.inera.intyg.srs.persistence
 
 import javax.persistence.Entity
 import javax.persistence.FetchType
+import javax.persistence.GeneratedValue
+import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
 
 @Entity
-class PredictionResponse(@Id
-                         val id: Long,
-                         val answer: String,
+class PredictionResponse(val answer: String,
                          val predictionId: String,
                          val isDefault: Boolean,
-                         val priority: Int
+                         val priority: Int,
+                         @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+                         val id: Long = -1
                         ) {
     @ManyToOne
     lateinit var question: PredictionQuestion

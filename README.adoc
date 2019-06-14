@@ -73,17 +73,15 @@ Now that the dependencies are taken care of, we build the application as usual:
 
 To run the application run the following, substituting your values for R_HOME and java.library.path:
 
- R_HOME=/Library/Frameworks/R.framework/Resources java -Djava.library.path="/Library/Frameworks/R.framework/Resources/library/rJava/jri" -Dresources.folder="[SRS-project]/src/main/resources" -jar build/libs/*.war --spring.profiles.active=runtime,it,bootstrap,scheduledUpdate
+ R_HOME=/Library/Frameworks/R.framework/Resources java -Djava.library.path="/Library/Frameworks/R.framework/Resources/library/rJava/jri" -Dresources.folder="[SRS-project]/src/main/resources" -jar build/libs/*.war --spring.profiles.active=runtime,it
 
 Replace [SRS-project] with your local SRS-project directory
 The 'runtime' profile is necessary to make sure that a real connection to the R engine is created.
-The 'scheduledUpdate' profile is necessary to update statistics files. Only one node should be responsible for this.
 The 'it' profile is needed to enable the testability api (used in restAssured integration tests).
-The 'bootstrap' profile ensures the application is bootstrapped with example data at startup.
 
 OS X example:
 ----
-R_HOME=/usr/local/lib/R java -Djava.library.path="/usr/local/lib/R/3.5/site-library/rJava/jri" -Dresources.folder="/Users/eriklupander/intyg/SRS/src/main/resources" -jar build/libs/*.war --spring.profiles.active=runtime,it,bootstrap,scheduledUpdate
+R_HOME=/usr/local/lib/R java -Djava.library.path="/usr/local/lib/R/3.5/site-library/rJava/jri" -Dresources.folder="/Users/eriklupander/intyg/SRS/src/main/resources" -jar build/libs/*.war --spring.profiles.active=runtime,it
 ----
 
 
@@ -122,7 +120,7 @@ install.packages("pch")
 quit()
 n
 cd /srs
-R_HOME=/usr/lib/R java -Djava.library.path="/usr/local/lib/R/site-library/rJava/jri" -Dresources.folder="/srs/src/main/resources" -jar build/libs/*.war --spring.profiles.active=runtime,it,bootstrap,scheduledUpdate
+R_HOME=/usr/lib/R java -Djava.library.path="/usr/local/lib/R/site-library/rJava/jri" -Dresources.folder="/srs/src/main/resources" -jar build/libs/*.war --spring.profiles.active=runtime,it
 ----
 
 == H2

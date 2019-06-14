@@ -7,7 +7,6 @@ import se.inera.intyg.clinicalprocess.healthcond.srs.setownopinion.v1.SetOwnOpin
 import se.inera.intyg.clinicalprocess.healthcond.srs.setownopinion.v1.SetOwnOpinionResponseType
 import se.inera.intyg.srs.persistence.ProbabilityRepository
 import se.inera.intyg.srs.vo.OwnOpinionModule
-import java.lang.RuntimeException
 
 @Service
 class SetOwnOpinionResponderImpl(val ownOpinionModule: OwnOpinionModule,

@@ -35,7 +35,7 @@ WORKDIR $CATALINA_HOME/bin
 #RUN chmod +x $CATALINA_HOME/wait
 
 RUN cd $CATALINA_HOME/webapps/webcert && ./gradlew appRun
-#CMD $CATALINA_HOME/wait && java -Dloader.path=WEB-INF/lib-provided,WEB-INF/lib,WEB-INF/classes -jar $CATALINA_HOME/webapps/web/build/libs/*.war --spring.profiles.active="runtime,it,bootstrap,scheduledUpdate"
+#CMD $CATALINA_HOME/wait && java -Dloader.path=WEB-INF/lib-provided,WEB-INF/lib,WEB-INF/classes -jar $CATALINA_HOME/webapps/web/build/libs/*.war --spring.profiles.active="runtime,it"
 
 
 EXPOSE 9088

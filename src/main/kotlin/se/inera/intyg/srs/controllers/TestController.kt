@@ -14,7 +14,6 @@ import se.inera.intyg.srs.service.ModelFileUpdateService
 import se.inera.intyg.srs.vo.ConsentModule
 import se.inera.intyg.srs.vo.MeasureInformationModule
 import se.inera.intyg.srs.vo.TestModule
-import java.util.concurrent.CompletableFuture
 
 @RestController
 @Profile("it")

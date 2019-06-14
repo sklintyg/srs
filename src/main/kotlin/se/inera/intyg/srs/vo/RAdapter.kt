@@ -98,8 +98,8 @@ class RAdapter(val modelService: ModelFileUpdateService, @Value("\${r.log.file.p
                 append("Sex = '${person.sex.predictionString}', ")
                 append("age_cat_fct = '${person.ageCategory}', ")
                 append("Region = '" + extraParams[LOCATION_KEY]?.get(REGION_KEY) + "', ")
-                append(extraParams[QUESTIONS_AND_ANSWERS_KEY]?.entries?.joinToString(", ", transform = { (key, value) -> "$key = '$value'" }))
-                append(")")
+                append(extraParams[QUESTIONS_AND_ANSWERS_KEY]?.entries?.joinToString(", ", transform = { (key, value) -> "'$key' = '$value'" }))
+                append(", check.names=F)")
             }.toString()
             log.trace("Evaluating rDataFrame: $rDataFrame")
 

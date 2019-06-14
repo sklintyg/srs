@@ -5,9 +5,7 @@ import com.jayway.restassured.http.ContentType
 import org.hamcrest.Matchers.equalTo
 import org.junit.Ignore
 import org.junit.Test
-import se.inera.intyg.srs.controllers.TestController.DiagnosisRequest
-import se.inera.intyg.srs.controllers.TestController.PredictionQuestion
-import se.inera.intyg.srs.controllers.TestController.PredictionResponse
+import se.inera.intyg.srs.controllers.TestController.*
 import se.inera.intyg.srs.integrationtest.BaseIntegrationTest
 import se.inera.intyg.srs.integrationtest.util.whenever
 

@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service
 import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Diagnosstatistik
 import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Statistikdata
 import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Statistikstatus
-import se.inera.intyg.srs.persistence.InternalStatisticRepository
 import se.inera.intyg.srs.persistence.NationalStatisticRepository
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.Diagnos
 import java.math.BigInteger
@@ -13,7 +12,7 @@ import java.util.Locale
 import kotlin.collections.HashMap
 
 @Service
-class StatisticModule(val internalStatisticRepo: InternalStatisticRepository, val nationalStatisticRepo: NationalStatisticRepository) : InformationModule<Diagnosstatistik> {
+class StatisticModule(val nationalStatisticRepo: NationalStatisticRepository) : InformationModule<Diagnosstatistik> {
 
     private val MIN_ID_POSITIONS = 3
 

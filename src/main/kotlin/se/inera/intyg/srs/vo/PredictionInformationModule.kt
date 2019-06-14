@@ -24,7 +24,6 @@ import se.inera.intyg.srs.service.monitoring.logPrediction
 import se.inera.intyg.srs.util.PredictionInformationUtil
 import se.inera.intyg.srs.util.getModelForDiagnosis
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.Diagnos
-import java.math.BigInteger
 import java.time.LocalDateTime
 
 @Service
@@ -163,17 +162,10 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
         return diagnos
     }
 
-//    private fun getHistoricPrediction(person: Person): Prediction {
-//        val historicProbability = probabilityRepo.findFirstByCertificateIdOrderByTimestampDesc(person.certificateId)
-//        val prediction = Prediction(historicProbability.diagnosis, historicProbability.)
-//        diagnosPrediktion.diagnosprediktionstatus = historicProbability.
-//    }
-
     private fun isCorrectPredictionParamsAgainstDiagnosis(diagnosis: PredictionDiagnosis, extraParams: Map<String, Map<String,
             String>>): Boolean {
         val inc = HashMap<String, String>()
         extraParams[QUESTIONS_AND_ANSWERS_KEY]?.map { inc.put(it.key, it.value) }
-//        extraParams.filter { it.key != "Region" }.map { inc.put(it.key, it.value) }
 
         val req = HashMap<String, List<String>>()
 
@@ -223,15 +215,16 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
                 extraParams[LOCATION_KEY]?.get(REGION_KEY),
                 extraParams[LOCATION_KEY]?.get(ZIP_CODE_KEY))
         probability = probabilityRepo.save(probability)
-        log.info("extraParams: $extraParams")
+        log.trace("extraParams: $extraParams")
         extraParams[QUESTIONS_AND_ANSWERS_KEY]?.forEach { q, r ->
-            log.info("question: $q, response: $r")
+            log.trace("question: $q, response: $r")
             val predictionResponse = responseRepo.findPredictionResponseByQuestionAndResponse(q, r)
-            log.info("Found predictionResponse $predictionResponse")
+            log.debug("Found predictionResponse $predictionResponse")
             if (predictionResponse != null) {
                 var patientAnswer = patientAnswerRepo.findByProbabilityAndPredictionResponse(probability, predictionResponse)
                 if (patientAnswer == null) {
-                    log.info("Creating PatientAnswer probability.id: ${probability.id}, predictionResponse(question=response): ${predictionResponse.question.predictionId}=${predictionResponse.predictionId} ")
+                    log.debug("Creating PatientAnswer probability.id: ${probability.id}, " +
+                            "predictionResponse(question=response): ${predictionResponse.question.predictionId}=${predictionResponse.predictionId} ")
                     patientAnswer = PatientAnswer()
                 }
                 patientAnswer.probability = probability

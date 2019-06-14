@@ -10,11 +10,12 @@ import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Atgardstyp
 import se.inera.intyg.srs.controllers.TestController
 import se.inera.intyg.srs.persistence.ConsentRepository
 import se.inera.intyg.srs.persistence.DiagnosisRepository
-import se.inera.intyg.srs.persistence.InternalStatistic
 import se.inera.intyg.srs.persistence.Measure
 import se.inera.intyg.srs.persistence.MeasurePriority
 import se.inera.intyg.srs.persistence.MeasurePriorityRepository
 import se.inera.intyg.srs.persistence.MeasureRepository
+import se.inera.intyg.srs.persistence.NationalStatistic
+import se.inera.intyg.srs.persistence.NationalStatisticRepository
 import se.inera.intyg.srs.persistence.PredictionDiagnosis
 import se.inera.intyg.srs.persistence.PredictionPriority
 import se.inera.intyg.srs.persistence.PredictionPriorityRepository
@@ -25,13 +26,7 @@ import se.inera.intyg.srs.persistence.QuestionRepository
 import se.inera.intyg.srs.persistence.Recommendation
 import se.inera.intyg.srs.persistence.RecommendationRepository
 import se.inera.intyg.srs.persistence.ResponseRepository
-import se.inera.intyg.srs.persistence.InternalStatisticRepository
-import se.inera.intyg.srs.persistence.NationalStatistic
-import se.inera.intyg.srs.persistence.NationalStatisticRepository
 import se.inera.intyg.srs.service.ModelFileUpdateService
-import java.nio.file.Files
-import java.nio.file.Paths
-import java.nio.file.StandardCopyOption
 import java.time.LocalDateTime
 import java.util.concurrent.atomic.AtomicLong
 
@@ -42,7 +37,6 @@ class TestModule(private val consentRepo: ConsentRepository,
                  private val measureRepo: MeasureRepository,
                  private val priorityRepo: MeasurePriorityRepository,
                  private val recommendationRepo: RecommendationRepository,
-//                 private val statisticsRepo: InternalStatisticRepository,
                  private val nationalStatisticRepo: NationalStatisticRepository,
                  private val diagnosisRepo: DiagnosisRepository,
                  private val predictPrioRepo: PredictionPriorityRepository,
@@ -72,9 +66,6 @@ class TestModule(private val consentRepo: ConsentRepository,
                     .map { priority -> priorityRepo.save(priority) }
                     .toMutableList()
 
-//    fun createStatistic(diagnosisId: String, pictureUrl: String): InternalStatistic =
-//            statisticsRepo.save(InternalStatistic(diagnosisId, pictureUrl, LocalDateTime.now(), uniqueId.incrementAndGet()))
-
     fun createNationalStatistic(diagnosisId: String, dayIntervalMin: Int,
                                 dayIntervalMaxExcl: Int, intervalQuantity: Int,
                                 accumulatedQuantity: Int): NationalStatistic =
@@ -82,24 +73,23 @@ class TestModule(private val consentRepo: ConsentRepository,
                                         intervalQuantity, accumulatedQuantity, LocalDateTime.now()))
 
     fun createPredictionQuestion(request: TestController.DiagnosisRequest): PredictionDiagnosis =
-        diagnosisRepo.save(PredictionDiagnosis(uniqueId.incrementAndGet(),
-                request.diagnosisId, request.prevalence, mapToPredictions(request.questions)))
+        diagnosisRepo.save(PredictionDiagnosis(request.diagnosisId, request.prevalence, mapToPredictions(request.questions)))
 
     private fun mapToPredictions(questions: List<TestController.PredictionQuestion>): List<PredictionPriority> =
         questions
                 .mapIndexed { i, question ->
-                    PredictionPriority(i + 1, mapToQuestion(question), uniqueId.incrementAndGet()) }
+                    PredictionPriority(i + 1, mapToQuestion(question)) }
                 .map { predictPrioRepo.save(it) }
 
     private fun mapToQuestion(question: TestController.PredictionQuestion): PredictionQuestion =
             questionRepo.save(PredictionQuestion(
-                    uniqueId.incrementAndGet(), question.question, question.helpText,
+                    question.question, question.helpText,
                     question.predictionId, mapToResponses(question.responses)))
 
     private fun mapToResponses(responses: Collection<TestController.PredictionResponse>) =
         responses
                 .mapIndexed { i, (answer, predictionId, default) ->
-                    PredictionResponse(uniqueId.incrementAndGet(), answer, predictionId, default, i + 1) }
+                    PredictionResponse(answer, predictionId, default, i + 1) }
                 .map { responseRepo.save(it) }
 
     fun deleteMeasure(diagnosisId: String) = measureRepo.deleteAll(measureRepo.findByDiagnosisIdStartingWith(diagnosisId))
@@ -111,8 +101,6 @@ class TestModule(private val consentRepo: ConsentRepository,
     fun deleteAllRecommendations() = recommendationRepo.deleteAll()
 
     fun deleteAllPriorities() = priorityRepo.deleteAll()
-
-//    fun deleteAllStatistics() = statisticsRepo.deleteAll()
 
     fun deleteAllNationalStatistics() = nationalStatisticRepo.deleteAll()
 

@@ -6,7 +6,6 @@ import org.hamcrest.Matchers
 import org.junit.Test
 import se.inera.intyg.srs.integrationtest.BaseIntegrationTest
 import se.inera.intyg.srs.integrationtest.util.whenever
-import java.math.BigInteger
 
 class StatistikIT : BaseIntegrationTest() {
 
