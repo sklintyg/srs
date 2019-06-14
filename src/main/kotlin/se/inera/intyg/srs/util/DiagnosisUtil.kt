@@ -2,7 +2,7 @@ package se.inera.intyg.srs.util
 
 import se.inera.intyg.srs.persistence.DiagnosisRepository
 import se.inera.intyg.srs.persistence.PredictionDiagnosis
-import java.util.Locale
+import java.util.*
 
 fun DiagnosisRepository.getModelForDiagnosis(diagnosisId: String): PredictionDiagnosis? {
     val MAX_ID_POSITIONS = 5

@@ -1,6 +1,5 @@
 package se.inera.intyg.srs.persistence
 
-import org.hibernate.annotations.Type
 import java.time.LocalDateTime
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue

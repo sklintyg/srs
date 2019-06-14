@@ -5,9 +5,7 @@ import com.nhaarman.mockito_kotlin.whenever
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
-import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Atgardsrekommendationstatus.DIAGNOSKOD_PA_HOGRE_NIVA
-import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Atgardsrekommendationstatus.INFORMATION_SAKNAS
-import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Atgardsrekommendationstatus.OK
+import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Atgardsrekommendationstatus.*
 import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Atgardstyp
 import se.inera.intyg.srs.persistence.Measure
 import se.inera.intyg.srs.persistence.MeasurePriority

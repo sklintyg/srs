@@ -1,18 +1,15 @@
 package se.inera.intyg.srs.integrationtest.getsrsinformation
 
-import com.jayway.restassured.RestAssured
 import com.jayway.restassured.RestAssured.given
 import com.jayway.restassured.http.ContentType
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
-import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
 import org.slf4j.LoggerFactory
 import se.inera.intyg.srs.controllers.TestController
 import se.inera.intyg.srs.integrationtest.BaseIntegrationTest
 import se.inera.intyg.srs.integrationtest.util.whenever
-import se.inera.intyg.srs.persistence.PredictionResponse
 
 class PrediktionIT : BaseIntegrationTest() {
 
