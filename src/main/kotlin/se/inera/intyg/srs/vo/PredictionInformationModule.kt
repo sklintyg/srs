@@ -40,7 +40,7 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
             throw NotImplementedError("Predictions can not be made with only diagnosis.")
 
     override fun getInfo(persons: List<Person>, extraParams: Map<String, Map<String, String>>, unitHsaId: String, calculateIndividual: Boolean): Map<Person, List<Diagnosprediktion>> {
-        log.info(persons)
+        log.trace(persons)
         val predictions = HashMap<Person, List<Diagnosprediktion>>()
         persons.forEach { person ->
             predictions.put(person, createInfo(person, extraParams, unitHsaId, calculateIndividual))
@@ -114,7 +114,9 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
                                 }
                     }
                     diagnosPrediktion.berakningstidpunkt = historicProbability.timestamp
-
+                } else {
+                    // We shouldn't do a prediction and found no historic so we're setting NOT_OK on the returned (not existing) prediction
+                    diagnosPrediktion.diagnosprediktionstatus = Diagnosprediktionstatus.NOT_OK
                 }
             } else if (diagnosis != null && isCorrectPredictionParamsAgainstDiagnosis(diagnosis, extraParams) && predictIndividualRisk) {
                 log.trace("Predict individual risk, we got a diagnosis and got correct prediction params")
@@ -166,6 +168,7 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
             String>>): Boolean {
         val inc = HashMap<String, String>()
         extraParams[QUESTIONS_AND_ANSWERS_KEY]?.map { inc.put(it.key, it.value) }
+        log.debug("Checking if correct prediction params, got params: $extraParams")
 
         val req = HashMap<String, List<String>>()
 
