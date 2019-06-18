@@ -34,7 +34,8 @@ stage('notify') {
 
 
 stage('propagate') {
-    node {
+    build job: "${buildRoot}-common", wait: false, parameters: [[$class: 'StringParameterValue', name: 'GIT_BRANCH', value: GIT_BRANCH]]
+	node {
         gitRef = "v${buildVersion}"
         releaseFlag = "${GIT_BRANCH.startsWith("release")}"
         build job: "srs-dintyg-build", wait: false, parameters: [
