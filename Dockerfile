@@ -36,7 +36,7 @@ WORKDIR $CATALINA_HOME/bin
 ADD https://github.com/ufoscout/docker-compose-wait/releases/download/2.5.0/wait $CATALINA_HOME/wait
 RUN chmod +x $CATALINA_HOME/wait
 
-CMD $CATALINA_HOME/wait && java -Djava.library.path="/usr/local/lib/R/site-library/rJava/jri" -Dloader.path=WEB-INF/lib-provided,WEB-INF/lib,WEB-INF/classes -jar $CATALINA_HOME/webapps/web/build/libs/*.war --spring.profiles.active="runtime,it"
+CMD $CATALINA_HOME/wait && java -Djava.library.path="/usr/local/lib/R/site-library/rJava/jri" -Dloader.path=WEB-INF/lib-provided,WEB-INF/lib,WEB-INF/classes -jar $CATALINA_HOME/webapps/web/build/libs/*.war --spring.profiles.active="runtime,it,docker"
 
 
 EXPOSE 8080
