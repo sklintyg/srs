@@ -124,7 +124,6 @@ class PrediktionIT : BaseIntegrationTest() {
                 .body("$PREDIKTION_ROOT.diagnosprediktionstatus", equalTo("NOT_OK"))
     }
 
-    @Ignore // TODO: Se till att det här testet fungerar igen (it["diagnosis"] as String) är null
     @Test
     fun testResultShouldBeSavedToDatabase() {
         // Kontrollera att Prediktionsresultat ska sparas i databasen tillsammans med
@@ -137,7 +136,7 @@ class PrediktionIT : BaseIntegrationTest() {
 
         getIntyg("TestId").first().let {
             assertThat(it["diagnosis"] as String, equalTo("X99"))
-            assertThat(it["incommingDiagnosis"] as String, equalTo("X999"))
+            assertThat(it["incomingDiagnosis"] as String, equalTo("X999"))
             assertThat(it["probability"] as Double, equalTo(0.44))
             assertThat(it["riskCategory"] as Int, equalTo(2))
         }
