@@ -30,13 +30,15 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
     private val log = LogManager.getLogger()
 
     final fun doUpdate() {
+        log.info("Removing old questions and responses")
         doRemoveOldQuestionsAndResponses()
+        log.info("Updating questions and responses")
         doUpdateQuestionsAndResponses()
     }
 
     private final fun doRemoveOldQuestionsAndResponses() {
-        responseRepo.deleteAll()
-        questionRepo.deleteAll()
+        log.info("Deleting question priorities")
+        predictPrioRepo.deleteAll()
     }
 
     class Variable(
@@ -127,7 +129,7 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
         log.info("Reading diagnosis variable combinations sheet")
         val sheet = workbook.getSheet("Variabler per diagnos")
         var readMoreRows = true
-        var rowNumber = 2
+        var rowNumber = 1
         var unimportableRows = 0
         val responseMap:HashMap<String, ArrayList<DiagnosisVariable>> = HashMap()
         while (readMoreRows && unimportableRows < 4) {
@@ -154,9 +156,24 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
     }
 
     private final fun storeResponse(variableFactorValue: VariableFactorValue): PredictionResponse {
-        log.info("Storing response for factor: ${variableFactorValue.responseId}")
-        return responseRepo.save(PredictionResponse(variableFactorValue.responseText,
-                variableFactorValue.responseId, variableFactorValue.isDefault, variableFactorValue.order!!))
+        var response:PredictionResponse? = null
+        responseRepo.findPredictionResponseByQuestionAndResponse(variableFactorValue.varName,
+                variableFactorValue.responseId) ?.let { existingResponse ->
+            log.info("Updating existing prediction response with question prediction id '${variableFactorValue.varName}' " +
+                    "and response prediction id '${variableFactorValue.responseId}'")
+            response = responseRepo.save(existingResponse.copy(
+                    answer = variableFactorValue.responseText,
+                    predictionId = variableFactorValue.responseId,
+                    isDefault = variableFactorValue.isDefault,
+                    priority = variableFactorValue.order!!
+            ))
+        } ?: run {
+            log.info("Creating prediction response with question prediction id '${variableFactorValue.varName}' " +
+                    "and response prediction id '${variableFactorValue.responseId}'")
+            response = responseRepo.save(PredictionResponse(variableFactorValue.responseText,
+                    variableFactorValue.responseId, variableFactorValue.isDefault, variableFactorValue.order!!))
+        }
+        return response!!
     }
 
     /**
@@ -164,12 +181,35 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
      * @param factorValues factors/responses indata (for the given variable/question)
      */
     private final fun storeQuestionWithAnswers(variable:Variable, factorValues: List<VariableFactorValue>): PredictionQuestion {
-        log.info("Storing question for variable: ${variable.name}")
-        return questionRepo.save(PredictionQuestion(variable.questionText!!, variable.helpText!!, variable.name,
-                // ... och ett antal svar
-                factorValues.map { variableFactorValue ->
-                    storeResponse(variableFactorValue)
-                }))
+        var question:PredictionQuestion? = null
+        // Check if we have an existing question with the same prediction id/variable name
+        questionRepo.findByPredictionId(variable.name)?.let { existingQuestion ->
+            // if existing, then update
+            log.info("Updating existing question with question prediction id '${variable.name}'")
+            question = questionRepo.save(existingQuestion.copy(
+                    question = variable.questionText!!,
+                    helpText = variable.helpText!!,
+                    answers = factorValues.map { variableFactorValue ->
+                        storeResponse(variableFactorValue)
+                    }))
+        } ?: run {
+            // if not existing (null) create a new one
+            log.info("Creating question with question prediction id '${variable.name}'")
+            question = questionRepo.save(PredictionQuestion(variable.questionText!!, variable.helpText!!, variable.name,
+                    // ... and a number of possible responses
+                    factorValues.map { variableFactorValue ->
+                        storeResponse(variableFactorValue)
+                    }))
+        }
+        return question!!
+    }
+
+    private final fun storePredictionPriority(diagnosisVariable: DiagnosisVariable,
+                                                       variableQuestionMap: Map<String, PredictionQuestion>): PredictionPriority {
+        log.info("Storing prediction priority '${diagnosisVariable.order}' for question '${diagnosisVariable.varName}'")
+        // Just create new ones here since we are always clearing priorities on each run
+        return predictPrioRepo.save(PredictionPriority(diagnosisVariable.order!!,
+                variableQuestionMap.getValue(diagnosisVariable.varName)))
     }
 
     /**
@@ -178,19 +218,34 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
     private final fun storePredictionDiagnosis(diagnosisCode: String,
                                                diagnosisVariables: List<DiagnosisVariable>,
                                                variableQuestionMap: Map<String, PredictionQuestion>): PredictionDiagnosis {
-        log.info("Storing prediciton diagnosis for diagnosis code: ${diagnosisCode}")
-        // Prevalensen uppdateras i senare steg, vid inläsning av åtgärdsrekommendationer och prevalens
-        return diagnosisRepo.save(PredictionDiagnosis(diagnosisCode, 0.0,
-                // För varje kombination av diagnos och variabel (fråga)
-                diagnosisVariables
-                        // Filtrera bort frågor som inte har någon order/priority (de sätts automatiskt och visas ej i GUI
-                        .filter { diagnosisVariable ->  diagnosisVariable.order != null}
-                        // Spara/koppla övriga med rätt prioritet till respektive variabels fråga
-                        .map {diagnosisVariable ->
-                            predictPrioRepo.save(PredictionPriority(diagnosisVariable.order!!,
-                                    variableQuestionMap.getValue(diagnosisVariable.varName)))
-                }
-        ))
+        var diagnosis:PredictionDiagnosis? = null
+        diagnosisRepo.findOneByDiagnosisId(diagnosisCode) ?. let { existingDiagnosis ->
+            log.info("Updating priorities on existing prediction diagnosis with diagnosis code '$diagnosisCode}'")
+            diagnosis = diagnosisRepo.save(existingDiagnosis.copy(
+                    diagnosisId = diagnosisCode,
+                    prevalence = 0.0,
+                    questions = diagnosisVariables
+                            // Filtrera bort frågor som inte har någon order/priority (de sätts automatiskt och visas ej i GUI
+                            .filter { diagnosisVariable ->  diagnosisVariable.order != null}
+                            // Spara/koppla övriga med rätt prioritet till respektive variabels fråga
+                            .map {diagnosisVariable ->
+                                storePredictionPriority(diagnosisVariable, variableQuestionMap)
+                            }))
+        } ?: run {
+            log.info("Creating new prediction diagnosis with diagnosis code '$diagnosisCode}', letting it be")
+            // Prevalensen uppdateras i senare steg, vid inläsning av åtgärdsrekommendationer och prevalens
+            diagnosis = return diagnosisRepo.save(PredictionDiagnosis(diagnosisCode, 0.0,
+                    // För varje kombination av diagnos och variabel (fråga)
+                    diagnosisVariables
+                            // Filtrera bort frågor som inte har någon order/priority (de sätts automatiskt och visas ej i GUI
+                            .filter { diagnosisVariable ->  diagnosisVariable.order != null}
+                            // Spara/koppla övriga med rätt prioritet till respektive variabels fråga
+                            .map {diagnosisVariable ->
+                                storePredictionPriority(diagnosisVariable, variableQuestionMap)
+                            }
+            ))
+        }
+        return diagnosis!!
     }
 
     private final fun doUpdateQuestionsAndResponses() {

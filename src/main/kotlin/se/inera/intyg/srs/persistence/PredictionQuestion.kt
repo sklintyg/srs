@@ -9,7 +9,7 @@ import javax.persistence.JoinColumn
 import javax.persistence.OneToMany
 
 @Entity
-class PredictionQuestion(val question: String,
+data class PredictionQuestion(val question: String,
                          val helpText: String,
                          val predictionId: String,
                          @OneToMany(fetch = FetchType.EAGER)
