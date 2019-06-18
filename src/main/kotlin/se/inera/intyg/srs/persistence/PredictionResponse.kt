@@ -9,7 +9,7 @@ import javax.persistence.ManyToOne
 import javax.persistence.OneToMany
 
 @Entity
-class PredictionResponse(val answer: String,
+data class PredictionResponse(val answer: String,
                          val predictionId: String,
                          val isDefault: Boolean,
                          val priority: Int,
