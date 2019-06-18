@@ -34,7 +34,7 @@ stage('notify') {
 
 
 stage('propagate') {
-    build job: "${buildRoot}-common", wait: false, parameters: [[$class: 'StringParameterValue', name: 'GIT_BRANCH', value: GIT_BRANCH]]
+//    build job: "${buildRoot}-common", wait: false, parameters: [[$class: 'StringParameterValue', name: 'GIT_BRANCH', value: GIT_BRANCH]]
 	node {
         gitRef = "v${buildVersion}"
         releaseFlag = "${GIT_BRANCH.startsWith("release")}"
