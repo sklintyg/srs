@@ -17,7 +17,7 @@ class GetSRSInformationForDiagnosis extends Simulation {
       .body(ELFileBody("request-bodies/GetSRSInformationForDiagnosis.xml"))
       .check(
         status.is(200),
-        substring("statistikbild>")))
+        substring("atgardsrubrik>Säkerställ att patienten har återbesök inbokat")))
     .pause(50 milliseconds)
 
 

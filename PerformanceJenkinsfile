@@ -1,0 +1,28 @@
+#!groovy
+
+stage('checkout srs') {
+    node {
+        git url: "https://github.com/sklintyg/srs.git", branch: GIT_BRANCH
+        util.run { checkout scm }
+    }
+}
+
+stage('build') {
+    node {
+        dir("performanceTests") {
+            sh("./gradlew build")
+        }
+    }
+}
+
+stage('gatling') {
+    node {
+        dir("performanceTests") {
+            try {
+                sh("./gradlew gatling -DbaseUrl=https://srs-reltest-tintyg.app-test1.ind-ocp.sth.basefarm.net")
+            } finally {
+                gatlingArchive()
+            }
+        }
+    }
+}
