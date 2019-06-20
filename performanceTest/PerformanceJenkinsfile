@@ -17,9 +17,9 @@ stage('build') {
 
 stage('gatling') {
     node {
-        dir("performanceTests") {
+        dir("performanceTest") {
             try {
-                sh("./gradlew gatling -Dcertificate.baseUrl=http://localhost:8080")
+                sh("./gradlew gatling -DbaseUrl=${BASE_URL}")
             } finally {
                 gatlingArchive()
             }
