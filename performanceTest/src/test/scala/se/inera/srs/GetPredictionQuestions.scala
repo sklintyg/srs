@@ -17,7 +17,7 @@ class GetPredictionQuestions extends Simulation {
       .body(ELFileBody("request-bodies/GetPredictionQuestions.xml"))
       .check(
         status.is(200),
-        substring("svarstext>Föräldraledig</")))
+        substring("<ns2:svarstext>Yrkesarbetar /Föräldraledig /Studerar</ns2:svarstext>")))
     .pause(50 milliseconds)
 
 
