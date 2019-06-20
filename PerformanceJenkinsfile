@@ -9,7 +9,7 @@ stage('checkout srs') {
 
 stage('build') {
     node {
-        dir("performanceTests") {
+        dir("performanceTest") {
             sh("./gradlew build")
         }
     }
@@ -17,9 +17,9 @@ stage('build') {
 
 stage('gatling') {
     node {
-        dir("performanceTests") {
+        dir("performanceTest") {
             try {
-                sh("./gradlew gatling -DbaseUrl=https://srs-reltest-tintyg.app-test1.ind-ocp.sth.basefarm.net")
+                sh("./gradlew gatling -DbaseUrl=${BASE_URL}")
             } finally {
                 gatlingArchive()
             }
