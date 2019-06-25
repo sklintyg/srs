@@ -41,7 +41,7 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
         predictPrioRepo.deleteAll()
     }
 
-    class Variable(
+    data class Variable(
             val name: String,
             val type: String,
             val automaticSelectionDiagnosisCode: String?,
@@ -49,7 +49,7 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
             val helpText: String?
     )
 
-    class VariableFactorValue(
+    data class VariableFactorValue(
             val varName: String,
             val responseText: String,
             val responseId: String,
@@ -57,7 +57,7 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
             val isDefault: Boolean
     )
 
-    class DiagnosisVariable(
+    data class DiagnosisVariable(
             val diagnosisCode: String,
             val varName: String,
             val order: Int?
@@ -143,6 +143,7 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
             val varName = row.getCell(1).stringCellValue
             val order = row.getCell(2)?.numericCellValue?.toInt()
             val diagnosisVariable = DiagnosisVariable(diagnosisCode, varName, order)
+            log.debug("Did read DiagnosisVariable: ${diagnosisVariable}")
             var list:ArrayList<DiagnosisVariable>? = responseMap.get(diagnosisCode)
             if (list==null) {
                 list = Lists.newArrayList();
@@ -220,25 +221,29 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
                                                variableQuestionMap: Map<String, PredictionQuestion>): PredictionDiagnosis {
         var diagnosis:PredictionDiagnosis? = null
         diagnosisRepo.findOneByDiagnosisId(diagnosisCode) ?. let { existingDiagnosis ->
-            log.info("Updating priorities on existing prediction diagnosis with diagnosis code '$diagnosisCode}'")
+            log.info("Updating priorities on existing prediction diagnosis with diagnosis code '$diagnosisCode'")
             diagnosis = diagnosisRepo.save(existingDiagnosis.copy(
                     diagnosisId = diagnosisCode,
                     prevalence = 0.0,
                     questions = diagnosisVariables
-                            // Filtrera bort frågor som inte har någon order/priority (de sätts automatiskt och visas ej i GUI
-                            .filter { diagnosisVariable ->  diagnosisVariable.order != null}
+                            // Filtrera bort frågor som inte har någon order/priority samt de som inte har någon fråga i
+                            // Questions-mappen (de sätts automatiskt och visas ej i GUI)
+                            .filter { diagnosisVariable ->  diagnosisVariable.order != null
+                                    && variableQuestionMap.containsKey (diagnosisVariable.varName)}
                             // Spara/koppla övriga med rätt prioritet till respektive variabels fråga
                             .map {diagnosisVariable ->
                                 storePredictionPriority(diagnosisVariable, variableQuestionMap)
                             }))
         } ?: run {
-            log.info("Creating new prediction diagnosis with diagnosis code '$diagnosisCode}', letting it be")
+            log.info("Creating new prediction diagnosis with diagnosis code '$diagnosisCode' with variables $diagnosisVariables")
             // Prevalensen uppdateras i senare steg, vid inläsning av åtgärdsrekommendationer och prevalens
             diagnosis = return diagnosisRepo.save(PredictionDiagnosis(diagnosisCode, 0.0,
                     // För varje kombination av diagnos och variabel (fråga)
                     diagnosisVariables
-                            // Filtrera bort frågor som inte har någon order/priority (de sätts automatiskt och visas ej i GUI
-                            .filter { diagnosisVariable ->  diagnosisVariable.order != null}
+                            // Filtrera bort frågor som inte har någon order/priority samt de som inte har någon fråga i
+                            // Questions-mappen (de sätts automatiskt och visas ej i GUI)
+                            .filter { diagnosisVariable ->  diagnosisVariable.order != null
+                                    && variableQuestionMap.containsKey (diagnosisVariable.varName)}
                             // Spara/koppla övriga med rätt prioritet till respektive variabels fråga
                             .map {diagnosisVariable ->
                                 storePredictionPriority(diagnosisVariable, variableQuestionMap)
