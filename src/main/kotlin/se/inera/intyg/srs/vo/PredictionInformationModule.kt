@@ -118,13 +118,13 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
                     // We shouldn't do a prediction and found no historic so we're setting NOT_OK on the returned (not existing) prediction
                     diagnosPrediktion.diagnosprediktionstatus = Diagnosprediktionstatus.NOT_OK
                 }
-            } else if (diagnosis != null && isCorrectPredictionParamsAgainstDiagnosis(diagnosis, extraParams) && predictIndividualRisk) {
+            } else if (diagnosis != null && predictIndividualRisk && isCorrectPredictionParamsAgainstDiagnosis(diagnosis, extraParams)) {
                 log.trace("Predict individual risk, we got a diagnosis and got correct prediction params")
                 calculatedPrediction = rAdapter.getPrediction(person, incomingDiagnosis, extraParams)
                 diagnosPrediktion.diagnosprediktionstatus = calculatedPrediction.status
                 diagnosPrediktion.berakningstidpunkt = calculatedPrediction.timestamp
             } else {
-                log.trace("Incorrect combination of parameters, responding with NOT_OK")
+                log.trace("No prediction was requested or incorrect combination of parameters, responding with prediction NOT_OK")
                 diagnosPrediktion.diagnosprediktionstatus = Diagnosprediktionstatus.NOT_OK
             }
 
