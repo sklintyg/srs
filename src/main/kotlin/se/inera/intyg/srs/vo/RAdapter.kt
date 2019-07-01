@@ -107,7 +107,7 @@ class RAdapter(val modelService: ModelFileUpdateService, @Value("\${r.log.file.p
             val rOutput = rengine.eval("output <- round(pch:::predict.pch(model,newdata = data)\$Surv, 2)")
 
             return if (rOutput != null) {
-                log.info("Successful prediction, result: " + rOutput.asDouble())
+                log.debug("Successful prediction, result: " + rOutput.asDouble())
                 Prediction(model.diagnosis, rOutput.asDouble(), status, LocalDateTime.now())
             } else {
                 log.debug("R produced no output")
@@ -118,7 +118,7 @@ class RAdapter(val modelService: ModelFileUpdateService, @Value("\${r.log.file.p
     }
 
     private fun loadModel(file: File) {
-        log.info("R loading from: {}", file.absolutePath)
+        log.debug("R loading from: {}", file.absolutePath)
         rengine.eval("model <- readRDS('${file.absolutePath}')  ", false) ?: throw RuntimeException("The prediction model does not exist!")
     }
 

@@ -205,7 +205,7 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
     }
 
     private fun persistProbability(diagnosPrediction: Diagnosprediktion, certificateId: String, extraParams: Map<String, Map<String, String>>) {
-        log.info("Persisting probability for certificateId: $certificateId")
+        log.debug("Persisting probability for certificateId: $certificateId")
         var probability = Probability(certificateId,
                 diagnosPrediction.sannolikhetOvergransvarde,
                 diagnosPrediction.risksignal.riskkategori,

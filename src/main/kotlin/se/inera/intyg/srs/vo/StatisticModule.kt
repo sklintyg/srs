@@ -20,7 +20,7 @@ class StatisticModule(val nationalStatisticRepo: NationalStatisticRepository) : 
 
     override fun getInfo(persons: List<Person>, extraParams: Map<String, Map<String, String>>,
                          careUnitHsaId: String, calculateIndividual: Boolean): Map<Person, List<Diagnosstatistik>> {
-        log.info("Getting statistics for $persons")
+        log.debug("Getting statistics for $persons")
         if (calculateIndividual) {
             throw RuntimeException("calculateIndividual not supported")
         }

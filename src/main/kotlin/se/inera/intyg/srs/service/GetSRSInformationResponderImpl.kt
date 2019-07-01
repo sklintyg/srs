@@ -48,7 +48,7 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
     private val log = LogManager.getLogger()
 
     override fun getSRSInformation(request: GetSRSInformationRequestType): GetSRSInformationResponseType {
-        log.info("Received request from ${request.konsumentId.extension}")
+        log.debug("Received request from ${request.konsumentId.extension}")
 
         val persons = transformIndividuals(request.individer.individ)
         val unitId = request.individer.individ.map { it.intygId.root }.first() ?: "NoUnitFound"

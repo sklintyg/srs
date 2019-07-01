@@ -38,7 +38,7 @@ class ModelFileUpdateService(val resourceLoader: ResourceLoader,
     }
 
     fun applyModels(resources: List<Resource>) {
-        log.info("Applying (test) models: {}", resources)
+        log.info("Applying models: {}", resources)
         models = collect(Sequence { resources.iterator() })
     }
 
