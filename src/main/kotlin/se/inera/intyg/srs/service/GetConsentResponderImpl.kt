@@ -14,12 +14,12 @@ class GetConsentResponderImpl(val consentModule: ConsentModule) : GetConsentResp
     private val log = LogManager.getLogger()
 
     override fun getConsent(request: GetConsentRequestType): GetConsentResponseType {
-        log.info("Get consent request received for care unit hsaId: ${request.vardenhetId.extension}")
+        log.debug("Get consent request received for care unit hsaId: ${request.vardenhetId.extension}")
         val response = GetConsentResponseType()
         val consent = consentModule.getConsent(request.personId, request.vardenhetId.extension)
 
         if (consent == null) {
-            log.info("No consent found, setting status INGET")
+            log.debug("No consent found, setting status INGET")
             response.samtyckesstatus = Samtyckesstatus.INGET
         } else {
             response.samtyckesstatus = Samtyckesstatus.JA

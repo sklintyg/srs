@@ -19,7 +19,7 @@ class GetSRSInformationForDiagnosisResponderImpl(val measureModule: MeasureInfor
     private val log = LogManager.getLogger()
 
     override fun getSRSInformationForDiagnosis(request: GetSRSInformationForDiagnosisRequestType): GetSRSInformationForDiagnosisResponseType {
-        log.info("Received request for diagnosis ${request.diagnos.code}")
+        log.debug("Received request for diagnosis ${request.diagnos.code}")
 
         val response = GetSRSInformationForDiagnosisResponseType()
 

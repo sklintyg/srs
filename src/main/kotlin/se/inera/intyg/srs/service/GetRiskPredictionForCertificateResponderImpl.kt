@@ -28,7 +28,7 @@ class GetRiskPredictionForCertificateResponderImpl(@Autowired val probabilityRep
             return response
         }
 
-        log.info("Getting riskprediction for certificate")
+        log.debug("Getting riskprediction for certificate")
 
         p0?.intygsId?.forEach { intygId ->
             val probability = probabilityRepository.findByCertificateId(intygId).maxBy { it.timestamp }

@@ -15,7 +15,7 @@ class SetOwnOpinionResponderImpl(val ownOpinionModule: OwnOpinionModule,
     private val log = LogManager.getLogger()
 
     override fun setOwnOpinion(request: SetOwnOpinionRequestType): SetOwnOpinionResponseType {
-        log.info("Set own opinion request received")
+        log.debug("Set own opinion request received")
         val probability = probabilityRepo.findFirstByCertificateIdAndDiagnosisOrderByTimestampDesc(request.intygId.extension, request.diagnos.code)
         if (probability == null) {
             throw RuntimeException("Found no stored probability to store the opinion on")
