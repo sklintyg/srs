@@ -27,11 +27,11 @@ val REGION_KEY = "Region"
 val ZIP_CODE_KEY = "ZipCode"
 val QUESTIONS_AND_ANSWERS_KEY = "QuestionsAndAnswers"
 
-val STHLM = "Stockholm"
-val NORD = "Nord"
-val VAST = "Vast"
-val MITT = "Mitt"
-val SYD = "Syd"
+val STHLM = "Stockholm" // TODO: remove region, not used anymore
+val NORD = "Nord" // TODO: remove region, not used anymore
+val VAST = "Vast" // TODO: remove region, not used anymore
+val MITT = "Mitt" // TODO: remove region, not used anymore
+val SYD = "Syd" // TODO: remove region, not used anymore
 
 val TODDLERS = "17-29"
 val KIDS = "30-39"

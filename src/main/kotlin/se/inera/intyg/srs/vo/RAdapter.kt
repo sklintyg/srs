@@ -21,7 +21,9 @@ import kotlin.concurrent.withLock
 
 @Configuration
 @Profile("runtime")
-class RAdapter(val modelService: ModelFileUpdateService, @Value("\${r.log.file.path}") val rLogFilePath: String) : PredictionAdapter {
+class RAdapter(val modelService: ModelFileUpdateService,
+               @Value("\${r.log.file.path}") val rLogFilePath: String,
+               @Value("\${r.debugFlag}") debugFlag: Int) : PredictionAdapter {
     private val MIN_ID_POSITIONS = 3
     private val MAX_ID_POSITIONS = 5
 
@@ -34,7 +36,7 @@ class RAdapter(val modelService: ModelFileUpdateService, @Value("\${r.log.file.p
     init {
 
         // Turn on logging from R
-        Rengine.DEBUG = 1
+        Rengine.DEBUG = debugFlag
         startRLogging()
 
         // Load required library pch

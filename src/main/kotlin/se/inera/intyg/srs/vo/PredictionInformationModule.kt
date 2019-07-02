@@ -147,10 +147,11 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
             }
 
             riskSignal.beskrivning = PredictionInformationUtil.categoryDescriptions[riskSignal.riskkategori]
-
-            logPrediction(extraParams, diagnosPrediktion.diagnos?.code ?: "", diagnosis?.prevalence?.toString() ?: "", person.sex.name,
-                    person.ageCategory, calculatedPrediction?.prediction?.toString() ?: "", riskSignal.riskkategori,
-                    calculatedPrediction?.status?.toString() ?: "", person.certificateId, careUnitHsaId)
+            if (predictIndividualRisk) {
+                logPrediction(extraParams, diagnosPrediktion.diagnos?.code ?: "", diagnosis?.prevalence?.toString() ?: "", person.sex.name,
+                        person.ageCategory, calculatedPrediction?.prediction?.toString() ?: "", riskSignal.riskkategori,
+                        calculatedPrediction?.status?.toString() ?: "", person.certificateId, careUnitHsaId)
+            }
 
             outgoingPrediction.add(diagnosPrediktion)
         }
