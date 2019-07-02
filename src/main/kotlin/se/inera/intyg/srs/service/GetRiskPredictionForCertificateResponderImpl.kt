@@ -28,14 +28,18 @@ class GetRiskPredictionForCertificateResponderImpl(@Autowired val probabilityRep
             return response
         }
 
-        log.debug("Getting riskprediction for certificate")
+        log.debug("Getting riskprediction for certificates. Number of certificates to fetch: ${p0?.intygsId?.size}")
 
-        p0?.intygsId?.forEach { intygId ->
-            val probability = probabilityRepository.findByCertificateId(intygId).maxBy { it.timestamp }
+        // Gets all probabilities for all certificateIds first ordered by certificateId ASC and then internally by timestamp DESC
+        // I.e. the first probability for each certificateId has the latest timestamp
+        val probabilities = probabilityRepository.findByCertificateIdInAndOrderedByCertificateIdAndTimestamp(p0!!.intygsId)
+        val addedCertificateIds = HashSet<String>()
 
-            if (probability != null) {
-                System.err.println(probability.timestamp)
-                val rp = RiskPrediktion()
+        probabilities.forEach { probability ->
+            val rp = RiskPrediktion()
+            // We want to add each certificate just once, and we only want to add the first since that has the latest timestamp
+            if (!addedCertificateIds.contains(probability.certificateId)) {
+                addedCertificateIds.add(probability.certificateId)
                 rp.intygsId = probability.certificateId
                 val riskSignal = Risksignal()
                 riskSignal.riskkategori = probability.riskCategory

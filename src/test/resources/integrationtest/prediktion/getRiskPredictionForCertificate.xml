@@ -1,0 +1,8 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:riv:clinicalprocess:healthcond:srs:GetRiskPredictionForCertificateResponder:1">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <urn:GetRiskPredictionForCertificateRequest>
+         <urn:intygs-id>intygsid_placeholder</urn:intygs-id>
+      </urn:GetRiskPredictionForCertificateRequest>
+   </soapenv:Body>
+</soapenv:Envelope>
