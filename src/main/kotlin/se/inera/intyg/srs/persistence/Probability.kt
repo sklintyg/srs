@@ -25,10 +25,10 @@ class Probability(val certificateId: String,
                   @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
                   val id: Long = -1) {
 
-    @OneToOne(mappedBy = "probability", cascade = [CascadeType.ALL])
+    @OneToOne(mappedBy = "probability", fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
     val ownOpinion: OwnOpinion? = null
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "probability", cascade = [CascadeType.ALL])
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "probability", cascade = [CascadeType.ALL])
     val patientAnswers: Collection<PatientAnswer>? = null
 
     override fun toString() =
