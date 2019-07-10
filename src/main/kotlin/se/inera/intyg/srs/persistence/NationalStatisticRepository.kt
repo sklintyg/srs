@@ -1,7 +1,7 @@
 package se.inera.intyg.srs.persistence
 
 import org.springframework.data.repository.CrudRepository
-import java.util.Optional
+import java.util.*
 
 interface NationalStatisticRepository : CrudRepository<NationalStatistic, Long> {
 

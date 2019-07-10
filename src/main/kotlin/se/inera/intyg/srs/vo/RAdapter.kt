@@ -21,7 +21,9 @@ import kotlin.concurrent.withLock
 
 @Configuration
 @Profile("runtime")
-class RAdapter(val modelService: ModelFileUpdateService, @Value("\${r.log.file.path}") val rLogFilePath: String) : PredictionAdapter {
+class RAdapter(val modelService: ModelFileUpdateService,
+               @Value("\${r.log.file.path}") val rLogFilePath: String,
+               @Value("\${r.debugFlag}") debugFlag: Int) : PredictionAdapter {
     private val MIN_ID_POSITIONS = 3
     private val MAX_ID_POSITIONS = 5
 
@@ -34,7 +36,7 @@ class RAdapter(val modelService: ModelFileUpdateService, @Value("\${r.log.file.p
     init {
 
         // Turn on logging from R
-        Rengine.DEBUG = 1
+        Rengine.DEBUG = debugFlag
         startRLogging()
 
         // Load required library pch
@@ -98,8 +100,8 @@ class RAdapter(val modelService: ModelFileUpdateService, @Value("\${r.log.file.p
                 append("Sex = '${person.sex.predictionString}', ")
                 append("age_cat_fct = '${person.ageCategory}', ")
                 append("Region = '" + extraParams[LOCATION_KEY]?.get(REGION_KEY) + "', ")
-                append(extraParams[QUESTIONS_AND_ANSWERS_KEY]?.entries?.joinToString(", ", transform = { (key, value) -> "$key = '$value'" }))
-                append(")")
+                append(extraParams[QUESTIONS_AND_ANSWERS_KEY]?.entries?.joinToString(", ", transform = { (key, value) -> "'$key' = '$value'" }))
+                append(", check.names=F)")
             }.toString()
             log.trace("Evaluating rDataFrame: $rDataFrame")
 
@@ -107,7 +109,7 @@ class RAdapter(val modelService: ModelFileUpdateService, @Value("\${r.log.file.p
             val rOutput = rengine.eval("output <- round(pch:::predict.pch(model,newdata = data)\$Surv, 2)")
 
             return if (rOutput != null) {
-                log.info("Successful prediction, result: " + rOutput.asDouble())
+                log.debug("Successful prediction, result: " + rOutput.asDouble())
                 Prediction(model.diagnosis, rOutput.asDouble(), status, LocalDateTime.now())
             } else {
                 log.debug("R produced no output")
@@ -118,7 +120,7 @@ class RAdapter(val modelService: ModelFileUpdateService, @Value("\${r.log.file.p
     }
 
     private fun loadModel(file: File) {
-        log.info("R loading from: {}", file.absolutePath)
+        log.debug("R loading from: {}", file.absolutePath)
         rengine.eval("model <- readRDS('${file.absolutePath}')  ", false) ?: throw RuntimeException("The prediction model does not exist!")
     }
 

@@ -13,8 +13,9 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import org.apache.cxf.Bus
+import org.apache.cxf.interceptor.LoggingInInterceptor
+import org.apache.cxf.interceptor.LoggingOutInterceptor
 import org.apache.cxf.jaxws.EndpointImpl
-import org.apache.logging.log4j.LogManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -38,9 +39,6 @@ import javax.xml.ws.Endpoint
 
 @SpringBootApplication
 class Application : SpringBootServletInitializer() {
-
-
-    private val log = LogManager.getLogger()
 
     @Autowired
     lateinit var bus: Bus
@@ -80,7 +78,11 @@ class Application : SpringBootServletInitializer() {
     fun getSrsEndpoint(): Endpoint {
         val endpoint = EndpointImpl(bus, srsResponder)
         endpoint.schemaLocations = listOf("classpath:core_components/clinicalprocess_healthcond_certificate_types_2.0.xsd",
+                "classpath:core_components/clinicalprocess_healthcond_srs_1.0.xsd",
                 "classpath:interactions/GetSRSInformation/GetSRSInformationResponder_2.0.xsd")
+        // Use these to get full loging of input and output at the web service
+        //endpoint.inInterceptors.add(LoggingInInterceptor())
+        //endpoint.outInterceptors.add(LoggingOutInterceptor())
         endpoint.publish("/getsrs")
         return endpoint
     }
@@ -89,6 +91,7 @@ class Application : SpringBootServletInitializer() {
     fun getSrsForDiagnosisEndpoint(): Endpoint {
         val endpoint = EndpointImpl(bus, srsForDiagnosisResponder)
         endpoint.schemaLocations = listOf("classpath:core_components/clinicalprocess_healthcond_certificate_types_2.0.xsd",
+                "classpath:core_components/clinicalprocess_healthcond_srs_1.0.xsd",
                 "classpath:interactions/GetSRSInformationForDiagnosis/GetSRSInformationForDiagnosisResponder_1.0.xsd")
         endpoint.publish("/getsrsfordiagnosis")
         return endpoint
@@ -116,6 +119,7 @@ class Application : SpringBootServletInitializer() {
     fun riskPredictionForCertificateEndpoint(): Endpoint {
         val endpoint = EndpointImpl(bus, getRiskPredictionForCertificateResponder)
         endpoint.schemaLocations = listOf("classpath:core_components/clinicalprocess_healthcond_certificate_types_2.0.xsd",
+                "classpath:core_components/clinicalprocess_healthcond_srs_1.0.xsd",
                 "classpath:interactions/GetRiskPredictionForCertificate/GetRiskPredictionForCertificateResponder_1.0.xsd")
         endpoint.publish("/get-risk-prediction-for-certificate/v1.0")
         return endpoint
@@ -125,6 +129,7 @@ class Application : SpringBootServletInitializer() {
     fun setOwnOpinionEndpoint(): Endpoint {
         val endpoint = EndpointImpl(bus, setOwnOpinionResponder)
         endpoint.schemaLocations = listOf("classpath:core_components/clinicalprocess_healthcond_certificate_types_2.0.xsd",
+                "classpath:core_components/clinicalprocess_healthcond_srs_1.0.xsd",
                 "classpath:interactions/SetOwnOpinion/SetOwnOpinionResponder_1.0.xsd")
         endpoint.publish("/set-own-opinion")
         return endpoint

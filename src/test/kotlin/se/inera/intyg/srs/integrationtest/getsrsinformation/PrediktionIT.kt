@@ -1,18 +1,15 @@
 package se.inera.intyg.srs.integrationtest.getsrsinformation
 
-import com.jayway.restassured.RestAssured
 import com.jayway.restassured.RestAssured.given
 import com.jayway.restassured.http.ContentType
 import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.Matchers.equalTo
-import org.junit.Before
+import org.hamcrest.Matchers.*
 import org.junit.Ignore
 import org.junit.Test
 import org.slf4j.LoggerFactory
 import se.inera.intyg.srs.controllers.TestController
 import se.inera.intyg.srs.integrationtest.BaseIntegrationTest
 import se.inera.intyg.srs.integrationtest.util.whenever
-import se.inera.intyg.srs.persistence.PredictionResponse
 
 class PrediktionIT : BaseIntegrationTest() {
 
@@ -23,6 +20,7 @@ class PrediktionIT : BaseIntegrationTest() {
     fun testPredictionModel() {
         setModels("x99v0")
         addDiagnosis(TestController.DiagnosisRequest("X99", 1.0, emptyList()))
+        addConsent("200005292396", true, "root")
 
         val response = sendPrediktionRequest("getPrediktion_Model1Request_output_0.44.xml", "X99")
         response.assertThat()
@@ -38,6 +36,7 @@ class PrediktionIT : BaseIntegrationTest() {
         // versionsnummer användas
         setModels("x99v0", "x99v1")
         addDiagnosis(TestController.DiagnosisRequest("X99", 1.0, emptyList()))
+        addConsent("200005292396", true, "root")
 
         val response = sendPrediktionRequest("getPrediktion_Model2Request_output_0.6.xml", "X99")
         response.assertThat()
@@ -49,6 +48,7 @@ class PrediktionIT : BaseIntegrationTest() {
     fun testShouldPickUpChangedModelFiles() {
         setModels() // Removes all models
         addDiagnosis(TestController.DiagnosisRequest("X99", 1.0, emptyList()))
+        addConsent("195801080214", true, "root")
 
         val response1 = sendPrediktionRequest("getPrediktion_Model1Request_output_0.89.xml", "X99")
         response1.assertThat()
@@ -62,11 +62,51 @@ class PrediktionIT : BaseIntegrationTest() {
     }
 
     @Test
+    fun testGetHistoricPrediction() {
+        setModels("x99v0")
+        addDiagnosis(TestController.DiagnosisRequest("X99", 1.0, emptyList()))
+//        addDiagnosis(TestController.DiagnosisRequest("X99", 1.0, listOf(
+//                TestController.PredictionQuestion("SA_1_gross", "SA_1_gross", "", listOf(TestController.PredictionResponse("0", "0",false))),
+//                TestController.PredictionQuestion("DP_atStart", "DP_atStart", "", listOf(TestController.PredictionResponse("false", "false",false))),
+//                TestController.PredictionQuestion("Visits_yearBefore_all_r1_median", "Visits_yearBefore_all_r1_median", "",
+//                        listOf(TestController.PredictionResponse("LessT2V", "LessT2V",false))),
+//                TestController.PredictionQuestion("SA_SyssStart_fct", "SA_SyssStart_fct", "",
+//                        listOf(TestController.PredictionResponse("work", "work",false),TestController.PredictionResponse("unemp", "unemp",false))),
+//                TestController.PredictionQuestion("fam_cat_4_cat_fct", "fam_cat_4_cat_fct", "",
+//                        listOf(TestController.PredictionResponse("Married", "Married",false))),
+//                TestController.PredictionQuestion("edu_cat_fct", "edu_cat_fct", "",
+//                        listOf(TestController.PredictionResponse(">12 years", ">12 years",false)))
+//        )))
+        addConsent("200005292396", true, "root")
+
+        val response = sendPrediktionRequest("getPrediktion_Model1Request_output_0.44.xml",
+                "X99", "intyg2")
+        response.assertThat()
+                .body("$PREDIKTION_ROOT.sannolikhet-overgransvarde", equalTo("0.44"))
+                .body("$PREDIKTION_ROOT.risksignal.riskkategori", equalTo("2"))
+                .body("$PREDIKTION_ROOT.risksignal.beskrivning", equalTo("Hög risk att sjukfallet varar i mer än 90 dagar"))
+                .body("$PREDIKTION_ROOT.diagnosprediktionstatus", equalTo("OK"))
+                .body("$PREDIKTION_ROOT.prediktionsfaktorer.fragasvar.size()", equalTo(0))
+
+        val response2 = sendPrediktionRequest("getHistoricPrediktion_Model1Request_output_0.44.xml",
+                "X99", "intyg2")
+        response2.assertThat()
+                .body("$PREDIKTION_ROOT.sannolikhet-overgransvarde", equalTo("0.44"))
+                .body("$PREDIKTION_ROOT.risksignal.riskkategori", equalTo("2"))
+                .body("$PREDIKTION_ROOT.risksignal.beskrivning", equalTo("Hög risk att sjukfallet varar i mer än 90 dagar"))
+                .body("$PREDIKTION_ROOT.diagnosprediktionstatus", equalTo("OK"))
+                .body("$PREDIKTION_ROOT.prediktionsfaktorer.fragasvar.size()", equalTo(0)) // No questions in integration tests yet
+
+
+    }
+
+    @Test
     fun testExistingPredictionOnHigherDiagnosisIdLevel() {
         // T.ex. När prediktion efterfrågas på M751 men bara finns på M75
         // så ska prediktion för M75 returneras.
         setModels("x99v0")
         addDiagnosis(TestController.DiagnosisRequest("X99", 1.0, emptyList()))
+        addConsent("195801080214", true, "root")
 
         val response2 = sendPrediktionRequest("getPrediktion_Model1Request_output_0.89.xml", "X991")
         response2.assertThat()
@@ -82,6 +122,7 @@ class PrediktionIT : BaseIntegrationTest() {
         setModels("x99v0", "x9900v0")
         addDiagnosis(TestController.DiagnosisRequest("X99", 1.0, emptyList()))
         addDiagnosis(TestController.DiagnosisRequest("X9900", 1.0, emptyList()))
+        addConsent("195801080214", true, "root")
 
         sendPrediktionRequest("getPrediktion_Model2Request_output_0.77.xml", "X9900")
                 .assertThat()
@@ -91,6 +132,7 @@ class PrediktionIT : BaseIntegrationTest() {
 
     @Test
     fun testTooLongDiagnosisCodeRequestShouldBeRejected() {
+        addConsent("200005292396", true, "root")
         // Anropa med 6-ställig kod och verifiera fel
         sendPrediktionRequest("getPrediktion_Model2Request_output_0.77.xml", "X99001")
                 .assertThat()
@@ -121,13 +163,13 @@ class PrediktionIT : BaseIntegrationTest() {
                                         TestController.PredictionResponse("DP_atStart", "false", true)
                                 )
                 ))))
+        addConsent("200005292396", true, "root")
         log.debug("after adding diagnosis, sending test")
         sendPrediktionRequest("getPrediktion_Model1Request_missingParams.xml", "X99")
                 .assertThat()
                 .body("$PREDIKTION_ROOT.diagnosprediktionstatus", equalTo("NOT_OK"))
     }
 
-    @Ignore // TODO: Se till att det här testet fungerar igen (it["diagnosis"] as String) är null
     @Test
     fun testResultShouldBeSavedToDatabase() {
         // Kontrollera att Prediktionsresultat ska sparas i databasen tillsammans med
@@ -135,12 +177,13 @@ class PrediktionIT : BaseIntegrationTest() {
         restTemplate.delete("/intyg")
         setModels("x99v0")
         addDiagnosis(TestController.DiagnosisRequest("X99", 1.0, emptyList()))
+        addConsent("200005292396", true, "root")
 
         sendPrediktionRequest("getPrediktion_Model1Request_output_0.44.xml", "X999", "TestId")
 
         getIntyg("TestId").first().let {
             assertThat(it["diagnosis"] as String, equalTo("X99"))
-            assertThat(it["incommingDiagnosis"] as String, equalTo("X999"))
+            assertThat(it["incomingDiagnosis"] as String, equalTo("X999"))
             assertThat(it["probability"] as Double, equalTo(0.44))
             assertThat(it["riskCategory"] as Int, equalTo(2))
         }
@@ -148,6 +191,7 @@ class PrediktionIT : BaseIntegrationTest() {
 
     @Test
     fun testMissingPredictionShouldYieldErrorMessage() {
+        addConsent("197308051234", true, "root")
         // Om prediktion saknas för en diagnos ska detta indikeras för den diagnosen.
         given()
             .contentType(ContentType.XML)
@@ -160,6 +204,20 @@ class PrediktionIT : BaseIntegrationTest() {
             .assertThat()
                 .body("$SOAP_ROOT.resultCode", equalTo("OK"))
                 .body("$PREDIKTION_ROOT.risksignal.beskrivning", equalTo("Prediktion saknas."))
+    }
+
+    @Test
+    fun testMissingConsentShouldYieldErrorMessage() {
+        // Om samtycke saknas skall det inte gå att köra en prediktion
+        setModels("x99v0")
+        addDiagnosis(TestController.DiagnosisRequest("X99", 1.0, emptyList()))
+
+        val response = sendPrediktionRequest("getPrediktion_Model1Request_output_0.44.xml", "X99")
+        response.assertThat()
+                .body("$PREDIKTION_ROOT", not(hasKey("sannolikhet-overgransvarde")))
+                .body("$PREDIKTION_ROOT.risksignal.riskkategori", equalTo("0"))
+                .body("$PREDIKTION_ROOT.risksignal.beskrivning", equalTo("Prediktion saknas."))
+                .body("$PREDIKTION_ROOT.diagnosprediktionstatus", equalTo("NOT_OK"))
     }
 
     private fun sendPrediktionRequest(requestFile: String, diagnosisId: String, intygsId: String = "intygsId") =

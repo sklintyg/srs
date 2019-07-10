@@ -38,8 +38,10 @@
 				<urn:frageid-srs>SA_SyssStart_fct</urn:frageid-srs>
 				<urn:svarsid-srs>work</urn:svarsid-srs>
 			</urn:fragasvar>
+			<urn:fragasvar>
 				<urn:frageid-srs>SA_1_gross</urn:frageid-srs>
 				<urn:svarsid-srs>(0,90]</urn:svarsid-srs>
+			</urn:fragasvar>
 			<urn:fragasvar>
 				<urn:frageid-srs>NoCareAtStart</urn:frageid-srs>
 				<urn:svarsid-srs>NoCareAtStart</urn:svarsid-srs>

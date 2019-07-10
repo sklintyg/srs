@@ -6,74 +6,31 @@ import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.xssf.usermodel.XSSFSheet
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.context.annotation.Profile
 import org.springframework.core.io.ResourceLoader
-import org.springframework.core.io.support.ResourcePatternUtils
 import org.springframework.stereotype.Component
 import org.springframework.util.StringUtils
-import se.inera.intyg.srs.persistence.InternalStatistic
-import se.inera.intyg.srs.persistence.InternalStatisticRepository
 import se.inera.intyg.srs.persistence.NationalStatistic
 import se.inera.intyg.srs.persistence.NationalStatisticRepository
-import java.io.File
-import java.time.Instant
 import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.ZoneOffset
-import java.util.Locale
-import kotlin.collections.ArrayList
-import kotlin.collections.LinkedHashMap
-import kotlin.collections.List
-import kotlin.collections.MutableMap
-import kotlin.collections.filter
-import kotlin.collections.find
-import kotlin.collections.forEach
-import kotlin.collections.map
-import kotlin.collections.mapNotNull
-import kotlin.collections.mutableMapOf
-import kotlin.collections.toList
 import kotlin.math.roundToInt
 
 /**
- * Scheduled service for checking for new statistics images in the dir specified with statistics.image.dir,
- * the update interval is also configurable via image.update.cron, both in application.properties.
+ * Service for updating national statistics from file.
  */
 @Component
-@Profile("runtime")
-class StatisticsFileUpdateService(@Value("\${statistics.image.location-pattern}") val imageLocationPattern: String,
-                                  @Value("\${statistics.national.file}") val nationalStatisticsFile: String,
-                                  @Value("\${base.url}") val baseUrl: String,
-                                  val internalStatisticRepo: InternalStatisticRepository,
+class StatisticsFileUpdateService(@Value("\${statistics.national.file}") val nationalStatisticsFile: String,
                                   val nationalStatisticsFileRepo: NationalStatisticRepository,
                                   val resourceLoader: ResourceLoader) {
 
     private val log = LogManager.getLogger()
 
-    private val imageFileExtension: String = "jpg"
-
-    private val urlExtension: String = "/image/"
-
-    // For now, only codes with three positions are allowed.
-    private val fileNameRegex = Regex("""\w\d{2}""")
-
-    init {
-        doUpdate()
-    }
-
-    private final fun doUpdate() {
+    final fun doUpdate() {
+        doRemoveOldStatistics()
         doUpdateNationalStatistics()
     }
 
-    private final fun logDataRow(currentRow: Row) {
-        val cellsInRow = currentRow.iterator()
-        while (cellsInRow.hasNext()) {
-            val currentCell = cellsInRow.next()
-            if (currentCell.getCellType() === CellType.STRING) {
-                log.info(currentCell.getStringCellValue() + " | ")
-            } else if (currentCell.getCellType() === CellType.NUMERIC) {
-                log.info(currentCell.getNumericCellValue().toString() + "(numeric)")
-            }
-        }
+    private final fun doRemoveOldStatistics() {
+        nationalStatisticsFileRepo.deleteAll()
     }
 
     private final fun getDiagnosisTitles(currentRow: Row): LinkedHashMap<String, MutableMap<Pair<Int, Int>, Int>> {
@@ -160,52 +117,4 @@ class StatisticsFileUpdateService(@Value("\${statistics.image.location-pattern}"
             }
         }
     }
-
-    // TODO: Remove since we no longer use static images
-    private final fun doUpdateImages() {
-        log.info("Performing image update... using imageLocationPattern: $imageLocationPattern")
-
-        val dbEntries: List<InternalStatistic> = internalStatisticRepo.findAll().toList()
-        val imageResourceEntries = ArrayList<String>()
-
-        ResourcePatternUtils.getResourcePatternResolver(resourceLoader).getResources(imageLocationPattern)
-                .mapNotNull { Pair(it.filename, it.lastModified()) }
-                .filter { (fileName, _) -> isRequiredFileType(fileName) && isVaildFileName(fileName) }
-                .map { (fileName, lastModified) -> Pair(fixFileName(fileName), lastModified) }
-                .forEach { (fileName, lastModified) ->
-                    val existingImage = dbEntries.find { cleanDiagnosisCode(it.diagnosisId) == fileName }
-                    val imageLastModifiedTime = Instant.ofEpochMilli(lastModified).atZone(ZoneId.systemDefault()).toLocalDateTime()
-                    if (existingImage == null) {
-                        log.info("New file found, saving as: $fileName")
-                        internalStatisticRepo.save(InternalStatistic(fileName, buildUrl(fileName), imageLastModifiedTime))
-                    } else if (!existingImage.timestamp.equals(imageLastModifiedTime)) {
-                        log.info("Existing but modified file found, updating $fileName")
-                        existingImage.timestamp = imageLastModifiedTime
-                        internalStatisticRepo.save(existingImage)
-                    }
-
-                    imageResourceEntries.add(fileName)
-                }
-
-        // Cleanup removed files
-        if (imageResourceEntries.size != dbEntries.size) {
-            dbEntries.filter { it.diagnosisId !in imageResourceEntries }.forEach {
-                log.info("Statistics image for ${it.diagnosisId} no longer available, removing from database.")
-                internalStatisticRepo.deleteById(it.id)
-            }
-        }
-    }
-
-    private fun fixFileName(fileName: String): String = fileName.dropLast(4)
-
-    private fun isVaildFileName(fileName: String): Boolean = fileNameRegex.matches(fixFileName(fileName))
-
-    private fun buildUrl(fileName: String): String = "$baseUrl$urlExtension$fileName"
-
-    private fun cleanDiagnosisCode(diagnosisId: String): String = diagnosisId.toUpperCase(Locale.ENGLISH).replace(".", "")
-
-    private fun isRequiredFileType(fileName: String): Boolean {
-        return fileName.toLowerCase().endsWith(imageFileExtension)
-    }
-
 }

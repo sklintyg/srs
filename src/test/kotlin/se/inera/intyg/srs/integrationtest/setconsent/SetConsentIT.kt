@@ -4,9 +4,7 @@ import com.jayway.restassured.RestAssured.given
 import com.jayway.restassured.http.ContentType
 import org.exparity.hamcrest.date.LocalDateTimeMatchers
 import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.Matchers.equalTo
-import org.hamcrest.Matchers.notNullValue
-import org.hamcrest.Matchers.nullValue
+import org.hamcrest.Matchers.*
 import org.junit.Test
 import se.inera.intyg.srs.integrationtest.BaseIntegrationTest
 import se.inera.intyg.srs.integrationtest.util.whenever

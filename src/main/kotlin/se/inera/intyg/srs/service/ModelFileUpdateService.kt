@@ -1,7 +1,6 @@
 package se.inera.intyg.srs.service
 
 import org.apache.logging.log4j.LogManager
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.io.Resource
 import org.springframework.core.io.ResourceLoader
@@ -39,7 +38,7 @@ class ModelFileUpdateService(val resourceLoader: ResourceLoader,
     }
 
     fun applyModels(resources: List<Resource>) {
-        log.info("Applying (test) models: {}", resources)
+        log.info("Applying models: {}", resources)
         models = collect(Sequence { resources.iterator() })
     }
 

@@ -7,8 +7,6 @@ import org.junit.Before
 import org.junit.Test
 import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Diagnosstatistik
 import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Statistikstatus
-import se.inera.intyg.srs.persistence.InternalStatistic
-import se.inera.intyg.srs.persistence.InternalStatisticRepository
 import se.inera.intyg.srs.persistence.NationalStatistic
 import se.inera.intyg.srs.persistence.NationalStatisticRepository
 import se.inera.intyg.srs.service.YOUTHS
@@ -24,28 +22,20 @@ class StatisticModuleTest {
 
     private val DIAGNOSIS_A1234 = "A1234"
     private val DIAGNOSIS_A12 = "A12"
-//    private val A12_URL = "http://test.se/A12"
-//    private val B12_URL = "http://test.se/B12"
     private val DIAGNOSIS_B12 = "B12"
     private val aDate = LocalDateTime.of(2017, 1, 1, 1, 1)
 
     lateinit var nationalStatisticsRepo: NationalStatisticRepository
-    lateinit var repo: InternalStatisticRepository
     lateinit var module: StatisticModule
 
     @Before
     fun setup() {
-        repo = mock()
         nationalStatisticsRepo = mock()
-        module = StatisticModule(repo, nationalStatisticsRepo)
+        module = StatisticModule(nationalStatisticsRepo)
         initData()
     }
 
     private fun initData() {
-//        whenever(repo.findByDiagnosisId(DIAGNOSIS_A12))
-//                .thenReturn(listOf(InternalStatistic("A12", A12_URL, aDate)))
-//        whenever(repo.findByDiagnosisId(DIAGNOSIS_B12))
-//                .thenReturn(listOf(InternalStatistic("B12", B12_URL, aDate)))
         whenever(nationalStatisticsRepo.findByDiagnosisIdOrderByDayIntervalMaxExcl(DIAGNOSIS_A12))
                 .thenReturn(listOf(NationalStatistic("A12", 0,30,100,
                         100, LocalDateTime.now())))

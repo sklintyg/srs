@@ -17,12 +17,7 @@ data class Recommendation(
 
         val recommendationText: String,
 
+        // We do not use generated id:s here since we use the id's from the indata file
         @Id
-//        @GeneratedValue(strategy = GenerationType.IDENTITY)
         val id: Long = 0
 )
-//{
-//
-//    override fun toString() =
-//            "Recommendation(id=$id, type=$type, recommendationText='$recommendationText')"
-//}

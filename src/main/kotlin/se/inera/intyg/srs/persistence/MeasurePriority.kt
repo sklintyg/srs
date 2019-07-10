@@ -18,7 +18,7 @@ class MeasurePriority(
         var measure: Measure? =null,
 
         @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-        val id: Long = 0
+        val id: Long = -1
 
 ) {
 

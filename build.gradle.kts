@@ -59,10 +59,10 @@ task<Test>("restAssuredTest") {
 //}
 //task<BootRun>("bootRun") {
 //    systemProperties(systemProperties)
-//    systemProperty("spring.active.profiles", "runtime,it,bootstrap,scheduledUpdate")
+//    systemProperty("spring.active.profiles", "runtime,it")
 //}
 //tasks.withType<BootRun> {
-//    systemProperty("spring.active.profiles", "runtime,it,bootstrap,scheduledUpdate")
+//    systemProperty("spring.active.profiles", "runtime,it")
 //    systemProperty("java.library.path", "/usr/local/lib/R/3.5/site-library/rJava/jri")
 //    systemProperty("server.port","8081")
 //    systemProperty("srs.resources.folder", "classpath:")

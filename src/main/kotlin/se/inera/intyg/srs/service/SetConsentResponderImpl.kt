@@ -13,7 +13,7 @@ class SetConsentResponderImpl(val consentModule: ConsentModule) : SetConsentResp
     private val log = LogManager.getLogger()
 
     override fun setConsent(request: SetConsentRequestType): SetConsentResponseType {
-        log.info("Set consent request received")
+        log.debug("Set consent request received")
         val response = SetConsentResponseType()
         val result = consentModule.setConsent(request.personId, request.isSamtycke, request.vardenhetId.extension)
         response.resultCode = result

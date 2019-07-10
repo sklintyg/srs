@@ -34,30 +34,30 @@
          <urn:prediktionsfaktorer>
             <urn:postnummer>80000</urn:postnummer>
             <!--1 or more repetitions:-->            
-            		<urn:fragasvar>
-            <urn:frageid-srs>SA_SyssStart_fct</urn:frageid-srs>
-            <urn:svarsid-srs>work</urn:svarsid-srs>
-		</urn:fragasvar>
-        <urn:fragasvar>
-            <urn:frageid-srs>SA_1_gross</urn:frageid-srs>
-            <urn:svarsid-srs>(180,366]</urn:svarsid-srs>
-		</urn:fragasvar>
-        <urn:fragasvar>
-            <urn:frageid-srs>SA_ExtentFirst</urn:frageid-srs>
-            <urn:svarsid-srs>1</urn:svarsid-srs>
-		</urn:fragasvar>
-        <urn:fragasvar>
-            <urn:frageid-srs>edu_cat_fct</urn:frageid-srs>
-            <urn:svarsid-srs>>12 years</urn:svarsid-srs>
-		</urn:fragasvar>
-        <urn:fragasvar>
-            <urn:frageid-srs>Visits_yearBefore_all_r1_median</urn:frageid-srs>
-            <urn:svarsid-srs>aboveMedian</urn:svarsid-srs>
-		</urn:fragasvar>
-        <urn:fragasvar>
-            <urn:frageid-srs>birth_cat_fct</urn:frageid-srs>
-            <urn:svarsid-srs>SW</urn:svarsid-srs>
-		</urn:fragasvar>
+ 			<urn:fragasvar>
+				<urn:frageid-srs>SA_1_gross</urn:frageid-srs>
+				<urn:svarsid-srs>0</urn:svarsid-srs>
+			</urn:fragasvar>
+			<urn:fragasvar>
+				<urn:frageid-srs>any_visits_-365_+6_F430</urn:frageid-srs>
+				<urn:svarsid-srs>0</urn:svarsid-srs>
+			</urn:fragasvar>
+			<urn:fragasvar>
+				<urn:frageid-srs>any_visits_-365_+6_F438</urn:frageid-srs>
+				<urn:svarsid-srs>1</urn:svarsid-srs>
+			</urn:fragasvar>
+			<urn:fragasvar>
+				<urn:frageid-srs>SA_ExtentFirst</urn:frageid-srs>
+				<urn:svarsid-srs>1</urn:svarsid-srs>
+			</urn:fragasvar>
+			<urn:fragasvar>
+				<urn:frageid-srs>SA_SyssStart_fct</urn:frageid-srs>
+				<urn:svarsid-srs>unemp</urn:svarsid-srs>
+			</urn:fragasvar>
+			<urn:fragasvar>
+				<urn:frageid-srs>birth_cat_fct</urn:frageid-srs>
+				<urn:svarsid-srs>SW</urn:svarsid-srs>
+			</urn:fragasvar>
          </urn:prediktionsfaktorer>
          <urn:individer>
             <urn:individ>

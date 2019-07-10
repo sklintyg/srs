@@ -7,7 +7,6 @@ import se.inera.intyg.clinicalprocess.healthcond.srs.setownopinion.v1.SetOwnOpin
 import se.inera.intyg.clinicalprocess.healthcond.srs.setownopinion.v1.SetOwnOpinionResponseType
 import se.inera.intyg.srs.persistence.ProbabilityRepository
 import se.inera.intyg.srs.vo.OwnOpinionModule
-import java.lang.RuntimeException
 
 @Service
 class SetOwnOpinionResponderImpl(val ownOpinionModule: OwnOpinionModule,
@@ -16,11 +15,12 @@ class SetOwnOpinionResponderImpl(val ownOpinionModule: OwnOpinionModule,
     private val log = LogManager.getLogger()
 
     override fun setOwnOpinion(request: SetOwnOpinionRequestType): SetOwnOpinionResponseType {
-        log.info("Set own opinion request received")
-        val probability = probabilityRepo.findFirstByCertificateIdAndDiagnosisOrderByTimestampDesc(request.intygId.extension, request.diagnos.code)
-        if (probability == null) {
+        log.debug("Set own opinion request received")
+        val probabilities = probabilityRepo.findByCertificateIdAndDiagnosisOrderByTimestampDesc(request.intygId.extension, request.diagnos.code)
+        if (probabilities.isEmpty()) {
             throw RuntimeException("Found no stored probability to store the opinion on")
         }
+        val probability = probabilities[0]
         val response = SetOwnOpinionResponseType()
         val result = ownOpinionModule.setOwnOpinion(request.vardgivareId.extension,
                 request.vardenhetId.extension,

@@ -363,4 +363,63 @@
                                  referencedColumnNames="id"/>
     </changeSet>
 
+    <changeSet id="19" author="ch">
+
+        <dropForeignKeyConstraint baseTableName="prediction_priority" constraintName="priority_diagnosis_fk" />
+
+        <dropForeignKeyConstraint baseTableName="prediction_priority" constraintName="priority_question_fk" />
+
+        <dropForeignKeyConstraint baseTableName="prediction_response" constraintName="response_question_fk" />
+
+        <dropForeignKeyConstraint baseTableName="patient_answer" constraintName="patient_answer_prediction_response_fk" />
+
+
+        <addAutoIncrement columnDataType="BIGINT"
+                          columnName="id"
+                          incrementBy="1"
+                          startWith="1"
+                          tableName="prediction_question"/>
+
+        <addAutoIncrement columnDataType="BIGINT"
+                          columnName="id"
+                          incrementBy="1"
+                          startWith="1"
+                          tableName="prediction_response"/>
+
+        <addAutoIncrement columnDataType="BIGINT"
+                          columnName="id"
+                          incrementBy="1"
+                          startWith="1"
+                          tableName="prediction_diagnosis"/>
+
+        <addForeignKeyConstraint constraintName="priority_diagnosis_fk"
+                                 baseTableName="prediction_priority"
+                                 baseColumnNames="diagnosis_id"
+                                 referencedTableName="prediction_diagnosis"
+                                 referencedColumnNames="id"/>
+
+
+        <addForeignKeyConstraint constraintName="priority_question_fk"
+                                 baseTableName="prediction_priority"
+                                 baseColumnNames="question_id"
+                                 referencedTableName="prediction_question"
+                                 referencedColumnNames="id"/>
+
+
+        <addForeignKeyConstraint constraintName="response_question_fk"
+                                 baseTableName="prediction_response"
+                                 baseColumnNames="question_id"
+                                 referencedTableName="prediction_question"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint constraintName="patient_answer_prediction_response_fk"
+                                 baseTableName="patient_answer"
+                                 baseColumnNames="prediction_response_id"
+                                 referencedTableName="prediction_response"
+                                 referencedColumnNames="id"/>
+
+        <dropTable tableName="internal_statistic" />
+
+    </changeSet>
+
 </databaseChangeLog>
