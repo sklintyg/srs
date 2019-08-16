@@ -93,7 +93,7 @@ dependencies {
     compile(kotlin("reflect", kotlinVersion))
 
     compile("se.inera.intyg.clinicalprocess.healthcond.srs:intyg-clinicalprocess-healthcond-srs-schemas:0.0.13")
-    compile("se.riv.itintegration.monitoring:itintegration-monitoring-schemas:1.0.0.4")
+    compile("se.riv.itintegration.monitoring:itintegration-monitoring-schemas:1.0.0.5")
 
     // External dependencies
     implementation("org.springframework.boot:spring-boot-starter-web")
