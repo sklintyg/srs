@@ -1,123 +1,137 @@
-import org.gradle.api.publish.maven.MavenPublication
-import org.springframework.boot.gradle.tasks.bundling.BootWar
-//import org.springframework.boot.gradle.tasks.run.BootRun
+import io.spring.gradle.dependencymanagement.DependencyManagementPlugin
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import se.inera.intyg.IntygPluginCheckstyleExtension
+import se.inera.intyg.JavaVersion
 import se.inera.intyg.TagReleaseTask
-import se.inera.intyg.VersionPropertyFileTask
+import se.inera.intyg.srs.build.Config.Dependencies
+import se.inera.intyg.srs.build.Config.Jvm
+import se.inera.intyg.srs.build.Config.TestDependencies
 
 plugins {
-    war
+    kotlin("jvm")
+    maven
     `maven-publish`
 
-    kotlin("jvm") version "1.3.31"
-    kotlin("plugin.spring") version "1.3.31"
-    kotlin("plugin.jpa") version "1.3.31"
-
-    id("io.spring.dependency-management") version "1.0.7.RELEASE"
-    id("se.inera.intyg.plugin.common") version "1.0.62"
-    id("org.springframework.boot") version "2.1.5.RELEASE"
-    id("org.ajoberstar.grgit") version "2.0.0"
-    // FIXME: doesn't work anymore
-    //id("org.jlleitschuh.gradle.ktlint") version "3.0.0"
+    id("se.inera.intyg.plugin.common") apply false
+    id("io.spring.dependency-management")
 }
 
-// harmonize output dir with openshift pipeline (convention)
-rootProject.buildDir = file("${rootDir}/web/build")
+allprojects {
+    group = "se.inera.intyg.srs"
+    version = System.getProperty("buildVersion", "0-SNAPSHOT")
 
-group = "se.inera.intyg.srs"
-version = System.getProperty("buildVersion") ?: "0.0.1-SNAPSHOT"
+    apply(plugin = "maven-publish")
 
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    kotlinOptions { jvmTarget = "1.8" }
-}
-
-val versionTask = task<VersionPropertyFileTask>("createVersionPropertyFile")
-tasks["war"].dependsOn(versionTask)
-
-task<TagReleaseTask>("tagRelease")
-
-tasks.withType<Test> {
-    exclude("**/*IT*")
-}
-
-tasks.getByName<BootWar>("bootWar"){
-    manifest {
-        attributes("Main-Class" to "org.springframework.boot.loader.PropertiesLauncher")
-        attributes("Start-Class" to "se.inera.intyg.srs.ApplicationKt")
+    extra.apply {
+        set("errorproneExclude", "true") //FIXME: Errorprone does not support Kotlin and KAPT. Until it does this will exclude the errorprone task for this project
+        set("detekt", "true") // If '-P codeQuality' is set as a project property, this property activates the kotlin code analysis plugin Detekt
     }
-}
 
-task<Test>("restAssuredTest") {
-    outputs.upToDateWhen { false }
-    systemProperty("integration.tests.baseUrl", System.getProperty("baseUrl") ?: "http://localhost:8080/")
-    include("**/*IT*")
-    excludes.clear()
-}
-
-// Lab settings for spring boot
-//run {
-//    systemProperties(System.getProperties())
-//}
-//task<BootRun>("bootRun") {
-//    systemProperties(systemProperties)
-//    systemProperty("spring.active.profiles", "runtime,it")
-//}
-//tasks.withType<BootRun> {
-//    systemProperty("spring.active.profiles", "runtime,it")
-//    systemProperty("java.library.path", "/usr/local/lib/R/3.5/site-library/rJava/jri")
-//    systemProperty("server.port","8081")
-//    systemProperty("srs.resources.folder", "classpath:")
-//    systemProperty("loader.path", "WEB-INF/lib-provided,WEB-INF/lib,WEB-INF/classes")
-//}
-
-publishing {
-    publications {
-        create<MavenPublication>("warFile") {
-            from(components["web"])
-        }
-    }
     repositories {
+        mavenLocal()
         maven {
             url = uri("https://build-inera.nordicmedtest.se/nexus/repository/releases/")
-            credentials {
-                username = System.getProperty("nexusUsername")
-                password = System.getProperty("nexusPassword")
+            mavenContent {
+                releasesOnly()
+            }
+        }
+        maven {
+            url = uri("https://build-inera.nordicmedtest.se/nexus/repository/snapshots/")
+            mavenContent {
+                snapshotsOnly()
+            }
+        }
+        mavenCentral()
+        jcenter()
+    }
+
+    publishing {
+        repositories {
+            maven {
+                url = uri("https://build-inera.nordicmedtest.se/nexus/repository/releases/")
+                credentials {
+                    username = System.getProperty("nexusUsername")
+                    password = System.getProperty("nexusPassword")
+                }
             }
         }
     }
 }
 
-dependencies {
-    val kotlinVersion = "1.3.21"
+apply(plugin = "se.inera.intyg.plugin.common")
 
-    compile(kotlin("stdlib", kotlinVersion))
-    compile(kotlin("reflect", kotlinVersion))
+subprojects {
+    apply(plugin = "org.gradle.maven")
+    apply(plugin = "org.gradle.maven-publish")
+    apply(plugin = "se.inera.intyg.plugin.common")
+    apply(plugin = "kotlin")
 
-    compile("se.inera.intyg.clinicalprocess.healthcond.srs:intyg-clinicalprocess-healthcond-srs-schemas:0.0.13")
-    compile("se.riv.itintegration.monitoring:itintegration-monitoring-schemas:1.0.0.5")
+    apply<DependencyManagementPlugin>()
 
-    // External dependencies
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-web-services")
-    implementation("org.apache.cxf:cxf-spring-boot-starter-jaxws:3.2.5")
+    configure<IntygPluginCheckstyleExtension> {
+        javaVersion = JavaVersion.JAVA11
+        showViolations = true
+        ignoreFailures = false
+    }
 
-    compile("org.liquibase:liquibase-core:3.6.3")
-    compile("com.fasterxml.jackson.module:jackson-module-kotlin:2.9.4")
-    compile("org.nuiton.thirdparty:JRI:0.9-9")
-    compile("com.google.guava:guava:23.0")
-    compile("org.apache.poi:poi-ooxml:4.0.1")
+    dependencyManagement {
+        imports {
+            mavenBom("org.springframework:spring-framework-bom:${Dependencies.springVersion}")
+            mavenBom("org.springframework.boot:spring-boot-dependencies:${Dependencies.springBootVersion}") {
+                bomProperty("kotlin.version", Dependencies.kotlinVersion)
+            }
+            mavenBom("org.junit:junit-bom:${TestDependencies.junit5Version}")
+        }
+    }
 
-    runtime("com.h2database:h2")
-    runtime("mysql:mysql-connector-java")
+    dependencies {
+        annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
-    testCompile("org.springframework.boot:spring-boot-starter-test")
-    testCompile("com.jayway.restassured:rest-assured:2.8.0")
-    testCompile("com.nhaarman:mockito-kotlin-kt1.1:1.5.0")
-    testCompile("org.exparity:hamcrest-date:2.0.1")
+        compileOnly("com.github.spotbugs:spotbugs-annotations:${Dependencies.spotbugsAnnotationsVersion}")
+        // spotbugs-annotations Example usage: @SuppressFBWarnings("RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE")
+
+        implementation("jakarta.jws:jakarta.jws-api:${Dependencies.jakartaJwsVersion}")
+        implementation("com.sun.activation:javax.activation:1.2.0")
+        implementation("javax.xml.ws:jaxws-api:${Dependencies.jaxWsVersion}")
+
+        implementation("org.apache.commons:commons-lang3")
+        implementation("com.google.guava:guava:${Dependencies.guavaVersion}")
+
+        testImplementation("org.springframework.boot:spring-boot-starter-test")
+        testImplementation("org.junit.jupiter:junit-jupiter-api")
+        testImplementation("org.junit.platform:junit-platform-runner") {
+            exclude(module = "junit")
+        }
+        testImplementation("org.mockito:mockito-core:${TestDependencies.mockitoCoreVersion}")
+        testImplementation("org.mockito:mockito-junit-jupiter:${TestDependencies.mockitoCoreVersion}")
+
+        testImplementation(kotlin("test"))
+
+        testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+    }
+
+    tasks {
+
+        withType<Test> {
+            useJUnitPlatform()
+        }
+
+        withType<JavaCompile> {
+            sourceCompatibility = Jvm.sourceCompatibility
+            targetCompatibility = Jvm.targetCompatibility
+            options.encoding = Jvm.encoding
+        }
+
+        withType<KotlinCompile> {
+            kotlinOptions.jvmTarget = Jvm.kotlinJvmTarget
+        }
+    }
 }
 
-repositories {
-    mavenLocal()
-    maven("https://build-inera.nordicmedtest.se/nexus/repository/releases/")
-    mavenCentral()
+tasks {
+    register<TagReleaseTask>("tagRelease")
+}
+
+dependencies {
+    subprojects.forEach { archives(it) }
 }
