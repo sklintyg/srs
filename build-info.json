@@ -1,0 +1,5 @@
+{
+  "appVersion": "1.2.0",
+  "buildArgs": "--refresh-dependencies clean build",
+  "tests": [ "restAssuredTest" ]
+}
