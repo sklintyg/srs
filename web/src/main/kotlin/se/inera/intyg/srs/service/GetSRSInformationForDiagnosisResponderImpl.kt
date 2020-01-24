@@ -1,7 +1,7 @@
 package se.inera.intyg.srs.service
 
 import org.apache.cxf.annotations.SchemaValidation
-import org.apache.logging.log4j.LogManager
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformationfordiagnosis.v1.GetSRSInformationForDiagnosisRequestType
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformationfordiagnosis.v1.GetSRSInformationForDiagnosisResponderInterface
@@ -16,7 +16,7 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v2.ResultCodeEnum
 class GetSRSInformationForDiagnosisResponderImpl(val measureModule: MeasureInformationModule,
                                                  val statisticModule: StatisticModule) : GetSRSInformationForDiagnosisResponderInterface {
 
-    private val log = LogManager.getLogger()
+    private val log = LoggerFactory.getLogger(javaClass)
 
     override fun getSRSInformationForDiagnosis(request: GetSRSInformationForDiagnosisRequestType): GetSRSInformationForDiagnosisResponseType {
         log.debug("Received request for diagnosis ${request.diagnos.code}")

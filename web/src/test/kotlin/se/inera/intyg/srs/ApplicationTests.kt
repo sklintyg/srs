@@ -22,7 +22,7 @@ import se.inera.intyg.srs.vo.TestPredictionAdapter
  */
 @RunWith(SpringRunner::class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@TestPropertySource(locations = arrayOf("classpath:test.properties"))
+@TestPropertySource(locations = arrayOf("classpath:application-test.properties"))
 @ContextConfiguration(loader= AnnotationConfigContextLoader::class)
 open class ApplicationTests {
 

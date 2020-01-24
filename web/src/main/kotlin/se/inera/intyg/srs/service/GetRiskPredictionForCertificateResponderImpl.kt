@@ -1,10 +1,9 @@
 package se.inera.intyg.srs.service
 
-import org.apache.logging.log4j.LogManager
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import riv.clinicalprocess.healthcond.srs.types._1.EgenBedomningRiskType
-
 import se.inera.intyg.clinicalprocess.healthcond.srs.getriskpredictionforcertificate.v1.GetRiskPredictionForCertificateRequestType
 import se.inera.intyg.clinicalprocess.healthcond.srs.getriskpredictionforcertificate.v1.GetRiskPredictionForCertificateResponderInterface
 import se.inera.intyg.clinicalprocess.healthcond.srs.getriskpredictionforcertificate.v1.GetRiskPredictionForCertificateResponseType
@@ -17,7 +16,7 @@ import se.inera.intyg.srs.util.PredictionInformationUtil
 @org.apache.cxf.annotations.SchemaValidation(type = org.apache.cxf.annotations.SchemaValidation.SchemaValidationType.BOTH)
 class GetRiskPredictionForCertificateResponderImpl(@Autowired val probabilityRepository: ProbabilityRepository) :
         GetRiskPredictionForCertificateResponderInterface {
-    private val log = LogManager.getLogger()
+    private val log = LoggerFactory.getLogger(javaClass)
 
     override fun getRiskPredictionForCertificate(p0: GetRiskPredictionForCertificateRequestType?) :
             GetRiskPredictionForCertificateResponseType {

@@ -1,6 +1,6 @@
 package se.inera.intyg.srs.vo
 
-import org.apache.logging.log4j.LogManager
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Atgard
 import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Atgardsrekommendation
@@ -18,14 +18,14 @@ class MeasureInformationModule(val measureRepo: MeasureRepository) : Information
 
     private val MIN_ID_POSITIONS = 3
 
-    private val log = LogManager.getLogger()
+    private val log = LoggerFactory.getLogger(javaClass)
 
     override fun getInfoForDiagnosis(diagnosisId: String): Atgardsrekommendation =
             createRecommendation(Diagnosis(diagnosisId))
 
     override fun getInfo(persons: List<Person>, extraParams: Map<String, Map<String, String>>,
                          careUnitHsaId: String, calculateIndividual: Boolean): Map<Person, List<Atgardsrekommendation>> {
-        log.debug(persons)
+        log.debug("Persons: $persons")
         if (calculateIndividual) {
             throw RuntimeException("calculateIndividual not supported")
         }

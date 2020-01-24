@@ -1,6 +1,6 @@
 package se.inera.intyg.srs.service
 
-import org.apache.logging.log4j.LogManager
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import se.inera.intyg.clinicalprocess.healthcond.srs.getconsent.v1.GetConsentRequestType
 import se.inera.intyg.clinicalprocess.healthcond.srs.getconsent.v1.GetConsentResponderInterface
@@ -11,7 +11,7 @@ import se.inera.intyg.srs.vo.ConsentModule
 @Service
 class GetConsentResponderImpl(val consentModule: ConsentModule) : GetConsentResponderInterface {
 
-    private val log = LogManager.getLogger()
+    private val log = LoggerFactory.getLogger(javaClass)
 
     override fun getConsent(request: GetConsentRequestType): GetConsentResponseType {
         log.debug("Get consent request received for care unit hsaId: ${request.vardenhetId.extension}")

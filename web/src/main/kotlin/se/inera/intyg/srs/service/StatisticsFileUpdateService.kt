@@ -1,10 +1,10 @@
 package se.inera.intyg.srs.service
 
-import org.apache.logging.log4j.LogManager
 import org.apache.poi.ss.usermodel.CellType
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.xssf.usermodel.XSSFSheet
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.io.ResourceLoader
 import org.springframework.stereotype.Component
@@ -22,7 +22,7 @@ class StatisticsFileUpdateService(@Value("\${statistics.national.file}") val nat
                                   val nationalStatisticsFileRepo: NationalStatisticRepository,
                                   val resourceLoader: ResourceLoader) {
 
-    private val log = LogManager.getLogger()
+    private val log = LoggerFactory.getLogger(javaClass)
 
     final fun doUpdate() {
         doRemoveOldStatistics()

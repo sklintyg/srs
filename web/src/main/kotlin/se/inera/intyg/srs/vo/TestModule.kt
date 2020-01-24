@@ -1,6 +1,6 @@
 package se.inera.intyg.srs.vo
 
-import org.apache.logging.log4j.LogManager
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
 import org.springframework.core.io.Resource
@@ -47,7 +47,7 @@ class TestModule(private val consentRepo: ConsentRepository,
                  private val resourceLoader: ResourceLoader,
                  @Value("\${resources.folder}") private val resourcesFolder: String) {
 
-    private val log = LogManager.getLogger();
+    private val log = LoggerFactory.getLogger(javaClass);
     private val uniqueId = AtomicLong(1000)
 
     fun createMeasure(diagnosisId: String, diagnosisText: String, recommendations: List<Pair<String,String>>): Measure {

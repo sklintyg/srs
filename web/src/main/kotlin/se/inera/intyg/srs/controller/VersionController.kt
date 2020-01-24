@@ -1,7 +1,7 @@
 package se.inera.intyg.srs.controller
 
 import org.apache.commons.lang3.StringUtils
-import org.apache.logging.log4j.LogManager
+import org.slf4j.LoggerFactory
 import org.springframework.boot.info.BuildProperties
 import org.springframework.core.env.Environment
 import org.springframework.http.MediaType
@@ -14,14 +14,14 @@ import java.time.ZoneId
 
 @RestController
 class VersionController(private val buildProperties: BuildProperties, private val environment:Environment) {
-    private val _log = LogManager.getLogger()
+    private val LOG = LoggerFactory.getLogger(javaClass)
 
     @RequestMapping(
             value = ["/version"],
             method = [(RequestMethod.GET)],
             produces = [(MediaType.APPLICATION_JSON_VALUE)])
     fun version(): ResponseEntity<VersionInfo> {
-        _log.info("Serving version")
+        LOG.info("Serving version")
 
         val applicationName = buildProperties.artifact
         val buildVersion = buildProperties.version

@@ -1,7 +1,7 @@
 package se.inera.intyg.srs.service
 
 import org.apache.cxf.annotations.SchemaValidation
-import org.apache.logging.log4j.LogManager
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Atgardsrekommendationer
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Bedomningsunderlag
@@ -45,7 +45,7 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
                                      val predictionModule: PredictionInformationModule,
                                      val statisticModule: StatisticModule) : GetSRSInformationResponderInterface {
 
-    private val log = LogManager.getLogger()
+    private val log = LoggerFactory.getLogger(javaClass)
 
     override fun getSRSInformation(request: GetSRSInformationRequestType): GetSRSInformationResponseType {
         log.debug("Received request from ${request.konsumentId.extension}")

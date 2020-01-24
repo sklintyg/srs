@@ -1,6 +1,6 @@
 package se.inera.intyg.srs.service
 
-import org.apache.logging.log4j.LogManager
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import se.inera.intyg.clinicalprocess.healthcond.srs.setownopinion.v1.SetOwnOpinionRequestType
 import se.inera.intyg.clinicalprocess.healthcond.srs.setownopinion.v1.SetOwnOpinionResponderInterface
@@ -12,7 +12,7 @@ import se.inera.intyg.srs.vo.OwnOpinionModule
 class SetOwnOpinionResponderImpl(val ownOpinionModule: OwnOpinionModule,
                                  val probabilityRepo: ProbabilityRepository) : SetOwnOpinionResponderInterface {
 
-    private val log = LogManager.getLogger()
+    private val log = LoggerFactory.getLogger(javaClass)
 
     override fun setOwnOpinion(request: SetOwnOpinionRequestType): SetOwnOpinionResponseType {
         log.debug("Set own opinion request received")

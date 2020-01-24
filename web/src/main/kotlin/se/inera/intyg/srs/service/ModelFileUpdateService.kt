@@ -1,6 +1,6 @@
 package se.inera.intyg.srs.service
 
-import org.apache.logging.log4j.LogManager
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.io.Resource
 import org.springframework.core.io.ResourceLoader
@@ -16,7 +16,7 @@ import java.io.File
 class ModelFileUpdateService(val resourceLoader: ResourceLoader,
         @Value("\${model.location-pattern}") val locationPattern: String) {
 
-    private val log = LogManager.getLogger()
+    private val log = LoggerFactory.getLogger(javaClass)
 
     private val DATA_FILE_EXTENSION = ".rds"
 

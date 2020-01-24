@@ -1,7 +1,7 @@
 package se.inera.intyg.srs.vo
 
-import org.apache.logging.log4j.LogManager
 import org.rosuda.JRI.Rengine
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
@@ -10,10 +10,10 @@ import se.inera.intyg.srs.service.LOCATION_KEY
 import se.inera.intyg.srs.service.ModelFileUpdateService
 import se.inera.intyg.srs.service.QUESTIONS_AND_ANSWERS_KEY
 import se.inera.intyg.srs.service.REGION_KEY
-import java.io.File
 import java.io.BufferedReader
+import java.io.File
 import java.time.LocalDateTime
-import java.util.Locale
+import java.util.*
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
 import javax.annotation.PreDestroy
@@ -27,7 +27,7 @@ open class RAdapter(val modelService: ModelFileUpdateService,
     private val MIN_ID_POSITIONS = 3
     private val MAX_ID_POSITIONS = 5
 
-    private val log = LogManager.getLogger()
+    private val log = LoggerFactory.getLogger(javaClass)
 
     private val rengine: Rengine = Rengine(arrayOf("--vanilla"), false, null)
 
