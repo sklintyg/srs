@@ -1,6 +1,6 @@
 package se.inera.intyg.srs.vo
 
-import org.apache.logging.log4j.LogManager
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Diagnosstatistik
 import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Statistikdata
@@ -31,7 +31,7 @@ class StatisticModule(val nationalStatisticRepo: NationalStatisticRepository) : 
         return statistics
     }
 
-    private val log = LogManager.getLogger()
+    private val log = LoggerFactory.getLogger(javaClass)
 
     private fun createInfo(person: Person): List<Diagnosstatistik> {
         val outgoingStatistik = mutableListOf<Diagnosstatistik>()

@@ -99,12 +99,12 @@ class StatisticsFileUpdateService(@Value("\${statistics.national.file}") val nat
                         log.debug("Creating or Updating National statistic diagnosisId: {}, days interval: {} with qty: {}", diagnosisId, days, qty)
                         var statEntryOpt = nationalStatisticsFileRepo.findOneByDiagnosisIdAndDayIntervalMaxExcl(diagnosisId, days.second)
                         if (!statEntryOpt.isPresent()) {
-                            log.info("Creating National statistic diagnosisId: {}, days interval: {} with qty: {}", diagnosisId, days, qty)
+                            log.debug("Creating National statistic diagnosisId: {}, days interval: {} with qty: {}", diagnosisId, days, qty)
                             var statEntry = NationalStatistic(diagnosisId, days.first, days.second, qty, accumulatedQtyForDiagUntilDays, fileModified)
                             nationalStatisticsFileRepo.save(statEntry)
                         } else if (statEntryOpt.get().intervalQuantity != qty
                                 || statEntryOpt.get().accumulatedQuantity != accumulatedQtyForDiagUntilDays) {
-                            log.info("Updating National statistic diagnosisId: {}, days interval: {} with qty: {}", diagnosisId, days, qty)
+                            log.debug("Updating National statistic diagnosisId: {}, days interval: {} with qty: {}", diagnosisId, days, qty)
                             var statEntry = statEntryOpt.get()
                             statEntry.intervalQuantity = qty
                             statEntry.accumulatedQuantity = accumulatedQtyForDiagUntilDays
@@ -114,6 +114,7 @@ class StatisticsFileUpdateService(@Value("\${statistics.national.file}") val nat
                     }
                 }
                 log.debug("Imported national statistics: {}", diagnosisMap)
+                log.info("Finished import of national statistics")
             }
         }
     }

@@ -1,8 +1,8 @@
 package se.inera.intyg.srs.service
 
 import com.google.common.collect.Lists
-import org.apache.logging.log4j.LogManager
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.io.ResourceLoader
 import org.springframework.stereotype.Component
@@ -27,13 +27,14 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
                                       val predictPrioRepo: PredictionPriorityRepository,
                                       val resourceLoader: ResourceLoader) {
 
-    private val log = LogManager.getLogger()
+    private val log = LoggerFactory.getLogger(javaClass)
 
     final fun doUpdate() {
         log.info("Removing old questions and responses")
         doRemoveOldQuestionsAndResponses()
         log.info("Updating questions and responses")
         doUpdateQuestionsAndResponses()
+        log.info("Finished update of model variables")
     }
 
     private final fun doRemoveOldQuestionsAndResponses() {
@@ -64,7 +65,7 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
     )
 
     private final fun readVariables(workbook: XSSFWorkbook): List<Variable> {
-        log.info("Reading variables sheet")
+        log.debug("Reading variables sheet")
         val sheet = workbook.getSheet("Kodning av variabelnamn")
         var readMoreRows = true
         var rowNumber = 1
@@ -90,7 +91,7 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
         return variables
     }
     private final fun readVariableFactorValues(workbook: XSSFWorkbook): Map<String, List<VariableFactorValue>> {
-        log.info("Reading factor values sheet")
+        log.debug("Reading factor values sheet")
         val sheet = workbook.getSheet("Kodning av värden för factor")
         var readMoreRows = true
         var rowNumber = 1
@@ -126,7 +127,7 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
      * Returns a map of variableName -> List of diagnosisVariable
      */
     private final fun readDiagnosisVariables(workbook: XSSFWorkbook): Map<String, List<DiagnosisVariable>> {
-        log.info("Reading diagnosis variable combinations sheet")
+        log.debug("Reading diagnosis variable combinations sheet")
         val sheet = workbook.getSheet("Variabler per diagnos")
         var readMoreRows = true
         var rowNumber = 1
@@ -156,11 +157,14 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
         return responseMap
     }
 
+    /**
+     * Creates or updates a response alternative for a prediction question
+     */
     private final fun storeResponse(variableFactorValue: VariableFactorValue, predictionQuestion: PredictionQuestion): PredictionResponse {
         var response: PredictionResponse? = null
         responseRepo.findPredictionResponseByQuestionAndResponse(variableFactorValue.varName,
                 variableFactorValue.responseId) ?.let { existingResponse ->
-            log.info("Updating existing prediction response with question prediction id '${variableFactorValue.varName}' " +
+            log.debug("Updating existing prediction response with question prediction id '${variableFactorValue.varName}' " +
                     "and response prediction id '${variableFactorValue.responseId}'")
             response = responseRepo.save(existingResponse.copy(
                     answer = variableFactorValue.responseText,
@@ -170,11 +174,12 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
                     question = predictionQuestion
             ))
         } ?: run {
-            log.info("Creating prediction response with question prediction id '${variableFactorValue.varName}' " +
+            log.debug("Creating prediction response with question prediction id '${variableFactorValue.varName}' " +
                     "and response prediction id '${variableFactorValue.responseId}'")
             response = responseRepo.save(PredictionResponse(variableFactorValue.responseText,
                     variableFactorValue.responseId, variableFactorValue.isDefault, variableFactorValue.order!!, predictionQuestion))
         }
+
         return response!!
     }
 
@@ -187,16 +192,16 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
         // Check if we have an existing question with the same prediction id/variable name
         questionRepo.findByPredictionId(variable.name)?.let { existingQuestion ->
             // if existing, then update
-            log.info("Updating existing question with question prediction id '${variable.name}'")
+            log.debug("Updating existing question with question prediction id '${variable.name}'")
             question = questionRepo.save(existingQuestion.copy(
                     question = variable.questionText!!,
                     helpText = variable.helpText!!,
                     answers = factorValues.map { variableFactorValue ->
-                        storeResponse(variableFactorValue, question!!)})
+                        storeResponse(variableFactorValue, existingQuestion)})
             )
         } ?: run {
             // if not existing (null) create a new one
-            log.info("Creating question with question prediction id '${variable.name}'")
+            log.debug("Creating question with question prediction id '${variable.name}'")
             question = questionRepo.save(PredictionQuestion(variable.questionText!!, variable.helpText!!, variable.name))
             // ... and a number of possible responses
             question?.answers = factorValues.map { variableFactorValue ->
@@ -207,7 +212,7 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
 
     private final fun storePredictionPriority(diagnosisVariable: DiagnosisVariable,
                                                        variableQuestionMap: Map<String, PredictionQuestion>): PredictionPriority {
-        log.info("Storing prediction priority '${diagnosisVariable.order}' for question '${diagnosisVariable.varName}'")
+        log.debug("Storing prediction priority '${diagnosisVariable.order}' for question '${diagnosisVariable.varName}'")
         // Just create new ones here since we are always clearing priorities on each run
         return predictPrioRepo.save(PredictionPriority(diagnosisVariable.order!!,
                 variableQuestionMap.getValue(diagnosisVariable.varName)))
@@ -221,7 +226,7 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
                                                variableQuestionMap: Map<String, PredictionQuestion>): PredictionDiagnosis {
         var diagnosis: PredictionDiagnosis? = null
         diagnosisRepo.findOneByDiagnosisId(diagnosisCode) ?. let { existingDiagnosis ->
-            log.info("Updating priorities on existing prediction diagnosis with diagnosis code '$diagnosisCode'")
+            log.debug("Updating priorities on existing prediction diagnosis with diagnosis code '$diagnosisCode'")
             diagnosis = diagnosisRepo.save(existingDiagnosis.copy(
                     diagnosisId = diagnosisCode,
                     prevalence = 0.0,
@@ -235,7 +240,7 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
                                 storePredictionPriority(diagnosisVariable, variableQuestionMap)
                             }))
         } ?: run {
-            log.info("Creating new prediction diagnosis with diagnosis code '$diagnosisCode' with variables $diagnosisVariables")
+            log.debug("Creating new prediction diagnosis with diagnosis code '$diagnosisCode' with variables $diagnosisVariables")
             // Prevalensen uppdateras i senare steg, vid inläsning av åtgärdsrekommendationer och prevalens
             diagnosis = diagnosisRepo.save(PredictionDiagnosis(diagnosisCode, 0.0,
                     // För varje kombination av diagnos och variabel (fråga)
@@ -264,7 +269,7 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
             val variableFactorValues = readVariableFactorValues(workbook) // map of variableName -> response list
             val variableDiagnoses = readDiagnosisVariables(workbook) // map of diagnosis -> diagnosis variable list (for the variable)
 
-            log.info("Persisting questions and responses")
+            log.debug("Persisting questions and responses")
             // För varje modellvariabel (fråga)
             val variableQuestionMap = variables
                     .filter { variable ->
@@ -282,7 +287,7 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
                         )
                     }.toMap()
 
-            log.info("Persisting question diagnoses and question priorities")
+            log.debug("Persisting question diagnoses and question priorities")
             // För varje diagnoskod
             variableDiagnoses.forEach { diagnosisCode, diagnosisVariables ->
                 // ... skapa en prediktions-diagnos
