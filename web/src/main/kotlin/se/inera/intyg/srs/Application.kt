@@ -22,6 +22,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.builder.SpringApplicationBuilder
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Profile
 import se.inera.intyg.clinicalprocess.healthcond.srs.getconsent.v1.GetConsentResponderInterface
 import se.inera.intyg.clinicalprocess.healthcond.srs.getdiagnosiscodes.v1.GetDiagnosisCodesResponderInterface
 import se.inera.intyg.clinicalprocess.healthcond.srs.getpredictionquestions.v1.GetPredictionQuestionsResponderInterface
@@ -32,9 +33,12 @@ import se.inera.intyg.clinicalprocess.healthcond.srs.setconsent.v1.SetConsentRes
 import se.inera.intyg.clinicalprocess.healthcond.srs.setownopinion.v1.SetOwnOpinionResponderInterface
 import se.riv.itintegration.monitoring.rivtabp21.v1.PingForConfigurationResponderInterface
 import java.text.SimpleDateFormat
+import java.time.Clock
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import javax.xml.ws.Endpoint
 
 @SpringBootApplication
@@ -72,6 +76,21 @@ open class Application : SpringBootServletInitializer() {
 
     override fun configure(application: SpringApplicationBuilder): SpringApplicationBuilder {
         return application.sources(Application::class.java)
+    }
+
+    @Bean
+    @Profile("!it")
+    open fun normalClock(): Clock {
+        return Clock.systemDefaultZone();
+    }
+
+    @Bean
+    @Profile("it")
+    open fun integrationTestClock(): Clock {
+        return Clock.fixed(
+                ZonedDateTime.of(2020, 1, 31, 23,59,0,0,
+                        ZoneId.systemDefault()).toInstant(),
+                ZoneId.systemDefault())
     }
 
     @Bean

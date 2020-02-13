@@ -4,10 +4,18 @@ import org.springframework.stereotype.Service
 import se.inera.intyg.srs.persistence.entity.Consent
 import se.inera.intyg.srs.persistence.repository.ConsentRepository
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.ResultCodeEnum
+import java.time.Clock
 import java.time.LocalDateTime
+import java.time.Month
+import java.time.ZoneOffset
 
 @Service
-class ConsentModule(private val consentRepo: ConsentRepository) {
+class ConsentModule(private val consentRepo: ConsentRepository, private var clock: Clock) {
+
+    // TODO: make consent needed date configurable
+    fun consentNeeded():Boolean = LocalDateTime.ofInstant(clock.instant(), ZoneOffset.systemDefault())
+            .isBefore(LocalDateTime.of(2020, Month.FEBRUARY, 1,0,0))
+
     fun getConsent(personnummer: String, vardenhetHsaId: String) : Consent? {
         return consentRepo.findConsentByPersonnummerAndVardenhetId(personnummer, vardenhetHsaId)
     }

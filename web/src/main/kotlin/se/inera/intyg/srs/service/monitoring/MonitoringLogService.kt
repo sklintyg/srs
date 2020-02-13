@@ -1,18 +1,22 @@
 package se.inera.intyg.srs.service.monitoring
 
-import org.apache.logging.log4j.LogManager
-import org.apache.logging.log4j.Marker
-import org.apache.logging.log4j.MarkerManager
+import org.slf4j.LoggerFactory
 import se.inera.intyg.srs.service.LOCATION_KEY
 import se.inera.intyg.srs.service.QUESTIONS_AND_ANSWERS_KEY
 import se.inera.intyg.srs.service.REGION_KEY
 
+/**
+ * Was used for monitoring predictions in an pre-OpenShift version where the ELK stack wasn't used for monitoring.
+ * At the moment it only prints a row in the log
+ */
 fun logPrediction(input: Map<String, Map<String, String>>, diagnosisCode: String, limit: String, sex: String, ageCategory: String, prediction: String,
                   predictionLevel: Int, statusCode: String, certificateId: String, hsaId: String) {
-    val log = LogManager.getLogger()
+
+    val LOG = LoggerFactory.getLogger("se.inera.intyg.srs.service.monitoring.MonitoringLogServiceKt")
     val location = input[LOCATION_KEY] ?: emptyMap()
     val qna = input[QUESTIONS_AND_ANSWERS_KEY] ?: emptyMap()
-    log.info(Markers.MONITORING.marker(), "{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}",
+
+    LOG.info("{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}",
             diagnosisCode,
             limit,
             prediction,
@@ -35,13 +39,5 @@ fun logPrediction(input: Map<String, Map<String, String>>, diagnosisCode: String
             certificateId,
             hsaId)
 
-}
-
-enum class Markers(val logName: String) {
-    MONITORING("MONITORING") {
-        override fun marker(): Marker = MarkerManager.getMarker(this.logName)
-    };
-
-    abstract fun marker(): Marker
 }
 

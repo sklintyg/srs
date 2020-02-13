@@ -8,7 +8,7 @@ import javax.persistence.Id
 import javax.persistence.OneToMany
 
 @Entity
-class Measure(val diagnosisId: String,
+data class Measure(val diagnosisId: String,
               val diagnosisText: String,
               val version: String,
               @OneToMany(fetch = FetchType.EAGER, mappedBy = "measure")

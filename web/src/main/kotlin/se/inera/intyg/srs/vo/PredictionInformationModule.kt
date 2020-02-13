@@ -1,6 +1,6 @@
 package se.inera.intyg.srs.vo
 
-import org.apache.logging.log4j.LogManager
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Diagnosprediktion
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Diagnosprediktionstatus
@@ -8,12 +8,12 @@ import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.FragaS
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Prediktionsfaktorer
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Risksignal
 import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.EgenBedomningRiskType
-import se.inera.intyg.srs.persistence.repository.ConsentRepository
-import se.inera.intyg.srs.persistence.repository.DiagnosisRepository
+import se.inera.intyg.srs.persistence.entity.Consent
 import se.inera.intyg.srs.persistence.entity.PatientAnswer
-import se.inera.intyg.srs.persistence.repository.PatientAnswerRepository
 import se.inera.intyg.srs.persistence.entity.PredictionDiagnosis
 import se.inera.intyg.srs.persistence.entity.Probability
+import se.inera.intyg.srs.persistence.repository.DiagnosisRepository
+import se.inera.intyg.srs.persistence.repository.PatientAnswerRepository
 import se.inera.intyg.srs.persistence.repository.ProbabilityRepository
 import se.inera.intyg.srs.persistence.repository.ResponseRepository
 import se.inera.intyg.srs.service.LOCATION_KEY
@@ -25,22 +25,25 @@ import se.inera.intyg.srs.util.PredictionInformationUtil
 import se.inera.intyg.srs.util.getModelForDiagnosis
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.Diagnos
 import java.time.LocalDateTime
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 @Service
 class PredictionInformationModule(val rAdapter: PredictionAdapter,
                                   val diagnosisRepo: DiagnosisRepository,
                                   val probabilityRepo: ProbabilityRepository,
                                   val patientAnswerRepo: PatientAnswerRepository,
-                                  val consentRepository: ConsentRepository,
+                                  val consentModule: ConsentModule,
                                   val responseRepo: ResponseRepository) : InformationModule<Diagnosprediktion> {
 
-    private val log = LogManager.getLogger()
+    private val log = LoggerFactory.getLogger(javaClass)
 
     override fun getInfoForDiagnosis(diagnosisId: String): Diagnosprediktion =
             throw NotImplementedError("Predictions can not be made with only diagnosis.")
 
     override fun getInfo(persons: List<Person>, extraParams: Map<String, Map<String, String>>, careUnitHsaId: String, calculateIndividual: Boolean): Map<Person, List<Diagnosprediktion>> {
-        log.trace(persons)
+        log.trace("Persons: $persons")
         val predictions = HashMap<Person, List<Diagnosprediktion>>()
         persons.forEach { person ->
             predictions.put(person, createInfo(person, extraParams, careUnitHsaId, calculateIndividual))
@@ -62,8 +65,6 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
             val diagnosPrediktion = Diagnosprediktion()
             diagnosPrediktion.inkommandediagnos = originalDiagnosis(incomingDiagnosis)
 
-            var calculatedPrediction: Prediction? = null
-
             log.debug("Fetching model for incoming diagnosis ${incomingDiagnosis.code}")
             val diagnosis = diagnosisRepo.getModelForDiagnosis(incomingDiagnosis.code)
             log.debug("Got diagnosis $diagnosis")
@@ -73,88 +74,108 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
                 diagnosPrediktion.prevalens = diagnosis.prevalence
             }
 
-            val consent = consentRepository.findConsentByPersonnummerAndVardenhetId(person.personId, careUnitHsaId)
+            val consent = if (consentModule.consentNeeded()) consentModule.getConsent(person.personId, careUnitHsaId) else null
             log.debug("certificateId ${person.certificateId} diagnosis ${diagnosis?.diagnosisId}")
-            val riskSignal = Risksignal()
-            diagnosPrediktion.risksignal = riskSignal
-            if (!predictIndividualRisk && !person.certificateId.isBlank() && diagnosis != null && consent != null) {
+            diagnosPrediktion.risksignal = Risksignal()
+            if (!predictIndividualRisk && !person.certificateId.isBlank() && diagnosis != null
+                    && (!consentModule.consentNeeded() || consent != null)) {
                 log.trace("Do not predict individual risk, looking for historic entries on the certificate")
-                // Check if we have a historic prediction
-
-                val historicProbabilities = probabilityRepo.findByCertificateIdAndDiagnosisOrderByTimestampDesc(
-                        person.certificateId, diagnosis.diagnosisId)
-                if (historicProbabilities.isNotEmpty()) {
-                    val historicProbability = historicProbabilities[0]
-                    log.trace("Found historic entry $historicProbability")
-                    diagnosPrediktion.sannolikhetOvergransvarde = historicProbability.probability
-                    diagnosPrediktion.diagnos = buildDiagnos(historicProbability.diagnosis, historicProbability.diagnosisCodeSystem)
-                    diagnosPrediktion.diagnosprediktionstatus = Diagnosprediktionstatus.valueOf(historicProbability.predictionStatus)
-                    diagnosPrediktion.inkommandediagnos.codeSystem = historicProbability.incomingDiagnosisCodeSystem
-                    diagnosPrediktion.inkommandediagnos.code = historicProbability.incomingDiagnosis
-                    riskSignal.riskkategori = calculateRisk(historicProbability.probability)
-
-                    if (historicProbability.ownOpinion != null) {
-                        diagnosPrediktion.lakarbedomningRisk = EgenBedomningRiskType.fromValue(historicProbability.ownOpinion.opinion)
-                    }
-                    if (!historicProbability.patientAnswers.isNullOrEmpty()) {
-                        diagnosPrediktion.prediktionsfaktorer = Prediktionsfaktorer()
-                        diagnosPrediktion.prediktionsfaktorer.postnummer = historicProbability.zipCode
-                        if (!historicProbability.region.isNullOrBlank()) {
-                            diagnosPrediktion.prediktionsfaktorer.fragasvar.add(
-                                FragaSvar().apply {
-                                    frageidSrs = "Region"
-                                    svarsidSrs = historicProbability.region
-                                }
-                            )
-                        }
-                        diagnosPrediktion.prediktionsfaktorer.postnummer = historicProbability.zipCode
-                        historicProbability.patientAnswers
-                                .forEach { pa->
-                                    diagnosPrediktion.prediktionsfaktorer.fragasvar.add(FragaSvar().apply {
-                                        frageidSrs = pa.predictionResponse.question?.predictionId
-                                        svarsidSrs = pa.predictionResponse.predictionId
-                                    })
-                                }
-                    }
-                    diagnosPrediktion.berakningstidpunkt = historicProbability.timestamp
-                } else {
-                    // We shouldn't do a prediction and found no historic so we're setting NOT_OK on the returned (not existing) prediction
-                    diagnosPrediktion.diagnosprediktionstatus = Diagnosprediktionstatus.NOT_OK
-                    riskSignal.riskkategori = 0
-                }
-            } else if (diagnosis != null && consent != null &&
+                fillWithHistoricPrediction(diagnosPrediktion, person, diagnosis)
+            } else if (diagnosis != null && (!consentModule.consentNeeded() || consent != null) &&
                     predictIndividualRisk && isCorrectPredictionParamsAgainstDiagnosis(diagnosis, extraParams)) {
                 log.trace("Predict individual risk, we got a diagnosis and got correct prediction params")
-                calculatedPrediction = rAdapter.getPrediction(person, incomingDiagnosis, extraParams)
-                diagnosPrediktion.diagnosprediktionstatus = calculatedPrediction.status
-                diagnosPrediktion.berakningstidpunkt = calculatedPrediction.timestamp
-                if (calculatedPrediction.status == Diagnosprediktionstatus.OK ||
-                                calculatedPrediction.status == Diagnosprediktionstatus.DIAGNOSKOD_PA_HOGRE_NIVA) {
-                    log.trace("Have diagnosis and a calculated prediction")
-                    diagnosPrediktion.sannolikhetOvergransvarde = calculatedPrediction.prediction
-                    diagnosPrediktion.diagnos = buildDiagnos(calculatedPrediction.diagnosis)
-                    riskSignal.riskkategori = calculateRisk(calculatedPrediction.prediction!!)
-                    persistProbability(diagnosPrediktion, person.certificateId, extraParams)
-                } else {
-                    riskSignal.riskkategori = 0
-                }
+                fillWithCalculatedPrediction(diagnosPrediktion, person, incomingDiagnosis, extraParams)
             } else {
                 log.trace("No consent was given, no prediction was requested or incorrect combination of parameters, " +
                         "responding with prediction NOT_OK")
                 diagnosPrediktion.diagnosprediktionstatus = Diagnosprediktionstatus.NOT_OK
-                riskSignal.riskkategori = 0
+                diagnosPrediktion.risksignal.riskkategori = 0
             }
 
-            riskSignal.beskrivning = PredictionInformationUtil.categoryDescriptions[riskSignal.riskkategori]
+            diagnosPrediktion.risksignal.beskrivning =
+                    PredictionInformationUtil.categoryDescriptions[diagnosPrediktion.risksignal.riskkategori]
             if (predictIndividualRisk) {
-                logPrediction(extraParams, diagnosPrediktion.diagnos?.code ?: "", diagnosis?.prevalence?.toString() ?: "", person.sex.name,
-                        person.ageCategory, calculatedPrediction?.prediction?.toString() ?: "", riskSignal.riskkategori,
-                        calculatedPrediction?.status?.toString() ?: "", person.certificateId, careUnitHsaId)
+                logPrediction(extraParams, diagnosPrediktion.diagnos?.code ?: "",
+                        diagnosis?.prevalence?.toString() ?: "", person.sex.name, person.ageCategory,
+                        diagnosPrediktion?.sannolikhetOvergransvarde?.toString() ?: "", diagnosPrediktion.risksignal.riskkategori,
+                        diagnosPrediktion?.diagnosprediktionstatus?.toString() ?: "", person.certificateId, careUnitHsaId)
             }
 
             outgoingPrediction.add(diagnosPrediktion)
         }
         return outgoingPrediction
+    }
+
+    /**
+     * Calculates a new prediction given a set of input parameters
+     */
+    private fun fillWithCalculatedPrediction(diagnosPrediktion: Diagnosprediktion, person: Person,
+                                             incomingDiagnosis: Diagnosis, extraParams: Map<String, Map<String, String>>) {
+        var calculatedPrediction: Prediction? = rAdapter.getPrediction(person, incomingDiagnosis, extraParams)
+        diagnosPrediktion.diagnosprediktionstatus = calculatedPrediction?.status
+        diagnosPrediktion.berakningstidpunkt = calculatedPrediction?.timestamp
+
+        if (calculatedPrediction?.status == Diagnosprediktionstatus.OK ||
+                calculatedPrediction?.status == Diagnosprediktionstatus.DIAGNOSKOD_PA_HOGRE_NIVA) {
+            log.trace("Have diagnosis and a calculated prediction")
+            diagnosPrediktion.sannolikhetOvergransvarde = calculatedPrediction.prediction
+            diagnosPrediktion.diagnos = buildDiagnos(calculatedPrediction.diagnosis)
+            diagnosPrediktion.risksignal.riskkategori = calculateRisk(calculatedPrediction.prediction!!)
+            persistProbability(diagnosPrediktion, person.certificateId, extraParams)
+        } else {
+            diagnosPrediktion.risksignal.riskkategori = 0
+        }
+    }
+
+    /**
+     * Looks fo a historic prediction and fills the result object diagnosPrediktion
+     * @param diagnosPrediktion The result object to fill with historic prediction data
+     * @param person Person indata
+     * @param diagnosis Diagnosis data entity
+     */
+    private fun fillWithHistoricPrediction(diagnosPrediktion: Diagnosprediktion, person: Person, diagnosis: PredictionDiagnosis) {
+        // Check if we have a historic prediction
+        val historicProbabilities = probabilityRepo.findByCertificateIdAndDiagnosisOrderByTimestampDesc(
+                person.certificateId, diagnosis.diagnosisId)
+        if (historicProbabilities.isNotEmpty()) {
+            val historicProbability = historicProbabilities[0]
+            log.trace("Found historic entry $historicProbability")
+            diagnosPrediktion.sannolikhetOvergransvarde = historicProbability.probability
+            diagnosPrediktion.diagnos = buildDiagnos(historicProbability.diagnosis, historicProbability.diagnosisCodeSystem)
+            diagnosPrediktion.diagnosprediktionstatus = Diagnosprediktionstatus.valueOf(historicProbability.predictionStatus)
+            diagnosPrediktion.inkommandediagnos.codeSystem = historicProbability.incomingDiagnosisCodeSystem
+            diagnosPrediktion.inkommandediagnos.code = historicProbability.incomingDiagnosis
+            diagnosPrediktion.risksignal.riskkategori = calculateRisk(historicProbability.probability)
+
+            if (historicProbability.ownOpinion != null) {
+                diagnosPrediktion.lakarbedomningRisk = EgenBedomningRiskType.fromValue(historicProbability.ownOpinion.opinion)
+            }
+            if (!historicProbability.patientAnswers.isNullOrEmpty()) {
+                diagnosPrediktion.prediktionsfaktorer = Prediktionsfaktorer()
+                diagnosPrediktion.prediktionsfaktorer.postnummer = historicProbability.zipCode
+                if (!historicProbability.region.isNullOrBlank()) {
+                    diagnosPrediktion.prediktionsfaktorer.fragasvar.add(
+                            FragaSvar().apply {
+                                frageidSrs = "Region"
+                                svarsidSrs = historicProbability.region
+                            }
+                    )
+                }
+                diagnosPrediktion.prediktionsfaktorer.postnummer = historicProbability.zipCode
+                historicProbability.patientAnswers
+                        .forEach { pa->
+                            diagnosPrediktion.prediktionsfaktorer.fragasvar.add(FragaSvar().apply {
+                                frageidSrs = pa.predictionResponse.question?.predictionId
+                                svarsidSrs = pa.predictionResponse.predictionId
+                            })
+                        }
+            }
+            diagnosPrediktion.berakningstidpunkt = historicProbability.timestamp
+        } else {
+            // We shouldn't do a prediction and found no historic so we're setting NOT_OK on the returned (not existing) prediction
+            diagnosPrediktion.diagnosprediktionstatus = Diagnosprediktionstatus.NOT_OK
+            diagnosPrediktion.risksignal.riskkategori = 0
+        }
     }
 
     private fun buildDiagnos(code: String, codeSystem: String = "1.2.752.116.1.1.1.1.3"): Diagnos {
