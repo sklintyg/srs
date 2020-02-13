@@ -68,12 +68,13 @@ tasks {
 
     val restAssuredTest by creating(Test::class) {
         outputs.upToDateWhen { false }
-        systemProperty("integration.tests.baseUrl", System.getProperty("baseUrl", "http://localhost:8080"))
+        systemProperty("integration.tests.baseUrl", System.getProperty("baseUrl", "http://localhost:"+port))
         include("**/*IT*")
     }
 
     test {
         exclude("**/*IT*")
+        testLogging.showStandardStreams = true
     }
 
     bootJar {
@@ -103,13 +104,13 @@ tasks {
         if (isIt == true) {
             jvmArgs = listOf(
                     "-Dspring.profiles.active=runtime, it",
-                    "-Djava.library.path=/usr/local/lib/R/3.5/site-library/rJava/jri",
+                    "-Djava.library.path=/usr/local/lib/R/3.6/site-library/rJava/jri",
                     "-Dloader.path=WEB-INF/lib-provided,WEB-INF/lib,WEB-INF/classes",
                     "-Dserver.port=${port}")
         } else {
             jvmArgs = listOf(
                     "-Dspring.profiles.active=runtime",
-                    "-Djava.library.path=/usr/local/lib/R/3.5/site-library/rJava/jri",
+                    "-Djava.library.path=/usr/local/lib/R/3.6/site-library/rJava/jri",
                     "-Dloader.path=WEB-INF/lib-provided,WEB-INF/lib,WEB-INF/classes",
                     "-Dserver.port=${port}")
         }
