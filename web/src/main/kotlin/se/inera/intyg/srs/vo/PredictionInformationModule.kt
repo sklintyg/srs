@@ -128,7 +128,7 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
     }
 
     /**
-     * Looks fo a historic prediction and fills the result object diagnosPrediktion
+     * Looks for a historic prediction and fills the result object diagnosPrediktion
      * @param diagnosPrediktion The result object to fill with historic prediction data
      * @param person Person indata
      * @param diagnosis Diagnosis data entity
@@ -148,7 +148,7 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
             diagnosPrediktion.risksignal.riskkategori = calculateRisk(historicProbability.probability)
 
             if (historicProbability.ownOpinion != null) {
-                diagnosPrediktion.lakarbedomningRisk = EgenBedomningRiskType.fromValue(historicProbability.ownOpinion.opinion)
+                diagnosPrediktion.lakarbedomningRisk = EgenBedomningRiskType.fromValue(historicProbability.ownOpinion!!.opinion)
             }
             if (!historicProbability.patientAnswers.isNullOrEmpty()) {
                 diagnosPrediktion.prediktionsfaktorer = Prediktionsfaktorer()
@@ -162,8 +162,7 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
                     )
                 }
                 diagnosPrediktion.prediktionsfaktorer.postnummer = historicProbability.zipCode
-                historicProbability.patientAnswers
-                        .forEach { pa->
+                historicProbability!!.patientAnswers!!.forEach { pa->
                             diagnosPrediktion.prediktionsfaktorer.fragasvar.add(FragaSvar().apply {
                                 frageidSrs = pa.predictionResponse.question?.predictionId
                                 svarsidSrs = pa.predictionResponse.predictionId

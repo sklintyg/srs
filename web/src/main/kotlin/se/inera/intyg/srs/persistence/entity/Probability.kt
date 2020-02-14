@@ -26,10 +26,10 @@ class Probability(val certificateId: String,
                   val id: Long = -1) {
 
     @OneToOne(mappedBy = "probability", fetch = FetchType.LAZY, cascade = [CascadeType.ALL])
-    val ownOpinion: OwnOpinion? = null
+    var ownOpinion: OwnOpinion? = null
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "probability", cascade = [CascadeType.ALL])
-    val patientAnswers: Collection<PatientAnswer>? = null
+    var patientAnswers: Collection<PatientAnswer>? = null
 
     override fun toString() =
         "Probability(id=$id, certificateId=$certificateId, probability=$probability, riskCategory=$riskCategory" +

@@ -124,14 +124,27 @@ open class RAdapter(val modelService: ModelFileUpdateService,
         rengine.eval("model <- readRDS('${file.absolutePath}')  ", false) ?: throw RuntimeException("The prediction model does not exist!")
     }
 
+    /**
+     * Finds an R model for the given diagnosis code.
+     * If we have a perfect match, e.g. M75 then return that model immediately and set status OK
+     *
+     * If we don't have a perfect match for e.g. F438A, shorten the string until we find the model e.g. F43 and flag with
+     * status "diagnosis on higher level".
+     *
+     * If we get a too long input, return no model with status NOT_OK
+     *
+     * If the input diagnosis code looks ok but we didn't manage to find a model, set status "prediction model missing"
+     *
+     */
     private fun getModelForDiagnosis(diagnosisId: String): Pair<ModelFileUpdateService.Model?, Diagnosprediktionstatus> {
         var currentId = cleanDiagnosisCode(diagnosisId)
         log.debug("getModelForDiagnosis diagnosisId: {}, cleanDiagnosisId: {}", diagnosisId, currentId)
         if (currentId.length > MAX_ID_POSITIONS) {
             return Pair(null, Diagnosprediktionstatus.NOT_OK)
         }
-
         var status: Diagnosprediktionstatus = Diagnosprediktionstatus.OK
+
+        // Find a suitable model by cutting of character by character from the end of the diagnosis code
         while (currentId.length >= MIN_ID_POSITIONS) {
             val model = modelService.modelForCode(currentId)
             log.debug("modelForCode currentId: {}, gave: {}", currentId, model)
@@ -139,7 +152,9 @@ open class RAdapter(val modelService: ModelFileUpdateService,
             if (model != null) {
                 return Pair(model, status)
             }
+            // Since we didn't find a model, Remove one character from the end of the id/diagnosisCode string to try again
             currentId = currentId.substring(0, currentId.length - 1)
+
             // Once we have shortened the code, we need to indicate that the info is not on the original level
             status = Diagnosprediktionstatus.DIAGNOSKOD_PA_HOGRE_NIVA
         }

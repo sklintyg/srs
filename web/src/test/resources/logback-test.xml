@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <!--
+        Used by tests where we don't setup a spring context such as e.g. PredictionInformationModuleTest
         Spring Test doesn't care about the application logging configuration when running unit tests
         so for testing we setup the logging configuration here instead of the application.properties file
         NB!
         There is a difference in the unit tests and integration tests whereas the integration tests starts
         up a Spring boot application and therefore uses the application config.
-        To get a consistent logging config during all tests we point to this config in application-test.properties.
+        To get a consistent logging config during all tests we could point to this config in application-test.properties.
          -->
     <include resource="org/springframework/boot/logging/logback/base.xml" />
-<!--    <logger name="se.inera.intyg.srs" level="TRACE" />-->
+    <logger name="se.inera.intyg.srs" level="TRACE" />
     <logger name="org.springframework" level="INFO"/>
 </configuration>

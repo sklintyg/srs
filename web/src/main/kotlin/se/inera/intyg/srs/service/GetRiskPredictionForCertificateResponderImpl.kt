@@ -45,7 +45,7 @@ class GetRiskPredictionForCertificateResponderImpl(@Autowired val probabilityRep
                 riskSignal.berakningstidpunkt = probability.timestamp
                 riskSignal.beskrivning = PredictionInformationUtil.categoryDescriptions[riskSignal.riskkategori]
                 if (probability.ownOpinion != null) {
-                    riskSignal.lakarbedomningRisk = EgenBedomningRiskType.fromValue(probability.ownOpinion.opinion)
+                    riskSignal.lakarbedomningRisk = EgenBedomningRiskType.fromValue(probability.ownOpinion!!.opinion)
                 }
                 rp.risksignal = riskSignal
                 response.riskPrediktioner.add(rp)
