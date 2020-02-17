@@ -1,8 +1,12 @@
 .gradle/
-build/
+/build/
+#*/build/
+#tools/*/build/
+/buildSrc/build/
+/web/build/
+
 .idea/
 /bin/
-/web/build/
 .classpath
 .project
 .settings/
