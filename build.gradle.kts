@@ -103,6 +103,8 @@ subprojects {
             exclude(module = "junit")
         }
         testImplementation("org.mockito:mockito-core:${TestDependencies.mockitoCoreVersion}")
+        // mockito-inline: To be able to mock final classes
+        testImplementation ("org.mockito:mockito-inline:${TestDependencies.mockitoCoreVersion}")
         testImplementation("org.mockito:mockito-junit-jupiter:${TestDependencies.mockitoCoreVersion}")
 
         testImplementation(kotlin("test"))
