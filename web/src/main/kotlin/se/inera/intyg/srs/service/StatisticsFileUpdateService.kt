@@ -53,8 +53,8 @@ class StatisticsFileUpdateService(@Value("\${statistics.national.file}") val nat
         days.contains("15-29") -> Pair(15, 29)
         days.contains("30-89") -> Pair(30, 89)
         days.contains("90-179") -> Pair(90, 179)
-        days.contains("180-365") -> Pair(180, 365)
-        days.contains("366") -> Pair(366, Int.MAX_VALUE)
+        days.contains("180-364") -> Pair(180, 364)
+        days.contains("365") -> Pair(365, Int.MAX_VALUE)
         else -> throw IllegalArgumentException("Incorrect day interval field in input data file for National Statistics, days interval: $days")
     }
 
@@ -91,7 +91,7 @@ class StatisticsFileUpdateService(@Value("\${statistics.national.file}") val nat
                 diagnosisMap.forEach { diagnosisId, diagnosisDaysQtyMap ->
                     diagnosisDaysQtyMap.forEach { days, qty ->
                         var accumulatedQtyForDiagUntilDays = 0
-                        for (daysIt in arrayOf(Pair(15, 29), Pair(30, 89), Pair(90, 179), Pair(180, 365), Pair(366, Int.MAX_VALUE))) {
+                        for (daysIt in arrayOf(Pair(15, 29), Pair(30, 89), Pair(90, 179), Pair(180, 364), Pair(365, Int.MAX_VALUE))) {
                             if (daysIt.second <= days.second) {
                                 accumulatedQtyForDiagUntilDays = accumulatedQtyForDiagUntilDays + (diagnosisDaysQtyMap.get(daysIt)!!)
                             }
