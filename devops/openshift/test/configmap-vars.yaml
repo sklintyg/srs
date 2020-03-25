@@ -1,7 +1,0 @@
-apiVersion: v1
-data:
-  SPRING_PROFILES_ACTIVE: "runtime,it"
-kind: ConfigMap
-metadata:
-  name: srs-test-configmap-envvar
-type: Opaque
