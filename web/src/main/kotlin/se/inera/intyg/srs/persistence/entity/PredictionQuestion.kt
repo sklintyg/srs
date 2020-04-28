@@ -8,8 +8,8 @@ import javax.persistence.Id
 import javax.persistence.OneToMany
 
 @Entity
-data class PredictionQuestion(val question: String,
-                              val helpText: String,
+data class PredictionQuestion(val question: String?,
+                              val helpText: String?,
                               val predictionId: String,
                               @OneToMany(mappedBy = "question",fetch = FetchType.EAGER)
 //                              @JoinColumn(name = "question_id")

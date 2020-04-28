@@ -2,13 +2,12 @@ package se.inera.intyg.srs.vo
 
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Diagnosprediktion
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Diagnosprediktionstatus
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.FragaSvar
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Prediktionsfaktorer
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Risksignal
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v3.Diagnosprediktion
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v3.Diagnosprediktionstatus
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v3.FragaSvar
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v3.Prediktionsfaktorer
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v3.Risksignal
 import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.EgenBedomningRiskType
-import se.inera.intyg.srs.persistence.entity.Consent
 import se.inera.intyg.srs.persistence.entity.PatientAnswer
 import se.inera.intyg.srs.persistence.entity.PredictionDiagnosis
 import se.inera.intyg.srs.persistence.entity.Probability
@@ -25,7 +24,6 @@ import se.inera.intyg.srs.util.PredictionInformationUtil
 import se.inera.intyg.srs.util.getModelForDiagnosis
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.Diagnos
 import java.time.LocalDateTime
-import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
@@ -42,7 +40,8 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
     override fun getInfoForDiagnosis(diagnosisId: String): Diagnosprediktion =
             throw NotImplementedError("Predictions can not be made with only diagnosis.")
 
-    override fun getInfo(persons: List<Person>, extraParams: Map<String, Map<String, String>>, careUnitHsaId: String, calculateIndividual: Boolean): Map<Person, List<Diagnosprediktion>> {
+    override fun getInfo(persons: List<Person>, extraParams: Map<String, Map<String, String>>, careUnitHsaId: String,
+                         calculateIndividual: Boolean, daysIntoSickLeave:Int): Map<Person, List<Diagnosprediktion>> {
         log.trace("Persons: $persons")
         val predictions = HashMap<Person, List<Diagnosprediktion>>()
         persons.forEach { person ->
@@ -82,9 +81,9 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
                 log.trace("Do not predict individual risk, looking for historic entries on the certificate")
                 fillWithHistoricPrediction(diagnosPrediktion, person, diagnosis)
             } else if (diagnosis != null && (!consentModule.consentNeeded() || consent != null) &&
-                    predictIndividualRisk && isCorrectPredictionParamsAgainstDiagnosis(diagnosis, extraParams)) {
+                    predictIndividualRisk) {
                 log.trace("Predict individual risk, we got a diagnosis and got correct prediction params")
-                fillWithCalculatedPrediction(diagnosPrediktion, person, incomingDiagnosis, extraParams)
+                fillWithCalculatedPrediction(diagnosPrediktion, person, incomingDiagnosis, extraParams, diagnosis)
             } else {
                 log.trace("No consent was given, no prediction was requested or incorrect combination of parameters, " +
                         "responding with prediction NOT_OK")
@@ -109,22 +108,68 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
     /**
      * Calculates a new prediction given a set of input parameters
      */
-    private fun fillWithCalculatedPrediction(diagnosPrediktion: Diagnosprediktion, person: Person,
-                                             incomingDiagnosis: Diagnosis, extraParams: Map<String, Map<String, String>>) {
-        var calculatedPrediction: Prediction? = rAdapter.getPrediction(person, incomingDiagnosis, extraParams)
-        diagnosPrediktion.diagnosprediktionstatus = calculatedPrediction?.status
-        diagnosPrediktion.berakningstidpunkt = calculatedPrediction?.timestamp
+    private fun fillWithCalculatedPrediction(diagnosPrediktionToPopulate: Diagnosprediktion, person: Person,
+                                             incomingDiagnosis: Diagnosis, extraParams: Map<String, Map<String, String>>,
+                                             diagnosisPredictionModel:PredictionDiagnosis) {
 
-        if (calculatedPrediction?.status == Diagnosprediktionstatus.OK ||
-                calculatedPrediction?.status == Diagnosprediktionstatus.DIAGNOSKOD_PA_HOGRE_NIVA) {
-            log.trace("Have diagnosis and a calculated prediction")
-            diagnosPrediktion.sannolikhetOvergransvarde = calculatedPrediction.prediction
-            diagnosPrediktion.diagnos = buildDiagnos(calculatedPrediction.diagnosis)
-            diagnosPrediktion.risksignal.riskkategori = calculateRisk(calculatedPrediction.prediction!!)
-            persistProbability(diagnosPrediktion, person.certificateId, extraParams)
+        // decorate extraParams with automatic selection based on diagnosis code
+        val decoratedExtraParams = decorateWithAutomaticSelectionParameters(diagnosisPredictionModel, incomingDiagnosis, extraParams)
+
+        if (isCorrectPredictionParamsAgainstDiagnosis(diagnosisPredictionModel, decoratedExtraParams)) {
+
+            var calculatedPrediction: Prediction? = rAdapter.getPrediction(person, incomingDiagnosis, decoratedExtraParams)
+            diagnosPrediktionToPopulate.diagnosprediktionstatus = calculatedPrediction?.status
+            diagnosPrediktionToPopulate.berakningstidpunkt = calculatedPrediction?.timestamp
+
+            if (calculatedPrediction?.status == Diagnosprediktionstatus.OK ||
+                    calculatedPrediction?.status == Diagnosprediktionstatus.DIAGNOSKOD_PA_HOGRE_NIVA) {
+                log.trace("Have diagnosis and a calculated prediction")
+                diagnosPrediktionToPopulate.sannolikhetOvergransvarde = calculatedPrediction.prediction
+                diagnosPrediktionToPopulate.diagnos = buildDiagnos(calculatedPrediction.diagnosis)
+                diagnosPrediktionToPopulate.risksignal.riskkategori = calculateRisk(calculatedPrediction.prediction!!)
+                persistProbability(diagnosPrediktionToPopulate, person.certificateId, extraParams) // we only want to persist user input, not the decorated extraParams
+            } else {
+                diagnosPrediktionToPopulate.risksignal.riskkategori = 0
+            }
+
         } else {
-            diagnosPrediktion.risksignal.riskkategori = 0
+            log.trace("Incorrect combination of parameters for prediction, " +
+                    "responding with prediction NOT_OK")
+            diagnosPrediktionToPopulate.diagnosprediktionstatus = Diagnosprediktionstatus.NOT_OK
+            diagnosPrediktionToPopulate.risksignal.riskkategori = 0
         }
+    }
+
+    /**
+     * Decorates the extraParams with answers to prediction factors with automatic selection
+     * @param diagnosisPredictionModel Info about the prediction model containing prioritized questions and response alternatives
+     * @param incomingDiagnosis The incoming full value for diagnosis
+     * @param extraParams A map holding the current input data for the prediction, e.g. the user's responses
+     * @return A new parameter map with automatically selected responses added.
+     */
+    private fun decorateWithAutomaticSelectionParameters(diagnosisPredictionModel:PredictionDiagnosis,
+                                                         incomingDiagnosis: Diagnosis,
+                                                         extraParams: Map<String, Map<String, String>>): Map<String, Map<String, String>> {
+        val diagnosisCodeToFind = incomingDiagnosis.code.substring(0, incomingDiagnosis.code.length.coerceAtMost(4))
+        log.debug("Looking for diagnosis code $diagnosisCodeToFind in automatic selection parameters")
+        val newQnAMap:MutableMap<String, String> = (extraParams[QUESTIONS_AND_ANSWERS_KEY] ?: error("No QnA map was given")).toMutableMap()
+        diagnosisPredictionModel.questions.forEach {pp ->
+            pp.question.answers
+                    .filter { a ->
+                        log.debug("Checking answer ${a.predictionId} for automatic setting rule: ${a.automaticSelectionDiagnosisCode}")
+                        a.automaticSelectionDiagnosisCode?.split(";")?.any { code ->
+                            diagnosisCodeToFind.equals(code) } ?: false
+                    }
+                    .forEach {automaticResponse ->
+                        log.debug("Found automatic response ${automaticResponse.predictionId} due to matching rule pattern " +
+                                "${automaticResponse.automaticSelectionDiagnosisCode} for question " +
+                                "${automaticResponse.question!!.predictionId} on diagnosis model ${diagnosisPredictionModel.diagnosisId}")
+                        newQnAMap?.put(automaticResponse.question!!.predictionId, automaticResponse.predictionId)
+                    }
+        }
+        val newExtraParams: MutableMap<String, Map<String, String>> = extraParams.toMutableMap()
+        newExtraParams[QUESTIONS_AND_ANSWERS_KEY] = newQnAMap
+        return newExtraParams
     }
 
     /**

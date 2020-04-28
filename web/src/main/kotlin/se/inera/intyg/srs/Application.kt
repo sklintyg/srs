@@ -27,7 +27,7 @@ import se.inera.intyg.clinicalprocess.healthcond.srs.getconsent.v1.GetConsentRes
 import se.inera.intyg.clinicalprocess.healthcond.srs.getdiagnosiscodes.v1.GetDiagnosisCodesResponderInterface
 import se.inera.intyg.clinicalprocess.healthcond.srs.getpredictionquestions.v1.GetPredictionQuestionsResponderInterface
 import se.inera.intyg.clinicalprocess.healthcond.srs.getriskpredictionforcertificate.v1.GetRiskPredictionForCertificateResponderInterface
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.GetSRSInformationResponderInterface
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v3.GetSRSInformationResponderInterface
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformationfordiagnosis.v1.GetSRSInformationForDiagnosisResponderInterface
 import se.inera.intyg.clinicalprocess.healthcond.srs.setconsent.v1.SetConsentResponderInterface
 import se.inera.intyg.clinicalprocess.healthcond.srs.setownopinion.v1.SetOwnOpinionResponderInterface
@@ -98,7 +98,7 @@ open class Application : SpringBootServletInitializer() {
         val endpoint = EndpointImpl(bus, srsResponder)
         endpoint.schemaLocations = listOf("classpath:core_components/clinicalprocess_healthcond_certificate_types_2.0.xsd",
                 "classpath:core_components/clinicalprocess_healthcond_srs_1.0.xsd",
-                "classpath:interactions/GetSRSInformation/GetSRSInformationResponder_2.0.xsd")
+                "classpath:interactions/GetSRSInformation/GetSRSInformationResponder_3.0.xsd")
         // Use these to get full loging of input and output at the web service
         //endpoint.inInterceptors.add(LoggingInInterceptor())
         //endpoint.outInterceptors.add(LoggingOutInterceptor())

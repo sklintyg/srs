@@ -9,6 +9,7 @@ import se.inera.intyg.srs.build.Config.TestDependencies
 
 plugins {
     kotlin("jvm")
+    `kotlin-dsl`
     maven
     `maven-publish`
 
@@ -116,6 +117,7 @@ subprojects {
 
         withType<Test> {
             useJUnitPlatform()
+            jvmArgs = listOf("-Djava.library.path=/usr/local/lib/R/3.6/site-library/rJava/jri")
         }
 
         withType<JavaCompile> {

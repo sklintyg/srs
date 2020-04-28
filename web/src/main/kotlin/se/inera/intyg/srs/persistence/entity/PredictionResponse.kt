@@ -15,11 +15,12 @@ data class PredictionResponse(
         val answer: String,
         val predictionId: String,
         val isDefault: Boolean,
-        val priority: Int,
+        val priority: Int?,
         @ManyToOne
         @JoinColumn(name = "question_id")
         @JsonIgnore
         var question: PredictionQuestion?,
+        val automaticSelectionDiagnosisCode: String? = null,
         @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
         val id: Long = -1
 ) {
@@ -29,6 +30,7 @@ data class PredictionResponse(
     var patientAnswers: Collection<PatientAnswer> = emptyList()
 
     override fun toString(): String {
-        return "PredictionResponse(id=$id, answer='$answer', predictionId='$predictionId', isDefault=$isDefault, priority=$priority)"
+        return "PredictionResponse(id=$id, answer='$answer', predictionId='$predictionId', isDefault=$isDefault, priority=$priority, " +
+                "automaticSelectionDiagnosisCode=$automaticSelectionDiagnosisCode)"
     }
 }

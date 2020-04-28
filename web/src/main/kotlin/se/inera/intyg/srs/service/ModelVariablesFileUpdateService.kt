@@ -55,7 +55,8 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
             val responseText: String,
             val responseId: String,
             val order: Int?,
-            val isDefault: Boolean
+            val isDefault: Boolean,
+            val automaticSelectionDiagnosisCode: String?
     )
 
     data class DiagnosisVariable(
@@ -110,7 +111,10 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
             val order = row.getCell(3)?.numericCellValue?.toInt()
             val isDefaultTxt = row.getCell(4)?.stringCellValue
             val isDefault = isDefaultTxt != null && isDefaultTxt.equals("T")
-            val variableFactorValue = VariableFactorValue(varName, responseText, responseId, order, isDefault)
+            val automaticSelectionDiagnosisCode = row.getCell(5)?.stringCellValue
+
+            val variableFactorValue =
+                    VariableFactorValue(varName, responseText, responseId, order, isDefault, automaticSelectionDiagnosisCode)
             var list:ArrayList<VariableFactorValue>? = responseMap.get(varName)
             if (list==null) {
                 list = Lists.newArrayList();
@@ -170,14 +174,16 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
                     answer = variableFactorValue.responseText,
                     predictionId = variableFactorValue.responseId,
                     isDefault = variableFactorValue.isDefault,
-                    priority = variableFactorValue.order!!,
-                    question = predictionQuestion
+                    priority = variableFactorValue.order,
+                    question = predictionQuestion,
+                    automaticSelectionDiagnosisCode = variableFactorValue.automaticSelectionDiagnosisCode
             ))
         } ?: run {
             log.debug("Creating prediction response with question prediction id '${variableFactorValue.varName}' " +
                     "and response prediction id '${variableFactorValue.responseId}'")
             response = responseRepo.save(PredictionResponse(variableFactorValue.responseText,
-                    variableFactorValue.responseId, variableFactorValue.isDefault, variableFactorValue.order!!, predictionQuestion))
+                    variableFactorValue.responseId, variableFactorValue.isDefault, variableFactorValue.order,
+                    predictionQuestion, variableFactorValue.automaticSelectionDiagnosisCode))
         }
 
         return response!!
@@ -202,7 +208,7 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
         } ?: run {
             // if not existing (null) create a new one
             log.debug("Creating question with question prediction id '${variable.name}'")
-            question = questionRepo.save(PredictionQuestion(variable.questionText!!, variable.helpText!!, variable.name))
+            question = questionRepo.save(PredictionQuestion(variable.questionText, variable.helpText, variable.name))
             // ... and a number of possible responses
             question?.answers = factorValues.map { variableFactorValue ->
                 storeResponse(variableFactorValue, question!!)}
@@ -275,15 +281,17 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
                     .filter { variable ->
                         // ... som har typen "factor" ...
                         "factor".equals(variable.type) &&
-                        // ... och minst ett svar med svarstext
+                        // ... och minst ett svar med svarstext eller automatisk ifyllnad
                             variableFactorValues.getValue(variable.name)
-                                .find { factor -> factor.responseText.isNotBlank() } != null
+                                .find { factor -> factor.responseText.isNotBlank() || !factor.automaticSelectionDiagnosisCode.isNullOrBlank() } != null
                     }
                     .map { variable ->
                         // ... skapa en fråga (och mappa till variabelnamn), från variabel och faktorer med text
                         variable.name to storeQuestionWithAnswers(variable,
-                                // Ta bara med factors/frågor som har svarstext, övriga sätts automatiskt och syns ej i GUI
-                                variableFactorValues.getValue(variable.name).filter { factor -> factor.responseText.isNotBlank() }
+                                // Ta bara med factors/frågor som har svarstext eller sätts automatiskt mha diagnoskod,
+                                // övriga (ålder, region etc) sätts automatiskt/hårdkodat och syns ej i GUI
+                                variableFactorValues.getValue(variable.name).filter { factor -> factor.responseText.isNotBlank()
+                                        || !factor.automaticSelectionDiagnosisCode.isNullOrBlank() }
                         )
                     }.toMap()
 

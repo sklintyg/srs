@@ -21,7 +21,7 @@ class VersionController(private val buildProperties: BuildProperties, private va
             method = [(RequestMethod.GET)],
             produces = [(MediaType.APPLICATION_JSON_VALUE)])
     fun version(): ResponseEntity<VersionInfo> {
-        LOG.info("Serving version")
+        LOG.debug("Serving version")
 
         val applicationName = buildProperties.artifact
         val buildVersion = buildProperties.version

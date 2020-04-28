@@ -3,14 +3,14 @@ package se.inera.intyg.srs.service
 import org.apache.cxf.annotations.SchemaValidation
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Atgardsrekommendationer
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Bedomningsunderlag
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.GetSRSInformationRequestType
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.GetSRSInformationResponderInterface
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.GetSRSInformationResponseType
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Individ
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Prediktion
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Prediktionsfaktorer
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v3.Atgardsrekommendationer
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v3.Bedomningsunderlag
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v3.GetSRSInformationRequestType
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v3.GetSRSInformationResponderInterface
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v3.GetSRSInformationResponseType
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v3.Individ
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v3.Prediktion
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v3.Prediktionsfaktorer
 import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Statistik
 import se.inera.intyg.srs.vo.Diagnosis
 import se.inera.intyg.srs.vo.MeasureInformationModule
@@ -25,6 +25,7 @@ import java.time.temporal.ChronoUnit
 val LOCATION_KEY = "Location"
 val REGION_KEY = "Region"
 val ZIP_CODE_KEY = "ZipCode"
+
 val QUESTIONS_AND_ANSWERS_KEY = "QuestionsAndAnswers"
 
 val STHLM = "Stockholm" // TODO: remove region, not used anymore
@@ -62,8 +63,8 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
         // No utdatafilter check here since we might always want to add prevalence, if applicable
         try {
             log.debug("Getting prediction info")
-
-            predictionModule.getInfo(persons, extraInfo, unitId, request.utdatafilter.isPrediktion).forEach { (person, prediction) ->
+            val daysIntoSickLeave = request.prediktionsfaktorer.sjukskrivningsdag
+            predictionModule.getInfo(persons, extraInfo, unitId, request.utdatafilter.isPrediktion, daysIntoSickLeave).forEach { (person, prediction) ->
                 val dtoPredictionList = Prediktion()
                 dtoPredictionList.diagnosprediktion.addAll(prediction)
                 val underlag = response.bedomningsunderlag.find { it.personId == person.personId } ?: createUnderlag(person.personId, response)
