@@ -422,4 +422,17 @@
 
     </changeSet>
 
+    <changeSet id="20" author="ch">
+        <addColumn tableName="prediction_response">
+            <column name="automatic_selection_diagnosis_code" type="VARCHAR(32)" />
+        </addColumn>
+
+        <dropNotNullConstraint tableName="prediction_question" columnDataType="VARCHAR(4096)" columnName="question" />
+
+        <dropNotNullConstraint tableName="prediction_question" columnDataType="VARCHAR(4096)" columnName="help_text" />
+
+        <dropNotNullConstraint tableName="prediction_response" columnDataType="INTEGER" columnName="priority" />
+
+    </changeSet>
+
 </databaseChangeLog>

@@ -20,19 +20,26 @@ class GetPredictionQuestionsResponderImpl(@Autowired val diagnosisRepository: Di
         val response = GetPredictionQuestionsResponseType()
         val diagnosis = diagnosisRepository.getModelForDiagnosis(request.diagnos.code) ?: return response
 
-        diagnosis.questions.forEach { savedQuestion ->
+        diagnosis.questions
+                .filter { q -> // only return those that questions that aren't answered automatically using diagnosis code
+                    // check if we have at least one answer that don't have an automatic selection,
+                    // All answers to automatic questions must have such a value so this comparison is quicker than the other way around
+                    q.question.answers.find { a -> a.automaticSelectionDiagnosisCode.isNullOrBlank() } != null
+                }
+                .forEach { savedQuestion ->
             val outboundQuestion = Prediktionsfraga()
             outboundQuestion.frageid = BigInteger.valueOf(savedQuestion.id)
             outboundQuestion.frageidSrs = savedQuestion.question.predictionId
             outboundQuestion.fragetext = savedQuestion.question.question
             outboundQuestion.hjalptext = savedQuestion.question.helpText
             outboundQuestion.prioritet = BigInteger.valueOf(savedQuestion.priority.toLong())
-            savedQuestion.question.answers.forEach { savedResponse ->
+            savedQuestion.question.answers
+                    .forEach { savedResponse ->
                 val outboundResponse = Svarsalternativ()
                 outboundResponse.svarsid = BigInteger.valueOf(savedResponse.id)
                 outboundResponse.svarsidSrs = savedResponse.predictionId
                 outboundResponse.isDefault = savedResponse.isDefault
-                outboundResponse.prioritet = BigInteger.valueOf(savedResponse.priority.toLong())
+                outboundResponse.prioritet = BigInteger.valueOf(savedResponse.priority?.toLong() ?: -1L)
                 outboundResponse.svarstext = savedResponse.answer
                 outboundQuestion.svarsalternativ.add(outboundResponse)
             }

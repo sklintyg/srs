@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
-import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v2.Diagnosprediktionstatus
+import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v3.Diagnosprediktionstatus
 import se.inera.intyg.srs.service.LOCATION_KEY
 import se.inera.intyg.srs.service.ModelFileUpdateService
 import se.inera.intyg.srs.service.QUESTIONS_AND_ANSWERS_KEY
@@ -75,7 +75,64 @@ open class RAdapter(val modelService: ModelFileUpdateService,
         startRLogging()
     }
 
-    override fun getPrediction(person: Person, diagnosis: Diagnosis, extraParams: Map<String, Map<String, String>>): Prediction {
+    /**
+     * Get a prediction of the probability that the sick leave will last longer than 90 days.
+     * @param person The person on sick leave
+     * @param diagnosis The main diagnosis
+     * @param extraParams A map of other parameters for the prediction.
+     * Shall be a map of two entries, one entry is a location map and the other entry is a
+     * "questions and answer" map.
+     *
+     *  Pseudo example for diagnosis model F43 (with comments) of the map in JSON notation to get an idea of the structure:
+     *
+     *  "extraParams": {
+     *          "Location": {
+     *                  "Region": "VAST",
+     *              },
+     *          "QuestionsAndAnswers": {
+     *              // Haft annat sjukskrivningsfall som blev längre än 14 dagar i sträck, senaste 12 månaderna
+     *              "SA_1_gross": "0", // Nej
+     *
+     *              // Vård för F430 (Akut stressreaktion) senaste 12 månaderna
+     *              "any_visits_-365_+6_F430": "0", // Nej
+     *
+     *              // Vård för F438 (Andra specificerade reaktioner på svår stress) senaste 12 månaderna
+     *              "any_visits_-365_+6_F438": "0", // Nej
+     *
+     *              // Sjukskrivningsgrad i början av detta sjukskrivningsfall
+     *              "SA_ExtentFirst": "1", // 100%
+     *
+     *              // Huvudsaklig sysselsättning vid detta sjukskrivningsfalls början
+     *              "SA_SyssStart_fct": "not_unempl", // Yrkesarbetar, Föräldraledig, Studerar
+     *
+     *              // Född i Sverige
+     *              "birth_cat_fct": "SW" // Ja
+     *          }
+     *  }
+     *
+     * The values for the questions and answer map corresponds to the model of
+     * the diagnosis and is specified in an Excel document, see SRS_PM_indata_2_1.xls
+     *
+     * Questions (or parameters) are referred to as variables in the document, possible answer values are referred
+     * to as factors.
+     *
+     * Some variables and factors are the same for all models, these are:
+     *
+     * "SA_Days_tot_modified" which is constantly 90 for all models in this implementation.
+     *
+     * "Sex" and "age_cat_fct" which are collected from the person object.
+     *
+     * "Region" which is collected from the location map
+     *
+     * Also see GetSRSInformationResponderImpl or PredictionInformationModuleTest to se how it is populated.
+     * Also see RAdapter to understand more of how it is interpreted.
+     *
+     * @param daysIntoSickLeave Number of days into the sick leave when th prediction is made, the first calculation is done based on day 15
+     */
+    override fun getPrediction(person: Person,
+                               diagnosis: Diagnosis,
+                               extraParams: Map<String, Map<String, String>>,
+                               daysIntoSickLeave:Int): Prediction {
         // Synchronizing here is an obvious performance bottle neck, but we have no choice since the R engine is
         // single-threaded, and cannot cope with concurrent calls. Intygsprojektet has accepted that R be used
         // for the execution of prediction models, and there is no reason to the believe that the number of calls
@@ -96,7 +153,7 @@ open class RAdapter(val modelService: ModelFileUpdateService,
             }
 
             val rDataFrame = StringBuilder("data <- data.frame(").apply {
-                append("SA_Days_tot_modified = as.integer(90), ")
+                append("SA_Days_tot_modified = as.integer(90), ") //Calculate the probability that the sick leave lasts longer than 90 days
                 append("Sex = '${person.sex.predictionString}', ")
                 append("age_cat_fct = '${person.ageCategory}', ")
                 append("Region = '" + extraParams[LOCATION_KEY]?.get(REGION_KEY) + "', ")
@@ -107,10 +164,36 @@ open class RAdapter(val modelService: ModelFileUpdateService,
 
             rengine.eval(rDataFrame)
             val rOutput = rengine.eval("output <- round(pch:::predict.pch(model,newdata = data)\$Surv, 2)")
+            return if (rOutput != null && daysIntoSickLeave <= 15) {
+                // The normal case is that we do the initial prediction at 15 days into the sick leave
+                val prediction = rOutput.asDouble()
+                log.debug("Successful prediction, result: " + prediction)
+                Prediction(model.diagnosis, prediction, status, LocalDateTime.now())
+            } else if (rOutput != null && daysIntoSickLeave > 15) {
+                // If we currently are more than 15 days into the sick leave we need to use Bayes Theorem P(T>X | T>Y) = P(T>X)/P(T>Y)
+                // The above is read the probability that T will be bigger than X given that T is bigger than Y.
+                // For example the probability that T will be bigger than 90 days (T>90) given that we already are at day 30 (T>30)
+                // Thus, we need to do yet another call to R to get the P(T>Y) and use that for to calculate the wanted probability.
+                val prediction = rOutput.asDouble()
+                log.trace("prediction90: $prediction")
 
-            return if (rOutput != null) {
-                log.debug("Successful prediction, result: " + rOutput.asDouble())
-                Prediction(model.diagnosis, rOutput.asDouble(), status, LocalDateTime.now())
+                val rDataFrame2 = StringBuilder("data <- data.frame(").apply {
+                    append("SA_Days_tot_modified = as.integer($daysIntoSickLeave), ")
+                    append("Sex = '${person.sex.predictionString}', ")
+                    append("age_cat_fct = '${person.ageCategory}', ")
+                    append("Region = '" + extraParams[LOCATION_KEY]?.get(REGION_KEY) + "', ")
+                    append(extraParams[QUESTIONS_AND_ANSWERS_KEY]?.entries?.joinToString(", ", transform = { (key, value) -> "'$key' = '$value'" }))
+                    append(", check.names=F)")
+                }.toString()
+                log.trace("Evaluating rDataFrame2: $rDataFrame2")
+
+                rengine.eval(rDataFrame2)
+                val rOutput2 = rengine.eval("output2 <- round(pch:::predict.pch(model,newdata = data)\$Surv, 2)")
+                val prediction2 = rOutput2.asDouble();
+                log.trace("prediction2 ($daysIntoSickLeave days into): $prediction2")
+                val predictionDaysInto = prediction/prediction2
+                log.trace("predictionDaysInto: $predictionDaysInto")
+                Prediction(model.diagnosis, predictionDaysInto, status, LocalDateTime.now())
             } else {
                 log.debug("R produced no output")
                 wipeRLogFileAndReportError()

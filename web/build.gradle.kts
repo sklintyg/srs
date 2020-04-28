@@ -1,6 +1,7 @@
 import org.gradle.internal.os.OperatingSystem
 import se.inera.intyg.srs.build.Config.Dependencies
 import se.inera.intyg.srs.build.Config.TestDependencies
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val localBuild = project.gradle.startParameter.taskNames.contains("bootRun")
 var isIt:Boolean? = false;
@@ -13,6 +14,7 @@ plugins {
     war
     kotlin("plugin.jpa")
     id("org.springframework.boot")
+    kotlin("jvm")
 }
 
 dependencies {
@@ -40,6 +42,7 @@ dependencies {
     testImplementation("io.rest-assured:json-schema-validator:${TestDependencies.restAssuredVersion}")
     testImplementation("io.rest-assured:json-path:${TestDependencies.restAssuredVersion}")
     testImplementation("io.rest-assured:xml-path:${TestDependencies.restAssuredVersion}")
+    implementation(kotlin("stdlib-jdk8"))
 }
 
 springBoot {
@@ -75,6 +78,7 @@ tasks {
     test {
         exclude("**/*IT*")
         testLogging.showStandardStreams = true
+        jvmArgs = listOf("-Djava.library.path=/usr/local/lib/R/3.6/site-library/rJava/jri")
     }
 
     bootJar {
@@ -115,4 +119,15 @@ tasks {
                     "-Dserver.port=${port}")
         }
     }
+}
+repositories {
+    mavenCentral()
+}
+val compileKotlin: KotlinCompile by tasks
+compileKotlin.kotlinOptions {
+    jvmTarget = "1.8"
+}
+val compileTestKotlin: KotlinCompile by tasks
+compileTestKotlin.kotlinOptions {
+    jvmTarget = "1.8"
 }
