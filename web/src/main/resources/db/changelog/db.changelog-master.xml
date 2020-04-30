@@ -435,4 +435,10 @@
 
     </changeSet>
 
+    <changeSet id="21" author="ch">
+        <modifyDataType tableName="prediction_response"
+                        columnName="automatic_selection_diagnosis_code"
+                        newDataType="VARCHAR(64)"/>
+    </changeSet>
+
 </databaseChangeLog>
