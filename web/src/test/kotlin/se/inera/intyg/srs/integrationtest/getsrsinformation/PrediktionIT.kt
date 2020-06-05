@@ -207,20 +207,6 @@ class PrediktionIT : BaseIntegrationTest() {
                 .body("$PREDIKTION_ROOT.risksignal.beskrivning", equalTo("Prediktion saknas."))
     }
 
-    @Test
-    fun testMissingConsentShouldYieldErrorMessage() {
-        // Om samtycke saknas skall det inte gå att köra en prediktion
-        setModels("x99v0")
-        addDiagnosis(TestController.DiagnosisRequest("X99", 1.0, emptyList()))
-
-        val response = sendPrediktionRequest("getPrediktion_Model1Request_output_0.44.xml", "X99")
-        response.assertThat()
-                .body("$PREDIKTION_ROOT", not(hasKey("sannolikhet-overgransvarde")))
-                .body("$PREDIKTION_ROOT.risksignal.riskkategori", equalTo("0"))
-                .body("$PREDIKTION_ROOT.risksignal.beskrivning", equalTo("Prediktion saknas."))
-                .body("$PREDIKTION_ROOT.diagnosprediktionstatus", equalTo("NOT_OK"))
-    }
-
     private fun sendPrediktionRequest(requestFile: String, diagnosisId: String, intygsId: String = "intygsId") =
             given()
                 .contentType(ContentType.XML)

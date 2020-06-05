@@ -25,7 +25,7 @@ open class MeasurePersistenceTest {
     }
 
     @Test
-    fun testCreateWithGeneratedId() {
+    fun testCreate() {
         var rec: Recommendation = Recommendation(Atgardstyp.fromValue("OBS"), "title", "text", 45)
         recommendationRepo.save(rec)
     }

@@ -156,7 +156,11 @@ open class RAdapter(val modelService: ModelFileUpdateService,
 
             val rDataFrame = StringBuilder("data <- data.frame(").apply {
                 append("SA_Days_tot_modified = as.integer(90), ") //Calculate the probability that the sick leave lasts longer than 90 days
-                append("Kon = '${person.sex.toSwedish()}', ")
+                if (model.isTestModel) {
+                    append("Sex = '${person.sex.predictionString}', ")
+                } else {
+                    append("Kon = '${person.sex.toSwedish()}', ")
+                }
                 append("age_cat_fct = '${person.ageCategory}', ")
                 append("Region = '" + extraParams[LOCATION_KEY]?.get(REGION_KEY) + "', ")
                 append(extraParams[QUESTIONS_AND_ANSWERS_KEY]?.entries?.joinToString(", ", transform = { (key, value) -> "'$key' = '$value'" }))
@@ -182,7 +186,11 @@ open class RAdapter(val modelService: ModelFileUpdateService,
 
                 val rDataFrame2 = StringBuilder("data <- data.frame(").apply {
                     append("SA_Days_tot_modified = as.integer($daysIntoSickLeave), ")
-                    append("Kon = '${person.sex.toSwedish()}', ")
+                    if (model.isTestModel) {
+                        append("Sex = '${person.sex.predictionString}', ")
+                    } else {
+                        append("Kon = '${person.sex.toSwedish()}', ")
+                    }
                     append("age_cat_fct = '${person.ageCategory}', ")
                     append("Region = '" + extraParams[LOCATION_KEY]?.get(REGION_KEY) + "', ")
                     append(extraParams[QUESTIONS_AND_ANSWERS_KEY]?.entries?.joinToString(", ", transform = { (key, value) -> "'$key' = '$value'" }))
@@ -253,6 +261,7 @@ open class RAdapter(val modelService: ModelFileUpdateService,
         if (currentId.length == 3) {
             log.debug("We got a three character diagnosis code, fallback to model without subdiag group params");
             val model = modelService.modelForCodeWithoutSubdiag(currentId)
+            log.debug("modelForCodeWithoutSubDiag currentId: {}, gave: {}", currentId, model?.version)
             if (model != null) {
                 return Pair(model, status);
             }
@@ -265,6 +274,7 @@ open class RAdapter(val modelService: ModelFileUpdateService,
             while (currentId.length >= MIN_ID_POSITIONS) {
                 val model = modelService.modelForCode(currentId)
                 log.debug("modelForCode currentId: {}, gave: {}", currentId, model)
+
 
                 if (model != null) {
                     return Pair(model, status)

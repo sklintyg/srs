@@ -23,6 +23,7 @@ import java.time.LocalDateTime
 @Order(100)
 class MeasuresAndPrevalenceFileUpdateService(@Value("\${recommendations.file}") val recommendationsFile: String,
                                              @Value("\${recommendations.importMaxLines: 1000}") val importMaxLines: Int,
+                                             @Value("\${model.currentVersion}") val currentModelVersion: String,
                                              val recommendationsRepo: RecommendationRepository,
                                              val measureRepo: MeasureRepository,
                                              val measurePriorityRepo: MeasurePriorityRepository,
@@ -133,7 +134,7 @@ class MeasuresAndPrevalenceFileUpdateService(@Value("\${recommendations.file}") 
             } else if (diagnosisId.length == 3) {
                 val prevalence = row.getCell(3).numericCellValue
                 log.debug("Setting prevalence for $diagnosisId to $prevalence")
-                diagnosisRepo.findOneByDiagnosisId(diagnosisId).let { diagnosis ->
+                diagnosisRepo.findOneByDiagnosisIdAndModelVersion(diagnosisId, currentModelVersion).let { diagnosis ->
                     diagnosisRepo.save(diagnosis!!.copy(prevalence = prevalence))
                     updatedPrevalences++
                 }

@@ -73,19 +73,20 @@ class TestModule(private val consentRepo: ConsentRepository,
                     intervalQuantity, accumulatedQuantity, LocalDateTime.now()))
 
     fun createPredictionQuestion(request: TestController.DiagnosisRequest): PredictionDiagnosis =
-        diagnosisRepo.save(PredictionDiagnosis(request.diagnosisId, request.prevalence, 3, mapToPredictions(request.questions)))
+        diagnosisRepo.save(PredictionDiagnosis(request.diagnosisId, request.prevalence, 3, request.modelVersion,
+            mapToPredictions(request.questions)))
 
     private fun mapToPredictions(questions: List<TestController.PredictionQuestion>): List<PredictionPriority> =
         questions
                 .mapIndexed { i, question ->
-                    PredictionPriority(i + 1, mapToQuestion(question))
+                    PredictionPriority(i + 1, "TEST_1.0", mapToQuestion(question))
                 }
                 .map { predictPrioRepo.save(it) }
 
     private fun mapToQuestion(question: TestController.PredictionQuestion): PredictionQuestion {
         var predictionQuestion:PredictionQuestion = questionRepo.save(PredictionQuestion(
                 question.question, question.helpText,
-                question.predictionId))
+                question.predictionId, "TEST_1.0"))
         predictionQuestion.answers = mapToResponses(question.responses, predictionQuestion)
         return predictionQuestion
     }
@@ -93,7 +94,7 @@ class TestModule(private val consentRepo: ConsentRepository,
     private fun mapToResponses(responses: Collection<TestController.PredictionResponse>, predictionQuestion:PredictionQuestion) =
         responses
                 .mapIndexed { i, (answer, predictionId, default) ->
-                    PredictionResponse(answer, predictionId, default, i + 1, predictionQuestion)
+                    PredictionResponse(answer, predictionId, default, i + 1,  "TEST_1.0", predictionQuestion)
                 }
                 .map {
                     responseRepo.save(it)
@@ -135,6 +136,7 @@ class TestModule(private val consentRepo: ConsentRepository,
         }
 
         modelFileUpdateService.applyModels(resources)
+        modelFileUpdateService.applyModelsWithoutSubdiag(resources)
     }
 
     fun getIntyg(intygsId: String) =

@@ -2,6 +2,7 @@ package se.inera.intyg.srs.service
 
 import org.apache.cxf.annotations.SchemaValidation
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import se.inera.intyg.clinicalprocess.healthcond.srs.getpredictionquestions.v1.GetPredictionQuestionsRequestType
 import se.inera.intyg.clinicalprocess.healthcond.srs.getpredictionquestions.v1.GetPredictionQuestionsResponderInterface
@@ -14,11 +15,14 @@ import java.math.BigInteger
 
 @Service
 @SchemaValidation(type = SchemaValidation.SchemaValidationType.BOTH)
-class GetPredictionQuestionsResponderImpl(@Autowired val diagnosisRepository: DiagnosisRepository) : GetPredictionQuestionsResponderInterface {
+class GetPredictionQuestionsResponderImpl(
+    @Autowired val diagnosisRepository: DiagnosisRepository,
+    @Value("\${model.currentVersion}") val currentModelVersion: String
+) : GetPredictionQuestionsResponderInterface {
 
     override fun getPredictionQuestions(request: GetPredictionQuestionsRequestType): GetPredictionQuestionsResponseType {
         val response = GetPredictionQuestionsResponseType()
-        val diagnosis = diagnosisRepository.getModelForDiagnosis(request.diagnos.code) ?: return response
+        val diagnosis = diagnosisRepository.getModelForDiagnosis(request.diagnos.code, currentModelVersion) ?: return response
 
         diagnosis.questions
                 .filter { q -> // only return those that questions that aren't answered automatically using diagnosis code

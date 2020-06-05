@@ -15,7 +15,7 @@ import java.util.*
  * @param diagnosisId The diagnosisId to look for
  * @return The PredictionDiagnosis entity with the longest match on diagnosisId
  */
-fun DiagnosisRepository.getModelForDiagnosis(diagnosisId: String): PredictionDiagnosis? {
+fun DiagnosisRepository.getModelForDiagnosis(diagnosisId: String, modelVersion: String): PredictionDiagnosis? {
     val MAX_ID_POSITIONS = 5
     val MIN_ID_POSITIONS = 3
     var currentId = cleanDiagnosisCode(diagnosisId)
@@ -25,7 +25,7 @@ fun DiagnosisRepository.getModelForDiagnosis(diagnosisId: String): PredictionDia
     }
 
     while (currentId.length >= MIN_ID_POSITIONS) {
-        val diagnosis = findOneByDiagnosisId(currentId)
+        val diagnosis = findOneByDiagnosisIdAndModelVersion(currentId, modelVersion)
         if (diagnosis != null) {
             return diagnosis
         }

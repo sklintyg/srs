@@ -447,4 +447,39 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="23" author="ch">
+        <addColumn tableName="prediction_question">
+            <column name="model_version" type="VARCHAR(8)" value="2.1"/>
+            <column name="created" type="TIMESTAMP" value="2019-09-01 00:00:00.000"/>
+            <column name="modified" type="TIMESTAMP" value="2019-09-01 00:00:00.000"/>
+        </addColumn>
+        <addColumn tableName="prediction_response">
+            <column name="model_version" type="VARCHAR(8)" value="2.1"/>
+            <column name="created" type="TIMESTAMP" value="2019-09-01 00:00:00.000"/>
+            <column name="modified" type="TIMESTAMP" value="2019-09-01 00:00:00.000"/>
+        </addColumn>
+        <addColumn tableName="prediction_diagnosis">
+            <column name="model_version" type="VARCHAR(8)" value="2.1"/>
+            <column name="created" type="TIMESTAMP" value="2019-09-01 00:00:00.000"/>
+            <column name="modified" type="TIMESTAMP" value="2019-09-01 00:00:00.000"/>
+        </addColumn>
+        <addColumn tableName="prediction_priority">
+            <column name="model_version" type="VARCHAR(8)" value="2.1"/>
+            <column name="created" type="TIMESTAMP" value="2019-09-01 00:00:00.000"/>
+            <column name="modified" type="TIMESTAMP" value="2019-09-01 00:00:00.000"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="ch" id="24">
+        <dropUniqueConstraint
+            constraintName="unique_diagnosis_id"
+            tableName="prediction_diagnosis"
+            uniqueColumns="diagnosis_id"
+        />
+        <addUniqueConstraint
+            columnNames="diagnosis_id, model_version"
+            constraintName="unique_diagnosis_id_model_version"
+            tableName="prediction_diagnosis" />
+    </changeSet>
+
 </databaseChangeLog>

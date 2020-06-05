@@ -14,18 +14,26 @@
          <urn:individer>
             <urn:individ>
                <urn:person-id>197308051234</urn:person-id>
-               <urn:diagnos>
-                  <urn1:code>F43.8A</urn1:code>
-                  <urn1:codeSystem>1.2.752.116.1.1.1.1.3</urn1:codeSystem>
-               </urn:diagnos>
-               <urn:diagnos>
-                  <urn1:code>diagnosis_placeholder</urn1:code>
-                  <urn1:codeSystem>1.2.752.116.1.1.1.1.3</urn1:codeSystem>
-               </urn:diagnos>
-               <urn:intyg-id>
-                  <urn1:root>root</urn1:root>
-                  <urn1:extension>abc</urn1:extension>
-               </urn:intyg-id>
+               <urn:diagnosintyg>
+                  <urn:diagnos>
+                     <urn1:code>F43.8A</urn1:code>
+                     <urn1:codeSystem>1.2.752.116.1.1.1.1.3</urn1:codeSystem>
+                  </urn:diagnos>
+                  <urn:intyg-id>
+                     <urn1:root>root</urn1:root>
+                     <urn1:extension>abc</urn1:extension>
+                  </urn:intyg-id>
+               </urn:diagnosintyg>
+               <urn:diagnosintyg>
+                  <urn:diagnos>
+                     <urn1:code>diagnosis_placeholder</urn1:code>
+                     <urn1:codeSystem>1.2.752.116.1.1.1.1.3</urn1:codeSystem>
+                  </urn:diagnos>
+                  <urn:intyg-id>
+                     <urn1:root>root</urn1:root>
+                     <urn1:extension>abc</urn1:extension>
+                  </urn:intyg-id>
+               </urn:diagnosintyg>
             </urn:individ>
          </urn:individer>
          <urn:utdatafilter>

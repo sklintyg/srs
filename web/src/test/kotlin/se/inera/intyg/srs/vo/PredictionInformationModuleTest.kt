@@ -44,28 +44,29 @@ class PredictionInformationModuleTest {
         consentModule = mock()
         diagnosisRepo = mock()
         probabilityRepo = mock()
-        predictionInformationModule = PredictionInformationModule(TestPredictionAdapter(),diagnosisRepo,probabilityRepo,mock(), consentModule, mock())
+        predictionInformationModule = PredictionInformationModule(TestPredictionAdapter(),diagnosisRepo,probabilityRepo,mock(),
+            consentModule, mock(), "TEST_1.0")
         initData()
     }
 
     private fun initData() {
         whenever(consentModule.consentNeeded()).thenReturn(false)
 
-        whenever(diagnosisRepo.getModelForDiagnosis(eq("F438A")))
-                .thenReturn(PredictionDiagnosis("F43", 0.32, 3,
-                        listOf(PredictionPriority(1,
-                                PredictionQuestion("question 1?", "help", "frageId-1",
+        whenever(diagnosisRepo.getModelForDiagnosis(eq("F438A"), eq("TEST_1.0")))
+                .thenReturn(PredictionDiagnosis("F43", 0.32, 3, "TEST_1.0",
+                        listOf(PredictionPriority(1, "TEST_1.0",
+                                PredictionQuestion("question 1?", "help", "frageId-1", "TEST_1.0",
                                         listOf(
-                                                PredictionResponse("answer alternative 1-1!", "svarsId-1a", true, 1, null),
-                                                PredictionResponse("answer alternative 1-2!", "svarsId-1b", false, 1, null)
+                                                PredictionResponse("answer alternative 1-1!", "svarsId-1a", true, 1, "TEST_1.0",null),
+                                                PredictionResponse("answer alternative 1-2!", "svarsId-1b", false, 1, "TEST_1.0",null)
                                         )
                                 )
                         ),
-                                PredictionPriority(2,
-                                        PredictionQuestion("question 2?", "help", "frageId-2",
+                                PredictionPriority(2, "TEST_1.0",
+                                        PredictionQuestion("question 2?", "help", "frageId-2", "TEST_1.0",
                                                 listOf(
-                                                        PredictionResponse("answer alternative 2-1!", "svarsId-2c", true, 1, null),
-                                                        PredictionResponse("answer alternative 2-2!", "svarsId-2d", false, 1, null)
+                                                        PredictionResponse("answer alternative 2-1!", "svarsId-2c", true, 1, "TEST_1.0",null),
+                                                        PredictionResponse("answer alternative 2-2!", "svarsId-2d", false, 1, "TEST_1.0",null)
                                                 )
                                         )
                                 )
@@ -91,10 +92,11 @@ class PredictionInformationModuleTest {
                             predictionId = "svarsId-1a",
                             isDefault = false,
                             priority = 1,
-                            question = PredictionQuestion("Fråga 1", "Frågan är svaret", "frageId-1",
+                            modelVersion = "TEST_1.0",
+                            question = PredictionQuestion("Fråga 1", "Frågan är svaret", "frageId-1", "TEST_1.0",
                                     listOf(
-                                            PredictionResponse("answer alternative 1-1!", "svarsId-1a", true, 1, null),
-                                            PredictionResponse("answer alternative 1-2!", "svarsId-1b", false, 1, null)
+                                            PredictionResponse("answer alternative 1-1!", "svarsId-1a", true, 1, "TEST_1.0",null),
+                                            PredictionResponse("answer alternative 1-2!", "svarsId-1b", false, 1, "TEST_1.0",null)
                                     ), 1
                             )
                     )

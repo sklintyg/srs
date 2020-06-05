@@ -51,6 +51,11 @@ class ModelFileUpdateService(val resourceLoader: ResourceLoader,
         models = collect(Sequence { resources.iterator() })
     }
 
+    fun applyModelsWithoutSubdiag(resources: List<Resource>) {
+        log.info("Applying models without sub diags: {}", resources)
+        modelsWithoutSubdiag = collect(Sequence { resources.iterator() })
+    }
+
     private final fun doUpdate(locationPattern: String) {
         log.info("Performing model update... locationPattern: {}", locationPattern)
         models = collect(Sequence {
@@ -76,9 +81,10 @@ class ModelFileUpdateService(val resourceLoader: ResourceLoader,
         val name = resource.filename
         val dStartPos = name!!.indexOf('_')
         val dEndPos = name.lastIndexOf('_')
-        val vEndPos = name.indexOf('.')
+        val vEndPos = name.lastIndexOf('.')
         val diagnosis = name.substring(dStartPos + 1, dEndPos)
-        val version = name.substring(dEndPos + 1, vEndPos)
+        val version = name.substring(dEndPos + 2, vEndPos)
+        val isTestModel: Boolean = diagnosis.startsWith("X99")
         val file = File.createTempFile(resource.filename, DATA_FILE_EXTENSION)
         val out = file.outputStream()
         try {
@@ -87,9 +93,9 @@ class ModelFileUpdateService(val resourceLoader: ResourceLoader,
             out.close()
         }
         file.deleteOnExit()
-        return Model(diagnosis, version, file)
+        return Model(diagnosis, version, file, isTestModel)
     }
 
-    class Model(val diagnosis: String, val version: String, val file: File)
+    class Model(val diagnosis: String, val version: String, val file: File, val isTestModel:Boolean = false)
 
 }

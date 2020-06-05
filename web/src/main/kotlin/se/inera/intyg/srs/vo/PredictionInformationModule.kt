@@ -1,6 +1,7 @@
 package se.inera.intyg.srs.vo
 
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v3.Diagnosprediktion
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v3.Diagnosprediktionstatus
@@ -34,7 +35,9 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
                                   val probabilityRepo: ProbabilityRepository,
                                   val patientAnswerRepo: PatientAnswerRepository,
                                   val consentModule: ConsentModule,
-                                  val responseRepo: ResponseRepository) : InformationModule<Diagnosprediktion> {
+                                  val responseRepo: ResponseRepository,
+                                  @Value("\${model.currentVersion}") val currentModelVersion: String
+) : InformationModule<Diagnosprediktion> {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -67,8 +70,8 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
             diagnosPrediktion.inkommandediagnos = originalDiagnosis(incomingCertDiagnosis)
             diagnosPrediktion.intygId = buildIntygId(careUnitHsaId, incomingCertDiagnosis.certificateId)
 
-            log.debug("Fetching model for incoming diagnosis ${incomingCertDiagnosis.code}")
-            val diagnosis = diagnosisRepo.getModelForDiagnosis(incomingCertDiagnosis.code)
+            log.debug("Fetching model for incoming diagnosis ${incomingCertDiagnosis.code} modelVersion ${currentModelVersion}")
+            val diagnosis = diagnosisRepo.getModelForDiagnosis(incomingCertDiagnosis.code, currentModelVersion)
             log.debug("Got diagnosis $diagnosis")
 
             if (diagnosis != null) {
@@ -186,7 +189,7 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
         if (diagToFind.length == 3) { // e.g. S52
             historicProbabilities = probabilityRepo.findByCertificateIdAndDiagnosisOrderByTimestampDesc(incomingCertDiagnosis.certificateId, diagToFind)
         } else { // e.g. F438a -> try F438a then F438 and stop (if 4 is the resolution)
-            while (diagToFind.length >= predictionDiagnosis.resolution && historicProbabilities.isEmpty()) {
+            while (diagToFind.length >= predictionDiagnosis.resolution?:3 && historicProbabilities.isEmpty()) {
                 log.debug("Trying to find historic prediction on diagnosis code ${diagToFind}")
                 historicProbabilities = probabilityRepo.findByCertificateIdAndDiagnosisOrderByTimestampDesc(incomingCertDiagnosis.certificateId, diagToFind)
                 diagToFind = diagToFind.dropLast(1);
