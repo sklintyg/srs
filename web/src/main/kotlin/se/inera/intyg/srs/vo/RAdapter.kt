@@ -59,7 +59,7 @@ open class RAdapter(val modelService: ModelFileUpdateService,
     // INTYG-4481: In case of execution error in R: append log contents to main log.
     // Then clear out old R log, by closing and then reopening log file with append disabled.
     private fun wipeRLogFileAndReportError() {
-        /*The R statement below somehow implicitely closes the log file (closing it again causes segfault). Someone with
+        /*The R statement below somehow implicitly closes the log file (closing it again causes segfault). Someone with
           R experience should confirm this, in order to make sure we don't leak resources (file pointers).*/
         rengine.eval("sink(file = NULL)")
         val logtext = File(rLogFilePath).bufferedReader().use(BufferedReader::readText)
@@ -130,9 +130,11 @@ open class RAdapter(val modelService: ModelFileUpdateService,
      * @param daysIntoSickLeave Number of days into the sick leave when th prediction is made, the first calculation is done based on day 15
      */
     override fun getPrediction(person: Person,
-                               diagnosis: Diagnosis,
+                               diagnosis: CertDiagnosis,
                                extraParams: Map<String, Map<String, String>>,
                                daysIntoSickLeave:Int): Prediction {
+
+        log.debug("RAdapter.getPrediction for diagnosis {}", diagnosis.code)
         // Synchronizing here is an obvious performance bottle neck, but we have no choice since the R engine is
         // single-threaded, and cannot cope with concurrent calls. Intygsprojektet has accepted that R be used
         // for the execution of prediction models, and there is no reason to the believe that the number of calls
@@ -154,7 +156,7 @@ open class RAdapter(val modelService: ModelFileUpdateService,
 
             val rDataFrame = StringBuilder("data <- data.frame(").apply {
                 append("SA_Days_tot_modified = as.integer(90), ") //Calculate the probability that the sick leave lasts longer than 90 days
-                append("Sex = '${person.sex.predictionString}', ")
+                append("Kon = '${person.sex.toSwedish()}', ")
                 append("age_cat_fct = '${person.ageCategory}', ")
                 append("Region = '" + extraParams[LOCATION_KEY]?.get(REGION_KEY) + "', ")
                 append(extraParams[QUESTIONS_AND_ANSWERS_KEY]?.entries?.joinToString(", ", transform = { (key, value) -> "'$key' = '$value'" }))
@@ -168,7 +170,8 @@ open class RAdapter(val modelService: ModelFileUpdateService,
                 // The normal case is that we do the initial prediction at 15 days into the sick leave
                 val prediction = rOutput.asDouble()
                 log.debug("Successful prediction, result: " + prediction)
-                Prediction(model.diagnosis, prediction, status, LocalDateTime.now())
+                val actualDiagnosisPredicted = getActualPredictedDiagnosis(diagnosis.code, model.diagnosis, extraParams[QUESTIONS_AND_ANSWERS_KEY])
+                Prediction(actualDiagnosisPredicted, prediction, status, LocalDateTime.now())
             } else if (rOutput != null && daysIntoSickLeave > 15) {
                 // If we currently are more than 15 days into the sick leave we need to use Bayes Theorem P(T>X | T>Y) = P(T>X)/P(T>Y)
                 // The above is read the probability that T will be bigger than X given that T is bigger than Y.
@@ -179,7 +182,7 @@ open class RAdapter(val modelService: ModelFileUpdateService,
 
                 val rDataFrame2 = StringBuilder("data <- data.frame(").apply {
                     append("SA_Days_tot_modified = as.integer($daysIntoSickLeave), ")
-                    append("Sex = '${person.sex.predictionString}', ")
+                    append("Kon = '${person.sex.toSwedish()}', ")
                     append("age_cat_fct = '${person.ageCategory}', ")
                     append("Region = '" + extraParams[LOCATION_KEY]?.get(REGION_KEY) + "', ")
                     append(extraParams[QUESTIONS_AND_ANSWERS_KEY]?.entries?.joinToString(", ", transform = { (key, value) -> "'$key' = '$value'" }))
@@ -199,6 +202,30 @@ open class RAdapter(val modelService: ModelFileUpdateService,
                 wipeRLogFileAndReportError()
                 Prediction(diagnosis.code, null, Diagnosprediktionstatus.NOT_OK, LocalDateTime.now())
             }
+        }
+    }
+
+    /**
+     * We might actually have done the prediction for a 4 character diagnosis code even though the model is based on 3 character codes.
+     *
+     * If we have question id's ending with "[prediction model's diag code]_subdiag_group" then the answer has been
+     * set automatically to get a more accurate prediction using 4 letters of the diagnosis diagnosis code (e.g. F348A -> F438) instead
+     * of the usual 3 letters (F438A -> F43).
+     * The model is normally for 3 letter diagnosis codes but since we add the extra question we get a 4 letter accuracy in those cases
+     * and want to reflect that in the returned Prediction object.
+     */
+    private fun getActualPredictedDiagnosis(incomingDiagnosis:String, predicionModelDiagnosis:String,
+                                                                       questionsAndAnswers: Map<String, String>?): String {
+        if (questionsAndAnswers == null) {
+            return predicionModelDiagnosis
+        }
+        // check if we have a question id containing "${predicionModelDiagnosis}_subdiag_group", that has a non blank answer
+        val hasSubDiagGroupAutomaticAnswer = questionsAndAnswers.keys
+                .any { k -> k.contains("${predicionModelDiagnosis}_subdiag_group") && !questionsAndAnswers[k].isNullOrBlank() }
+        return if (hasSubDiagGroupAutomaticAnswer) {
+            incomingDiagnosis.substring(0, Math.min(incomingDiagnosis.length, 4))
+        } else {
+            predicionModelDiagnosis;
         }
     }
 
@@ -222,24 +249,32 @@ open class RAdapter(val modelService: ModelFileUpdateService,
     private fun getModelForDiagnosis(diagnosisId: String): Pair<ModelFileUpdateService.Model?, Diagnosprediktionstatus> {
         var currentId = cleanDiagnosisCode(diagnosisId)
         log.debug("getModelForDiagnosis diagnosisId: {}, cleanDiagnosisId: {}", diagnosisId, currentId)
-        if (currentId.length > MAX_ID_POSITIONS) {
-            return Pair(null, Diagnosprediktionstatus.NOT_OK)
-        }
         var status: Diagnosprediktionstatus = Diagnosprediktionstatus.OK
-
-        // Find a suitable model by cutting of character by character from the end of the diagnosis code
-        while (currentId.length >= MIN_ID_POSITIONS) {
-            val model = modelService.modelForCode(currentId)
-            log.debug("modelForCode currentId: {}, gave: {}", currentId, model)
-
+        if (currentId.length == 3) {
+            log.debug("We got a three character diagnosis code, fallback to model without subdiag group params");
+            val model = modelService.modelForCodeWithoutSubdiag(currentId)
             if (model != null) {
-                return Pair(model, status)
+                return Pair(model, status);
             }
-            // Since we didn't find a model, Remove one character from the end of the id/diagnosisCode string to try again
-            currentId = currentId.substring(0, currentId.length - 1)
+        } else {
+            if (currentId.length > MAX_ID_POSITIONS) {
+                return Pair(null, Diagnosprediktionstatus.NOT_OK)
+            }
 
-            // Once we have shortened the code, we need to indicate that the info is not on the original level
-            status = Diagnosprediktionstatus.DIAGNOSKOD_PA_HOGRE_NIVA
+            // Find a suitable model by cutting of character by character from the end of the diagnosis code
+            while (currentId.length >= MIN_ID_POSITIONS) {
+                val model = modelService.modelForCode(currentId)
+                log.debug("modelForCode currentId: {}, gave: {}", currentId, model)
+
+                if (model != null) {
+                    return Pair(model, status)
+                }
+                // Since we didn't find a model, Remove one character from the end of the id/diagnosisCode string to try again
+                currentId = currentId.substring(0, currentId.length - 1)
+
+                // Once we have shortened the code, we need to indicate that the info is not on the original level
+                status = Diagnosprediktionstatus.DIAGNOSKOD_PA_HOGRE_NIVA
+            }
         }
         return Pair(null, Diagnosprediktionstatus.PREDIKTIONSMODELL_SAKNAS)
     }

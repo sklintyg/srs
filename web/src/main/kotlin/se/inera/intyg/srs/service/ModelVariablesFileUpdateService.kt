@@ -62,7 +62,8 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
     data class DiagnosisVariable(
             val diagnosisCode: String,
             val varName: String,
-            val order: Int?
+            val order: Int?,
+            val resolution: Int
     )
 
     private final fun readVariables(workbook: XSSFWorkbook): List<Variable> {
@@ -145,9 +146,15 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
                 rowNumber++
                 continue
             }
+            var resolution = 3;
             val varName = row.getCell(1).stringCellValue
-            val order = row.getCell(2)?.numericCellValue?.toInt()
-            val diagnosisVariable = DiagnosisVariable(diagnosisCode, varName, order)
+            var order = row.getCell(2)?.numericCellValue?.toInt()
+            // We want to have subdiag_groups with us but make sure it is with order 0
+            if (order == null && varName.isNotBlank() && varName.contains("_subdiag_group")) {
+                order = 0
+                resolution = 4; // if we have subdiag groups, the prediction is considering 4 characters of the diagnosis code
+            }
+            val diagnosisVariable = DiagnosisVariable(diagnosisCode, varName, order, resolution)
             log.debug("Did read DiagnosisVariable: ${diagnosisVariable}")
             var list:ArrayList<DiagnosisVariable>? = responseMap.get(diagnosisCode)
             if (list==null) {
@@ -231,11 +238,13 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
                                                diagnosisVariables: List<DiagnosisVariable>,
                                                variableQuestionMap: Map<String, PredictionQuestion>): PredictionDiagnosis {
         var diagnosis: PredictionDiagnosis? = null
+        var resolution = (diagnosisVariables.maxBy { it.resolution })!!.resolution
         diagnosisRepo.findOneByDiagnosisId(diagnosisCode) ?. let { existingDiagnosis ->
             log.debug("Updating priorities on existing prediction diagnosis with diagnosis code '$diagnosisCode'")
             diagnosis = diagnosisRepo.save(existingDiagnosis.copy(
                     diagnosisId = diagnosisCode,
                     prevalence = 0.0,
+                    resolution = resolution,
                     questions = diagnosisVariables
                             // Filtrera bort frågor som inte har någon order/priority samt de som inte har någon fråga i
                             // Questions-mappen (de sätts automatiskt och visas ej i GUI)
@@ -248,7 +257,7 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
         } ?: run {
             log.debug("Creating new prediction diagnosis with diagnosis code '$diagnosisCode' with variables $diagnosisVariables")
             // Prevalensen uppdateras i senare steg, vid inläsning av åtgärdsrekommendationer och prevalens
-            diagnosis = diagnosisRepo.save(PredictionDiagnosis(diagnosisCode, 0.0,
+            diagnosis = diagnosisRepo.save(PredictionDiagnosis(diagnosisCode, 0.0, resolution,
                     // För varje kombination av diagnos och variabel (fråga)
                     diagnosisVariables
                             // Filtrera bort frågor som inte har någon order/priority samt de som inte har någon fråga i

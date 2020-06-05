@@ -21,7 +21,7 @@ class MeasureInformationModule(val measureRepo: MeasureRepository) : Information
     private val log = LoggerFactory.getLogger(javaClass)
 
     override fun getInfoForDiagnosis(diagnosisId: String): Atgardsrekommendation =
-            createRecommendation(Diagnosis(diagnosisId))
+            createRecommendation(CertDiagnosis("N/A", diagnosisId))
 
     override fun getInfo(persons: List<Person>, extraParams: Map<String, Map<String, String>>,
                          careUnitHsaId: String, calculateIndividual: Boolean, daysIntoSickLeave:Int): Map<Person, List<Atgardsrekommendation>> {
@@ -37,9 +37,9 @@ class MeasureInformationModule(val measureRepo: MeasureRepository) : Information
     }
 
     private fun createInfo(person: Person): List<Atgardsrekommendation> =
-            person.diagnoses.map(this::createRecommendation)
+            person.certDiags.map(this::createRecommendation)
 
-    private fun createRecommendation(incomingDiagnosis: Diagnosis): Atgardsrekommendation {
+    private fun createRecommendation(incomingDiagnosis: CertDiagnosis): Atgardsrekommendation {
         val recommendation = Atgardsrekommendation()
         recommendation.inkommandediagnos = originalDiagnosis(incomingDiagnosis)
 

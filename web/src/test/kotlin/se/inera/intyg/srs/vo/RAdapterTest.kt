@@ -18,7 +18,7 @@ import se.inera.intyg.srs.service.ZIP_CODE_KEY
 class RAdapterTest () {
 
     val resourceLoader:ResourceLoader = DefaultResourceLoader()
-    val modelFileService:ModelFileUpdateService = ModelFileUpdateService(resourceLoader, "classpath:/model/*")
+    val modelFileService:ModelFileUpdateService = ModelFileUpdateService(resourceLoader, "classpath:/model/*", "classpath:/models_without_subdiag/*")
 
     @Before
     fun setup() {
@@ -29,8 +29,7 @@ class RAdapterTest () {
     @EnabledIfEnvironmentVariable(named = "R_HOME", matches = "^.*$" ) // only use when a local R environment is available
     fun testRAdapter() {
         val rAdapter:RAdapter = RAdapter(modelFileService, "/tmp/r-log", 1)
-        val person:Person = Person("19121212-1212", "57-63", Sex.MAN, listOf(Diagnosis("F438A")),
-                "cert-id-1")
+        val person:Person = Person("19121212-1212", "57-63", Sex.MAN, listOf(CertDiagnosis("cert-id-1", "F438A")))
 
         val extraParams = mapOf(
                 LOCATION_KEY to mapOf(
@@ -43,16 +42,16 @@ class RAdapterTest () {
                         "SA_SyssStart_fct" to "not_unemp",
                         "birth_cat_fct" to "SW",
                         "any_visits_-365_+6_Mental_notF43" to "0",
-                        "any_visits_-365_+6_R53" to "0",
-                        "any_visits_-6_+15_F43_subdiag_group" to "Annat/Vet ej"
+                        "comorbidity" to "no",
+                        "any_visits_-6_+15_F43_subdiag_group" to "Annat"
                 )
         )
 
-        val prediction = rAdapter.getPrediction(person, Diagnosis("F438A"), extraParams,10)
+        val prediction = rAdapter.getPrediction(person, CertDiagnosis("cert-id-1","F438A"), extraParams,10)
 
         assertEquals(Diagnosprediktionstatus.DIAGNOSKOD_PA_HOGRE_NIVA, prediction.status)
-        assertEquals("F43", prediction.diagnosis)
-        assertEquals(0.53, prediction.prediction)
+        assertEquals("F438", prediction.diagnosis)
+        assertEquals(0.41, prediction.prediction)
 
     }
 }

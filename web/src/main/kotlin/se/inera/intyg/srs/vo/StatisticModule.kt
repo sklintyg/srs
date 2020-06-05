@@ -35,7 +35,7 @@ class StatisticModule(val nationalStatisticRepo: NationalStatisticRepository) : 
 
     private fun createInfo(person: Person): List<Diagnosstatistik> {
         val outgoingStatistik = mutableListOf<Diagnosstatistik>()
-        person.diagnoses.forEach { diagnose ->
+        person.certDiags.forEach { diagnose ->
             outgoingStatistik.add(getStatistikForDiagnosis(diagnose.code))
         }
         return outgoingStatistik

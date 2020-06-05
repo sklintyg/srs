@@ -10,7 +10,7 @@ import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Statistikstatus
 import se.inera.intyg.srs.persistence.entity.NationalStatistic
 import se.inera.intyg.srs.persistence.repository.NationalStatisticRepository
 import se.inera.intyg.srs.service.YOUTHS
-import se.inera.intyg.srs.vo.Diagnosis
+import se.inera.intyg.srs.vo.CertDiagnosis
 import se.inera.intyg.srs.vo.Person
 import se.inera.intyg.srs.vo.Sex
 import se.inera.intyg.srs.vo.StatisticModule
@@ -79,8 +79,8 @@ class StatisticModuleTest {
     }
 
     private fun doGetInfo(diagnoses: List<String>): List<Diagnosstatistik> {
-        val diagnosesList = diagnoses.stream().map { Diagnosis(it) }.collect(Collectors.toList())
-        val person = Person("1212121212", YOUTHS, Sex.MAN, diagnosesList, "test1")
+        val diagnosesList = diagnoses.stream().map { CertDiagnosis("test1",it) }.collect(Collectors.toList())
+        val person = Person("1212121212", YOUTHS, Sex.MAN, diagnosesList)
         return module.getInfo(listOf(person), mapOf()).get(person)!!
     }
 

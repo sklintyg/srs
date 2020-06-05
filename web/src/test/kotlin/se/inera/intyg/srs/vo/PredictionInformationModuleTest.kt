@@ -37,7 +37,7 @@ class PredictionInformationModuleTest {
     private lateinit var probabilityRepo: ProbabilityRepository
 
     private val testPerson = Person("198402289287", "KIDS", Sex.WOMAN,
-            listOf(Diagnosis("F438A")),"certId-1")
+            listOf(CertDiagnosis("certId-1", "F438A")))
 
     @BeforeEach
     fun setup() {
@@ -52,7 +52,7 @@ class PredictionInformationModuleTest {
         whenever(consentModule.consentNeeded()).thenReturn(false)
 
         whenever(diagnosisRepo.getModelForDiagnosis(eq("F438A")))
-                .thenReturn(PredictionDiagnosis("F43", 0.32,
+                .thenReturn(PredictionDiagnosis("F43", 0.32, 3,
                         listOf(PredictionPriority(1,
                                 PredictionQuestion("question 1?", "help", "frageId-1",
                                         listOf(

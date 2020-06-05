@@ -12,10 +12,7 @@ import se.inera.intyg.srs.persistence.entity.MeasurePriority
 import se.inera.intyg.srs.persistence.repository.MeasureRepository
 import se.inera.intyg.srs.persistence.entity.Recommendation
 import se.inera.intyg.srs.service.YOUTHS
-import se.inera.intyg.srs.vo.Diagnosis
-import se.inera.intyg.srs.vo.MeasureInformationModule
-import se.inera.intyg.srs.vo.Person
-import se.inera.intyg.srs.vo.Sex
+import se.inera.intyg.srs.vo.*
 
 class MeasureInformationModuleTest {
 
@@ -63,7 +60,7 @@ class MeasureInformationModuleTest {
     @Test
     fun nonExistingDiagnosisIsReportedAndTheInputDiagnosisIsReusedInOutput() {
         val nonExisting = "Z123"
-        val person = Person("1212121212", YOUTHS, Sex.MAN, listOf(Diagnosis(nonExisting)), "test1")
+        val person = Person("1212121212", YOUTHS, Sex.MAN, listOf(CertDiagnosis("test1",nonExisting)))
         val result = module.getInfo(listOf(person), mapOf())
         assertEquals(nonExisting, result.get(person)!![0].inkommandediagnos.code)
         assertEquals(INFORMATION_SAKNAS, result.get(person)!![0].atgardsrekommendationstatus)
@@ -71,7 +68,7 @@ class MeasureInformationModuleTest {
 
     @Test
     fun diagnosisCodeIsShortenedUntilItMatches() {
-        val person = Person("1212121212", YOUTHS, Sex.MAN, listOf(Diagnosis(DIAGNOSIS_A1234)), "test1")
+        val person = Person("1212121212", YOUTHS, Sex.MAN, listOf(CertDiagnosis("test1", DIAGNOSIS_A1234)))
         val result = module.getInfo(listOf(person), mapOf())
         assertEquals(DIAGNOSIS_A12, result.get(person)!![0].diagnos.code)
         assertEquals(DIAGNOSIS_A1234, result.get(person)!![0].inkommandediagnos.code)
@@ -80,7 +77,7 @@ class MeasureInformationModuleTest {
 
     @Test
     fun measureShouldBeReturnedForEachMatchingDiagnosis() {
-        val person = Person("1212121212", YOUTHS, Sex.MAN, listOf(Diagnosis(DIAGNOSIS_A12), Diagnosis(DIAGNOSIS_B12)), "test1")
+        val person = Person("1212121212", YOUTHS, Sex.MAN, listOf(CertDiagnosis("test1", DIAGNOSIS_A12), CertDiagnosis("test1", DIAGNOSIS_B12)))
         val result = module.getInfo(listOf(person), mapOf())
         assertEquals(2, result.get(person)!!.size)
         assertEquals(DIAGNOSIS_A12, result.get(person)!![0].diagnos.code)

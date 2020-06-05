@@ -441,4 +441,10 @@
                         newDataType="VARCHAR(64)"/>
     </changeSet>
 
+    <changeSet id="22" author="ch">
+        <addColumn tableName="prediction_diagnosis">
+            <column name="resolution" type="INTEGER" />
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

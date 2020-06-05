@@ -12,7 +12,7 @@ open class TestPredictionAdapter : PredictionAdapter {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
-    override fun getPrediction(person: Person, diagnosis: Diagnosis, extraParams: Map<String, Map<String, String>>, daysInto:Int): Prediction {
+    override fun getPrediction(person: Person, diagnosis: CertDiagnosis, extraParams: Map<String, Map<String, String>>, daysInto:Int): Prediction {
         log.debug("Test prediction adapter got getPrediction(person: $person, diagnosis: $diagnosis, extraParams: $extraParams)")
         return Prediction("F43", 0.52, Diagnosprediktionstatus.OK, LocalDateTime.now())
     }

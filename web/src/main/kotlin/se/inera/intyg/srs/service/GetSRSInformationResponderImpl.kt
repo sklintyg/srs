@@ -12,7 +12,7 @@ import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v3.Indivi
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v3.Prediktion
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v3.Prediktionsfaktorer
 import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Statistik
-import se.inera.intyg.srs.vo.Diagnosis
+import se.inera.intyg.srs.vo.CertDiagnosis
 import se.inera.intyg.srs.vo.MeasureInformationModule
 import se.inera.intyg.srs.vo.Person
 import se.inera.intyg.srs.vo.PredictionInformationModule
@@ -52,7 +52,7 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
         log.debug("Received request from ${request.konsumentId.extension}")
 
         val persons = transformIndividuals(request.individer.individ)
-        val unitId = request.individer.individ.map { it.intygId.root }.first() ?: "NoUnitFound"
+        val unitId = request.individer.individ.map { it.diagnosintyg.first().intygId.root }.first() ?: "NoUnitFound"
         val extraInfo: Map<String, Map<String, String>> =
                 if (request.prediktionsfaktorer != null)
                     transformPredictionFactors(request.prediktionsfaktorer)
@@ -117,9 +117,8 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
             individer.map { individ ->
                 val age = calculateAge(individ.personId)
                 val sex = calculateSex(individ.personId)
-                val diagnoses = individ.diagnos.map { diagnos -> Diagnosis(diagnos.code) }
-                val certificateId = individ.intygId.extension
-                Person(individ.personId, age, sex, diagnoses, certificateId)
+                val certDiags = individ.diagnosintyg.map { di -> CertDiagnosis(di.intygId.extension, di.diagnos.code) }
+                Person(individ.personId, age, sex, certDiags)
             }
 
     private fun calculateAge(personId: String): String {

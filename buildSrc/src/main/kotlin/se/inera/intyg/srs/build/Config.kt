@@ -13,7 +13,7 @@ object Config {
 
         //Project dependencies
         const val intygPluginVersion = "3.0.6"
-        const val srsSchemasVersion = "0.0.14"
+        const val srsSchemasVersion = "0.0.15"
         const val monitoringSchemasVersion = "1.0.0.5"
 
         //External dependencies

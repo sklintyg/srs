@@ -23,6 +23,7 @@ import se.inera.intyg.srs.service.monitoring.logPrediction
 import se.inera.intyg.srs.util.PredictionInformationUtil
 import se.inera.intyg.srs.util.getModelForDiagnosis
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.Diagnos
+import se.riv.clinicalprocess.healthcond.certificate.types.v2.IntygId
 import java.time.LocalDateTime
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -45,7 +46,7 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
         log.trace("Persons: $persons")
         val predictions = HashMap<Person, List<Diagnosprediktion>>()
         persons.forEach { person ->
-            predictions.put(person, createInfo(person, extraParams, careUnitHsaId, calculateIndividual))
+            predictions.put(person, createInfo(person, extraParams, careUnitHsaId, calculateIndividual, daysIntoSickLeave))
         }
         return predictions
     }
@@ -53,19 +54,21 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
     /**
      * Create DiagnosPrediktion from incoming Person objects and extra params
      */
-    private fun createInfo(person: Person, extraParams: Map<String, Map<String, String>>, careUnitHsaId: String, predictIndividualRisk: Boolean): List<Diagnosprediktion> {
+    private fun createInfo(person: Person, extraParams: Map<String, Map<String, String>>, careUnitHsaId: String,
+                           predictIndividualRisk: Boolean, daysIntoSickLeave:Int): List<Diagnosprediktion> {
         log.debug("createInfo(person: $person, extraParams: $extraParams, careUnitHsaId: " +
-                "$careUnitHsaId, predictIndividualRisk: $predictIndividualRisk)")
+                "$careUnitHsaId, predictIndividualRisk: $predictIndividualRisk, daysIntoSickLeave: $daysIntoSickLeave)")
         val outgoingPrediction = mutableListOf<Diagnosprediktion>()
 
-        person.diagnoses.forEach { incomingDiagnosis ->
-            log.trace("working with incomingDiagnosis: $incomingDiagnosis")
+        person.certDiags.forEachIndexed { index, incomingCertDiagnosis ->
+            log.trace("working with incomingCertDiagnosis: ${incomingCertDiagnosis.code} certificateId: ${incomingCertDiagnosis.certificateId} index: $index")
 
             val diagnosPrediktion = Diagnosprediktion()
-            diagnosPrediktion.inkommandediagnos = originalDiagnosis(incomingDiagnosis)
+            diagnosPrediktion.inkommandediagnos = originalDiagnosis(incomingCertDiagnosis)
+            diagnosPrediktion.intygId = buildIntygId(careUnitHsaId, incomingCertDiagnosis.certificateId)
 
-            log.debug("Fetching model for incoming diagnosis ${incomingDiagnosis.code}")
-            val diagnosis = diagnosisRepo.getModelForDiagnosis(incomingDiagnosis.code)
+            log.debug("Fetching model for incoming diagnosis ${incomingCertDiagnosis.code}")
+            val diagnosis = diagnosisRepo.getModelForDiagnosis(incomingCertDiagnosis.code)
             log.debug("Got diagnosis $diagnosis")
 
             if (diagnosis != null) {
@@ -73,17 +76,20 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
                 diagnosPrediktion.prevalens = diagnosis.prevalence
             }
 
-            val consent = if (consentModule.consentNeeded()) consentModule.getConsent(person.personId, careUnitHsaId) else null
-            log.debug("certificateId ${person.certificateId} diagnosis ${diagnosis?.diagnosisId}")
+            log.debug("certificateId ${incomingCertDiagnosis.certificateId} diagnosis ${diagnosis?.diagnosisId}")
             diagnosPrediktion.risksignal = Risksignal()
-            if (!predictIndividualRisk && !person.certificateId.isBlank() && diagnosis != null
-                    && (!consentModule.consentNeeded() || consent != null)) {
-                log.trace("Do not predict individual risk, looking for historic entries on the certificate")
-                fillWithHistoricPrediction(diagnosPrediktion, person, diagnosis)
-            } else if (diagnosis != null && (!consentModule.consentNeeded() || consent != null) &&
-                    predictIndividualRisk) {
+            // Fill extension certificates (index>0) with historic entries and fill the current with historic or calculated risk
+            if ((!predictIndividualRisk || index > 0) && incomingCertDiagnosis.certificateId.isNotEmpty() && diagnosis != null) {
+                log.trace("Do not predict individual risk for index:$index, looking for historic entries on the certificate/diagnosis")
+                fillWithHistoricPrediction(diagnosPrediktion, incomingCertDiagnosis, diagnosis)
+            } else if (index == 0 && diagnosis != null && predictIndividualRisk) {
                 log.trace("Predict individual risk, we got a diagnosis and got correct prediction params")
-                fillWithCalculatedPrediction(diagnosPrediktion, person, incomingDiagnosis, extraParams, diagnosis)
+                fillWithCalculatedPrediction(diagnosPrediktion, person, incomingCertDiagnosis, extraParams, diagnosis, daysIntoSickLeave)
+                logPrediction(extraParams, diagnosPrediktion.diagnos?.code ?: "",
+                    diagnosis?.prevalence?.toString() ?: "", person.sex.name, person.ageCategory,
+                    diagnosPrediktion?.sannolikhetOvergransvarde?.toString() ?: "", diagnosPrediktion.risksignal.riskkategori,
+                    diagnosPrediktion?.diagnosprediktionstatus?.toString() ?: "", incomingCertDiagnosis.certificateId, careUnitHsaId)
+
             } else {
                 log.trace("No consent was given, no prediction was requested or incorrect combination of parameters, " +
                         "responding with prediction NOT_OK")
@@ -93,13 +99,6 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
 
             diagnosPrediktion.risksignal.beskrivning =
                     PredictionInformationUtil.categoryDescriptions[diagnosPrediktion.risksignal.riskkategori]
-            if (predictIndividualRisk) {
-                logPrediction(extraParams, diagnosPrediktion.diagnos?.code ?: "",
-                        diagnosis?.prevalence?.toString() ?: "", person.sex.name, person.ageCategory,
-                        diagnosPrediktion?.sannolikhetOvergransvarde?.toString() ?: "", diagnosPrediktion.risksignal.riskkategori,
-                        diagnosPrediktion?.diagnosprediktionstatus?.toString() ?: "", person.certificateId, careUnitHsaId)
-            }
-
             outgoingPrediction.add(diagnosPrediktion)
         }
         return outgoingPrediction
@@ -109,15 +108,16 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
      * Calculates a new prediction given a set of input parameters
      */
     private fun fillWithCalculatedPrediction(diagnosPrediktionToPopulate: Diagnosprediktion, person: Person,
-                                             incomingDiagnosis: Diagnosis, extraParams: Map<String, Map<String, String>>,
-                                             diagnosisPredictionModel:PredictionDiagnosis) {
+                                             incomingCertDiagnosis: CertDiagnosis, extraParams: Map<String, Map<String, String>>,
+                                             diagnosisPredictionModel:PredictionDiagnosis, daysIntoSickLeave:Int) {
 
         // decorate extraParams with automatic selection based on diagnosis code
-        val decoratedExtraParams = decorateWithAutomaticSelectionParameters(diagnosisPredictionModel, incomingDiagnosis, extraParams)
+        val decoratedExtraParams = decorateWithAutomaticSelectionParameters(diagnosisPredictionModel, incomingCertDiagnosis, extraParams)
 
-        if (isCorrectPredictionParamsAgainstDiagnosis(diagnosisPredictionModel, decoratedExtraParams)) {
+        if (isCorrectPredictionParamsAgainstDiagnosis(diagnosisPredictionModel, decoratedExtraParams, incomingCertDiagnosis)) {
 
-            var calculatedPrediction: Prediction? = rAdapter.getPrediction(person, incomingDiagnosis, decoratedExtraParams)
+            var calculatedPrediction: Prediction? =
+                rAdapter.getPrediction(person, incomingCertDiagnosis, decoratedExtraParams, daysIntoSickLeave)
             diagnosPrediktionToPopulate.diagnosprediktionstatus = calculatedPrediction?.status
             diagnosPrediktionToPopulate.berakningstidpunkt = calculatedPrediction?.timestamp
 
@@ -127,7 +127,7 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
                 diagnosPrediktionToPopulate.sannolikhetOvergransvarde = calculatedPrediction.prediction
                 diagnosPrediktionToPopulate.diagnos = buildDiagnos(calculatedPrediction.diagnosis)
                 diagnosPrediktionToPopulate.risksignal.riskkategori = calculateRisk(calculatedPrediction.prediction!!)
-                persistProbability(diagnosPrediktionToPopulate, person.certificateId, extraParams) // we only want to persist user input, not the decorated extraParams
+                persistProbability(diagnosPrediktionToPopulate, incomingCertDiagnosis.certificateId, extraParams) // we only want to persist user input, not the decorated extraParams
             } else {
                 diagnosPrediktionToPopulate.risksignal.riskkategori = 0
             }
@@ -148,9 +148,9 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
      * @return A new parameter map with automatically selected responses added.
      */
     private fun decorateWithAutomaticSelectionParameters(diagnosisPredictionModel:PredictionDiagnosis,
-                                                         incomingDiagnosis: Diagnosis,
+                                                         incomingCertDiagnosis: CertDiagnosis,
                                                          extraParams: Map<String, Map<String, String>>): Map<String, Map<String, String>> {
-        val diagnosisCodeToFind = incomingDiagnosis.code.substring(0, incomingDiagnosis.code.length.coerceAtMost(4))
+        val diagnosisCodeToFind = incomingCertDiagnosis.code.substring(0, incomingCertDiagnosis.code.length.coerceAtMost(4))
         log.debug("Looking for diagnosis code $diagnosisCodeToFind in automatic selection parameters")
         val newQnAMap:MutableMap<String, String> = (extraParams[QUESTIONS_AND_ANSWERS_KEY] ?: error("No QnA map was given")).toMutableMap()
         diagnosisPredictionModel.questions.forEach {pp ->
@@ -175,15 +175,25 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
     /**
      * Looks for a historic prediction and fills the result object diagnosPrediktion
      * @param diagnosPrediktion The result object to fill with historic prediction data
-     * @param person Person indata
+     * @param certificateId the certificate which had an earlier risk prediction
      * @param diagnosis Diagnosis data entity
      */
-    private fun fillWithHistoricPrediction(diagnosPrediktion: Diagnosprediktion, person: Person, diagnosis: PredictionDiagnosis) {
+    private fun fillWithHistoricPrediction(diagnosPrediktion: Diagnosprediktion, incomingCertDiagnosis: CertDiagnosis, predictionDiagnosis:PredictionDiagnosis) {
+        log.debug("fillWithHistoricPrediction(certId: ${incomingCertDiagnosis.certificateId}, diagnosis: ${incomingCertDiagnosis.code})")
         // Check if we have a historic prediction
-        val historicProbabilities = probabilityRepo.findByCertificateIdAndDiagnosisOrderByTimestampDesc(
-                person.certificateId, diagnosis.diagnosisId)
+        var diagToFind = incomingCertDiagnosis.code;
+        var historicProbabilities: List<Probability> = listOf();
+        if (diagToFind.length == 3) { // e.g. S52
+            historicProbabilities = probabilityRepo.findByCertificateIdAndDiagnosisOrderByTimestampDesc(incomingCertDiagnosis.certificateId, diagToFind)
+        } else { // e.g. F438a -> try F438a then F438 and stop (if 4 is the resolution)
+            while (diagToFind.length >= predictionDiagnosis.resolution && historicProbabilities.isEmpty()) {
+                log.debug("Trying to find historic prediction on diagnosis code ${diagToFind}")
+                historicProbabilities = probabilityRepo.findByCertificateIdAndDiagnosisOrderByTimestampDesc(incomingCertDiagnosis.certificateId, diagToFind)
+                diagToFind = diagToFind.dropLast(1);
+            }
+        }
         if (historicProbabilities.isNotEmpty()) {
-            val historicProbability = historicProbabilities[0]
+            val historicProbability = historicProbabilities.first()
             log.trace("Found historic entry $historicProbability")
             diagnosPrediktion.sannolikhetOvergransvarde = historicProbability.probability
             diagnosPrediktion.diagnos = buildDiagnos(historicProbability.diagnosis, historicProbability.diagnosisCodeSystem)
@@ -222,6 +232,13 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
         }
     }
 
+    private fun buildIntygId(certificateId:String, careUnitId: String): IntygId {
+        return IntygId().apply {
+            this.root = careUnitId;
+            this.extension = certificateId;
+        }
+    }
+
     private fun buildDiagnos(code: String, codeSystem: String = "1.2.752.116.1.1.1.1.3"): Diagnos {
         val diagnos = Diagnos()
         diagnos.codeSystem = codeSystem
@@ -230,15 +247,21 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
     }
 
     private fun isCorrectPredictionParamsAgainstDiagnosis(diagnosis: PredictionDiagnosis, extraParams: Map<String, Map<String,
-            String>>): Boolean {
+            String>>, incomingCertDiagnosis:CertDiagnosis): Boolean {
         val included = HashMap<String, String>()
         extraParams[QUESTIONS_AND_ANSWERS_KEY]?.map { included.put(it.key, it.value) }
-        log.debug("Checking if correct prediction params, got params: $extraParams")
+        log.debug("Checking if correct prediction params, got params: $extraParams for diagnosis model: ${diagnosis.diagnosisId}, " +
+            "incoming diagnosis: ${incomingCertDiagnosis.code}")
 
         val required = HashMap<String, List<String>>()
 
         diagnosis.questions.forEach {
-            required.put(it.question.predictionId, it.question.answers.map { it.predictionId })
+            if (incomingCertDiagnosis.code.length == 3 && it.question.predictionId.contains("_subdiag_group")) {
+                // Do nothing and continue with next...
+                // We skip this since we cant use subdiag_group params on 3 character diagnosis codes
+            } else {
+                required.put(it.question.predictionId, it.question.answers.map { it.predictionId })
+            }
         }
 
         val (isOk, errorList) = isCorrectQuestionsAndAnswers(included, required)
@@ -314,7 +337,7 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
         }
 }
 
-fun originalDiagnosis(incoming: Diagnosis): Diagnos {
+fun originalDiagnosis(incoming: CertDiagnosis): Diagnos {
     val original = Diagnos()
     original.codeSystem = incoming.codeSystem
     original.code = incoming.code

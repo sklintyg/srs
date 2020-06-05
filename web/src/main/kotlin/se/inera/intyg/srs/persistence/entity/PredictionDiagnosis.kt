@@ -11,6 +11,7 @@ import javax.persistence.OneToMany
 @Entity
 data class PredictionDiagnosis(val diagnosisId: String,
                                val prevalence: Double,
+                               val resolution: Int,
                                @OneToMany(fetch = FetchType.EAGER)
                                @JoinColumn(name = "diagnosis_id")
                                val questions: Collection<PredictionPriority>,
