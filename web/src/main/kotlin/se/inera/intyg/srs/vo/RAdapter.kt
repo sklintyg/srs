@@ -204,7 +204,8 @@ open class RAdapter(val modelService: ModelFileUpdateService,
                 log.trace("prediction2 ($daysIntoSickLeave days into): $prediction2")
                 val predictionDaysInto = prediction/prediction2
                 log.trace("predictionDaysInto: $predictionDaysInto")
-                Prediction(model.diagnosis, predictionDaysInto, status, LocalDateTime.now())
+                val actualDiagnosisPredicted = getActualPredictedDiagnosis(diagnosis.code, model.diagnosis, extraParams[QUESTIONS_AND_ANSWERS_KEY])
+                Prediction(actualDiagnosisPredicted, predictionDaysInto, status, LocalDateTime.now())
             } else {
                 log.debug("R produced no output")
                 wipeRLogFileAndReportError()
