@@ -36,8 +36,11 @@ class MeasureInformationModule(val measureRepo: MeasureRepository) : Information
         return measures
     }
 
+    /**
+     * Today we only respond with measures for the current certificate/diagnosis
+     */
     private fun createInfo(person: Person): List<Atgardsrekommendation> =
-            person.certDiags.map(this::createRecommendation)
+        listOf(createRecommendation(person.certDiags[0]))
 
     private fun createRecommendation(incomingDiagnosis: CertDiagnosis): Atgardsrekommendation {
         val recommendation = Atgardsrekommendation()
