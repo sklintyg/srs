@@ -11,6 +11,7 @@ import se.inera.intyg.srs.persistence.entity.Measure
 import se.inera.intyg.srs.persistence.entity.MeasurePriority
 import se.inera.intyg.srs.persistence.repository.MeasureRepository
 import se.inera.intyg.srs.persistence.entity.Recommendation
+import se.inera.intyg.srs.service.AT_DEATHS_DOOR
 import se.inera.intyg.srs.service.YOUTHS
 import se.inera.intyg.srs.vo.*
 
@@ -76,18 +77,35 @@ class MeasureInformationModuleTest {
     }
 
     @Test
-    fun measureShouldBeReturnedForEachMatchingDiagnosis() {
-        val person = Person("1212121212", YOUTHS, Sex.MAN, listOf(CertDiagnosis("test1", DIAGNOSIS_A12), CertDiagnosis("test1", DIAGNOSIS_B12)))
+    fun measureShouldBeReturnedForFirstDiagnosisPerPersonOnlyOnePerPerson() {
+        val person = Person("1212121212", YOUTHS, Sex.MAN,
+            listOf(CertDiagnosis("test1", DIAGNOSIS_A12), CertDiagnosis("test1", DIAGNOSIS_B12)))
         val result = module.getInfo(listOf(person), mapOf())
-        assertEquals(2, result.get(person)!!.size)
+        assertEquals(1, result.get(person)!!.size)
+        assertEquals(DIAGNOSIS_A12, result.get(person)!![0].diagnos.code)
+        assertEquals(1, result.get(person)!![0].atgard.size)
+        assertEquals(Atgardstyp.REK, result.get(person)!![0].atgard.get(0).atgardstyp)
+        assertEquals(OK, result.get(person)!![0].atgardsrekommendationstatus) }
+
+    @Test
+    fun measureShouldBeReturnedForFirstDiagnosisPerPerson() {
+        val person = Person("1212121212", YOUTHS, Sex.MAN,
+            listOf(CertDiagnosis("test1", DIAGNOSIS_A12)))
+        val person2 = Person("191212121212", AT_DEATHS_DOOR, Sex.MAN,
+            listOf(CertDiagnosis("test2", DIAGNOSIS_B12)))
+        val result = module.getInfo(listOf(person, person2), mapOf())
+
+        assertEquals(1, result.get(person)!!.size)
         assertEquals(DIAGNOSIS_A12, result.get(person)!![0].diagnos.code)
         assertEquals(1, result.get(person)!![0].atgard.size)
         assertEquals(Atgardstyp.REK, result.get(person)!![0].atgard.get(0).atgardstyp)
         assertEquals(OK, result.get(person)!![0].atgardsrekommendationstatus)
-        assertEquals(DIAGNOSIS_B12, result.get(person)!![1].diagnos.code)
-        assertEquals(1, result.get(person)!![1].atgard.size)
-        assertEquals(Atgardstyp.OBS, result.get(person)!![1].atgard.get(0).atgardstyp)
-        assertEquals(OK, result.get(person)!![1].atgardsrekommendationstatus)
+
+        assertEquals(1, result.get(person2)!!.size)
+        assertEquals(DIAGNOSIS_B12, result.get(person2)!![0].diagnos.code)
+        assertEquals(1, result.get(person2)!![0].atgard.size)
+        assertEquals(Atgardstyp.OBS, result.get(person2)!![0].atgard.get(0).atgardstyp)
+        assertEquals(OK, result.get(person2)!![0].atgardsrekommendationstatus)
     }
 
 }
