@@ -134,9 +134,11 @@ class MeasuresAndPrevalenceFileUpdateService(@Value("\${recommendations.file}") 
             } else if (diagnosisId.length == 3) {
                 val prevalence = row.getCell(3).numericCellValue
                 log.debug("Setting prevalence for $diagnosisId to $prevalence")
-                diagnosisRepo.findOneByDiagnosisIdAndModelVersion(diagnosisId, currentModelVersion).let { diagnosis ->
-                    diagnosisRepo.save(diagnosis!!.copy(prevalence = prevalence))
-                    updatedPrevalences++
+                diagnosisRepo.findByDiagnosisIdAndModelVersion(diagnosisId, currentModelVersion).let { diags -> // with and without subdiags
+                    diags.forEach { diagnosis ->
+                        diagnosisRepo.save(diagnosis!!.copy(prevalence = prevalence))
+                        updatedPrevalences++
+                    }
                 }
             }
             rowNumber++

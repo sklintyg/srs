@@ -17,7 +17,7 @@ class GetRiskPredictionForCertificateIT : BaseIntegrationTest() {
     @Test
     fun testGetRiskPredictionForCertificateOnlyReturnsLatest() {
         setModels("x99v0")
-        addDiagnosis(TestController.DiagnosisRequest("X99", 1.0, emptyList(), "2.2"))
+        addDiagnosis(TestController.DiagnosisRequest("X99", 1.0, false, emptyList(), "2.2"))
         addConsent("200005292396", true, "root")
 
         val response = sendPrediktionRequest("getPrediktion_Model1Request_output_0.44.xml", "X99", "intyg1")

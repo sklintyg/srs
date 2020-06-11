@@ -18,7 +18,7 @@ class PrediktionIT : BaseIntegrationTest() {
     @Test
     fun testPredictionModel() {
         setModels("x99v0")
-        addDiagnosis(TestController.DiagnosisRequest("X99", 1.0, emptyList()))
+        addDiagnosis(TestController.DiagnosisRequest("X99", 1.0, false, emptyList()))
         addConsent("200005292396", true, "root")
 
         val response = sendPrediktionRequest("getPrediktion_Model1Request_output_0.44.xml", "X99")
@@ -34,7 +34,7 @@ class PrediktionIT : BaseIntegrationTest() {
         // Om två prediktionsfiler för samma diagnos finns ska den med högst
         // versionsnummer användas
         setModels("x99v0", "x99v1")
-        addDiagnosis(TestController.DiagnosisRequest("X99", 1.0, emptyList()))
+        addDiagnosis(TestController.DiagnosisRequest("X99", 1.0, false, emptyList()))
         addConsent("200005292396", true, "root")
 
         val response = sendPrediktionRequest("getPrediktion_Model2Request_output_0.6.xml", "X99")
@@ -46,7 +46,7 @@ class PrediktionIT : BaseIntegrationTest() {
     @Test
     fun testShouldPickUpChangedModelFiles() {
         setModels() // Removes all models
-        addDiagnosis(TestController.DiagnosisRequest("X99", 1.0, emptyList()))
+        addDiagnosis(TestController.DiagnosisRequest("X99", 1.0, false, emptyList()))
         addConsent("195801080214", true, "root")
 
         val response1 = sendPrediktionRequest("getPrediktion_Model1Request_output_0.89.xml", "X99")
@@ -63,7 +63,7 @@ class PrediktionIT : BaseIntegrationTest() {
     @Test
     fun testGetHistoricPrediction() {
         setModels("x99v0")
-        addDiagnosis(TestController.DiagnosisRequest("X99", 1.0, emptyList()))
+        addDiagnosis(TestController.DiagnosisRequest("X99", 1.0, false, emptyList()))
         // TODO: Check how to/fix addition of questions and answers to the test suite without breaking referential integrity of the test
         // TODO: We probably need to clean up questions and answers in BaseIntegrationTest between each test
 //        addDiagnosis(TestController.DiagnosisRequest("X99", 1.0, listOf(
@@ -106,7 +106,7 @@ class PrediktionIT : BaseIntegrationTest() {
         // T.ex. När prediktion efterfrågas på M751 men bara finns på M75
         // så ska prediktion för M75 returneras.
         setModels("x99v0")
-        addDiagnosis(TestController.DiagnosisRequest("X99", 1.0, emptyList()))
+        addDiagnosis(TestController.DiagnosisRequest("X99", 1.0, false, emptyList()))
         addConsent("195801080214", true, "root")
 
         val response2 = sendPrediktionRequest("getPrediktion_Model1Request_output_0.89.xml", "X991")
@@ -121,8 +121,8 @@ class PrediktionIT : BaseIntegrationTest() {
         // så är det prediktion för M7512 som ska returneras
 
         setModels("x99v0", "x9900v0")
-        addDiagnosis(TestController.DiagnosisRequest("X99", 1.0, emptyList()))
-        addDiagnosis(TestController.DiagnosisRequest("X9900", 1.0, emptyList()))
+        addDiagnosis(TestController.DiagnosisRequest("X99", 1.0, false, emptyList()))
+        addDiagnosis(TestController.DiagnosisRequest("X9900", 1.0, true, emptyList()))
         addConsent("195801080214", true, "root")
 
         sendPrediktionRequest("getPrediktion_Model2Request_output_0.77.xml", "X9900")
@@ -151,14 +151,14 @@ class PrediktionIT : BaseIntegrationTest() {
         // TODO: Ett mer beskrivande felmeddelande hade varit bättre än bara "NOT_OK".
         setModels("x99v0")
         log.debug("before adding diagnosis")
-        addDiagnosis(TestController.DiagnosisRequest("X99", 1.0,
+        addDiagnosis(TestController.DiagnosisRequest("X99", 1.0, false,
                 listOf(
-                        TestController.PredictionQuestion("Question", "SA_1_gross", "Help text",
+                        TestController.PredictionQuestion("Question", "SA_1_gross", "Help text", false,
                                 listOf(
                                         TestController.PredictionResponse("SA_1_gross", "0", true),
                                         TestController.PredictionResponse("SA_1_gross", "1", true)
                                         )),
-                        TestController.PredictionQuestion("Question", "DP_atStart", "Help text",
+                        TestController.PredictionQuestion("Question", "DP_atStart", "Help text", false,
                                 listOf(
                                         TestController.PredictionResponse("DP_atStart", "true", true),
                                         TestController.PredictionResponse("DP_atStart", "false", true)
@@ -177,7 +177,7 @@ class PrediktionIT : BaseIntegrationTest() {
         // Intygs-ID
         restTemplate.delete("/intyg")
         setModels("x99v0")
-        addDiagnosis(TestController.DiagnosisRequest("X99", 1.0, emptyList()))
+        addDiagnosis(TestController.DiagnosisRequest("X99", 1.0, false, emptyList()))
         addConsent("200005292396", true, "root")
 
         sendPrediktionRequest("getPrediktion_Model1Request_output_0.44.xml", "X999", "TestId")

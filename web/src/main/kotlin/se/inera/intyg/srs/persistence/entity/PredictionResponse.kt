@@ -22,6 +22,7 @@ data class PredictionResponse(
         val isDefault: Boolean,
         val priority: Int?,
         val modelVersion: String,
+        val forSubdiagnosis: Boolean,
         @ManyToOne
         @JoinColumn(name = "question_id")
         @JsonIgnore
@@ -45,6 +46,6 @@ data class PredictionResponse(
 
     override fun toString(): String {
         return "PredictionResponse(id=$id, answer='$answer', predictionId='$predictionId', isDefault=$isDefault, priority=$priority, " +
-                "automaticSelectionDiagnosisCode=$automaticSelectionDiagnosisCode)"
+                "automaticSelectionDiagnosisCode=$automaticSelectionDiagnosisCode, modelVersion=$modelVersion, forSubdiagnosis=$forSubdiagnosis)"
     }
 }

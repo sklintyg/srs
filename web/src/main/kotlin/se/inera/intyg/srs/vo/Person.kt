@@ -6,11 +6,4 @@ data class CertDiagnosis(val certificateId:String, val code: String, val codeSys
 
 enum class Sex(val predictionString: String) {
     MAN("Male"), WOMAN("Female");
-    fun toSwedish():String {
-        return when(this.predictionString) {
-            "Male" -> "Män"
-            "Female" -> "Kvinnor"
-            else -> throw IllegalArgumentException("Unknown enum value of Sex: $predictionString")
-        }
-    }
 }

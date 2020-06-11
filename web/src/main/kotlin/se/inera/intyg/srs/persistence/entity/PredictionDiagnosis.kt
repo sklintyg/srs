@@ -18,6 +18,7 @@ data class PredictionDiagnosis(val diagnosisId: String,
                                val prevalence: Double,
                                val resolution: Int?,
                                val modelVersion: String,
+                               val forSubdiagnosis: Boolean,
                                @OneToMany(fetch = FetchType.EAGER)
                                @JoinColumn(name = "diagnosis_id")
                                val questions: Collection<PredictionPriority>,

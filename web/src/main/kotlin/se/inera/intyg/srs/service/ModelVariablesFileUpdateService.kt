@@ -20,6 +20,7 @@ import se.inera.intyg.srs.persistence.repository.ResponseRepository
  */
 @Component
 class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val variablesFile: String,
+                                      @Value("\${model.variablesFileWithoutSubdiag}") val variablesFileWithoutSubdiag: String,
                                       @Value("\${recommendations.importMaxLines: 1000}") val importMaxLines: Int,
                                       val questionRepo: QuestionRepository,
                                       val responseRepo: ResponseRepository,
@@ -29,24 +30,22 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
 
     private val log = LoggerFactory.getLogger(javaClass)
 
-    final fun doUpdate() {
+    fun doUpdate() {
         val modelVersion = extractModelVersion();
         log.info("Removing old questions and responses, modelVersion: $modelVersion")
         doRemoveOldQuestionsAndResponses(modelVersion)
         log.info("Updating questions and responses, modelVersion: $modelVersion")
-        doUpdateQuestionsAndResponses(modelVersion)
+        doUpdateQuestionsAndResponses(variablesFile, modelVersion, true)
+        doUpdateQuestionsAndResponses(variablesFileWithoutSubdiag, modelVersion, false)
         log.info("Finished update of model variables, modelVersion: $modelVersion")
     }
 
-    private final fun doRemoveOldQuestionsAndResponses(modelVersion: String) {
+    private fun doRemoveOldQuestionsAndResponses(modelVersion: String) {
         log.info("Deleting question priorities for model version $modelVersion")
-        predictPrioRepo.findByModelVersion(modelVersion).forEach { pp ->
-            log.info("deleting prediction priority")
-            predictPrioRepo.delete(pp);
-        }
+        predictPrioRepo.deleteAll(predictPrioRepo.findByModelVersion(modelVersion))
     }
 
-    private final fun extractModelVersion(): String {
+    private fun extractModelVersion(): String {
         val modelVersionPattern = "(\\d_\\d).xlsx".toRegex()
         val match = modelVersionPattern.find(variablesFile)
         val modelVersion = match!!.groupValues.get(1)!!.replace("_", ".");
@@ -80,7 +79,7 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
             val modelVersion: String
     )
 
-    private final fun readVariables(workbook: XSSFWorkbook, modelVersion: String): List<Variable> {
+    private fun readVariables(workbook: XSSFWorkbook, modelVersion: String): List<Variable> {
         log.debug("Reading variables sheet")
         val sheet = workbook.getSheet("Kodning av variabelnamn")
         var readMoreRows = true
@@ -106,7 +105,7 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
         log.info("Found ${variables.size} variables")
         return variables
     }
-    private final fun readVariableFactorValues(workbook: XSSFWorkbook, modelVersion:String): Map<String, List<VariableFactorValue>> {
+    private fun readVariableFactorValues(workbook: XSSFWorkbook, modelVersion:String): Map<String, List<VariableFactorValue>> {
         log.debug("Reading factor values sheet")
         val sheet = workbook.getSheet("Kodning av värden för factor")
         var readMoreRows = true
@@ -145,7 +144,7 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
     /**
      * Returns a map of variableName -> List of diagnosisVariable
      */
-    private final fun readDiagnosisVariables(workbook: XSSFWorkbook, modelVersion: String): Map<String, List<DiagnosisVariable>> {
+    private fun readDiagnosisVariables(workbook: XSSFWorkbook, modelVersion: String): Map<String, List<DiagnosisVariable>> {
         log.debug("Reading diagnosis variable combinations sheet")
         val sheet = workbook.getSheet("Variabler per diagnos")
         var readMoreRows = true
@@ -185,10 +184,10 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
     /**
      * Creates or updates a response alternative for a prediction question
      */
-    private final fun storeResponse(variableFactorValue: VariableFactorValue, predictionQuestion: PredictionQuestion): PredictionResponse {
+    private fun storeResponse(forSubdiags: Boolean, variableFactorValue: VariableFactorValue, predictionQuestion: PredictionQuestion): PredictionResponse {
         var response: PredictionResponse? = null
-        responseRepo.findPredictionResponseByQuestionAndResponse(variableFactorValue.varName,
-                variableFactorValue.responseId) ?.let { existingResponse ->
+        responseRepo.findPredictionResponseByQuestionAndResponseAndModelVersionAndForSubdiagnosis(variableFactorValue.varName,
+                variableFactorValue.responseId, variableFactorValue.modelVersion, forSubdiags) ?.let { existingResponse ->
             log.debug("Updating existing prediction response with question prediction id '${variableFactorValue.varName}' " +
                     "and response prediction id '${variableFactorValue.responseId}'")
             response = responseRepo.save(existingResponse.copy(
@@ -203,7 +202,8 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
             log.debug("Creating prediction response with question prediction id '${variableFactorValue.varName}' " +
                     "and response prediction id '${variableFactorValue.responseId}'")
             response = responseRepo.save(PredictionResponse(variableFactorValue.responseText,
-                variableFactorValue.responseId, variableFactorValue.isDefault, variableFactorValue.order, variableFactorValue.modelVersion,
+                variableFactorValue.responseId, variableFactorValue.isDefault, variableFactorValue.order,
+                variableFactorValue.modelVersion, forSubdiags,
                 predictionQuestion, variableFactorValue.automaticSelectionDiagnosisCode))
         }
 
@@ -214,47 +214,49 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
      * @param variable variable/question indata
      * @param factorValues factors/responses indata (for the given variable/question)
      */
-    private final fun storeQuestionWithAnswers(variable:Variable, factorValues: List<VariableFactorValue>): PredictionQuestion {
+    private fun storeQuestionWithAnswers(forSubdiags:Boolean, variable:Variable, factorValues: List<VariableFactorValue>): PredictionQuestion {
         var question: PredictionQuestion? = null
         // Check if we have an existing question with the same prediction id/variable name
-        questionRepo.findByPredictionId(variable.name)?.let { existingQuestion ->
+        questionRepo.findByPredictionIdAndForSubdiagnosis(variable.name, forSubdiags)?.let { existingQuestion ->
             // if existing, then update
             log.debug("Updating existing question with question prediction id '${variable.name}'")
             question = questionRepo.save(existingQuestion.copy(
                     question = variable.questionText,
                     helpText = variable.helpText,
                     answers = factorValues.map { variableFactorValue ->
-                        storeResponse(variableFactorValue, existingQuestion)})
+                        storeResponse(forSubdiags,variableFactorValue, existingQuestion)})
             )
         } ?: run {
             // if not existing (null) create a new one
             log.debug("Creating question with question prediction id '${variable.name}'")
-            question = questionRepo.save(PredictionQuestion(variable.questionText, variable.helpText, variable.name, variable.modelVersion))
+            question = questionRepo.save(PredictionQuestion(variable.questionText, variable.helpText, variable.name,
+                variable.modelVersion, forSubdiags))
             // ... and a number of possible responses
             question?.answers = factorValues.map { variableFactorValue ->
-                storeResponse(variableFactorValue, question!!)}
+                storeResponse(forSubdiags, variableFactorValue, question!!)}
         }
         return question!!
     }
 
-    private final fun storePredictionPriority(diagnosisVariable: DiagnosisVariable,
+    private fun storePredictionPriority(forSubdiags:Boolean, diagnosisVariable: DiagnosisVariable,
                                                        variableQuestionMap: Map<String, PredictionQuestion>): PredictionPriority {
         log.debug("Storing prediction priority '${diagnosisVariable.order}' for question '${diagnosisVariable.varName}'")
         // Just create new ones here since we are always clearing priorities on each run
-        return predictPrioRepo.save(PredictionPriority(diagnosisVariable.order!!, diagnosisVariable.modelVersion,
+        return predictPrioRepo.save(PredictionPriority(diagnosisVariable.order!!, diagnosisVariable.modelVersion, forSubdiags,
                 variableQuestionMap.getValue(diagnosisVariable.varName)))
     }
 
     /**
      * @param variableQuestionMap map from variable name to persisted PredictionQuestion
      */
-    private final fun storePredictionDiagnosis(diagnosisCode: String,
+    private fun storePredictionDiagnosis(forSubdiags: Boolean,
+                                               diagnosisCode: String,
                                                diagnosisVariables: List<DiagnosisVariable>,
                                                variableQuestionMap: Map<String, PredictionQuestion>,
                                                modelVersion: String): PredictionDiagnosis {
         var diagnosis: PredictionDiagnosis? = null
         var resolution = (diagnosisVariables.maxBy { it.resolution })!!.resolution
-        diagnosisRepo.findOneByDiagnosisIdAndModelVersion(diagnosisCode, modelVersion) ?. let { existingDiagnosis ->
+        diagnosisRepo.findOneByDiagnosisIdAndModelVersionAndForSubdiagnosis(diagnosisCode, modelVersion, forSubdiags) ?. let { existingDiagnosis ->
             log.debug("Updating priorities on existing prediction diagnosis with diagnosis code '$diagnosisCode'")
             diagnosis = diagnosisRepo.save(existingDiagnosis.copy(
                     diagnosisId = diagnosisCode,
@@ -267,12 +269,12 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
                                     && variableQuestionMap.containsKey (diagnosisVariable.varName)}
                             // Spara/koppla övriga med rätt prioritet till respektive variabels fråga
                             .map {diagnosisVariable ->
-                                storePredictionPriority(diagnosisVariable, variableQuestionMap)
+                                storePredictionPriority(forSubdiags, diagnosisVariable, variableQuestionMap)
                             }))
         } ?: run {
             log.debug("Creating new prediction diagnosis with diagnosis code '$diagnosisCode' with variables $diagnosisVariables")
             // Prevalensen uppdateras i senare steg, vid inläsning av åtgärdsrekommendationer och prevalens
-            diagnosis = diagnosisRepo.save(PredictionDiagnosis(diagnosisCode, 0.0, resolution, modelVersion,
+            diagnosis = diagnosisRepo.save(PredictionDiagnosis(diagnosisCode, 0.0, resolution, modelVersion, forSubdiags,
                     // För varje kombination av diagnos och variabel (fråga)
                     diagnosisVariables
                             // Filtrera bort frågor som inte har någon order/priority samt de som inte har någon fråga i
@@ -283,16 +285,16 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
                             }
                             // Spara/koppla övriga med rätt prioritet till respektive variabels fråga
                             .map { diagnosisVariable ->
-                                storePredictionPriority(diagnosisVariable, variableQuestionMap)
+                                storePredictionPriority(forSubdiags, diagnosisVariable, variableQuestionMap)
                             }
             ))
         }
         return diagnosis!!
     }
 
-    private final fun doUpdateQuestionsAndResponses(modelVersion: String) {
-        log.info("Performing update of model variables (questions and responses) for model version $modelVersion from file $variablesFile")
-        val excelFileStream = resourceLoader.getResource(variablesFile).inputStream
+    private fun doUpdateQuestionsAndResponses(file:String, modelVersion: String, forSubdiags:Boolean=true) {
+        log.info("Performing update of model variables (questions and responses) for model version $modelVersion from file $file")
+        val excelFileStream = resourceLoader.getResource(file).inputStream
         XSSFWorkbook(excelFileStream).use { workbook ->
 
             val variables = readVariables(workbook, modelVersion) // map of variableName -> variable (question)
@@ -311,7 +313,7 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
                     }
                     .map { variable ->
                         // ... skapa en fråga (och mappa till variabelnamn), från variabel och faktorer med text
-                        variable.name to storeQuestionWithAnswers(variable,
+                        variable.name to storeQuestionWithAnswers(forSubdiags, variable,
                                 // Ta bara med factors/frågor som har svarstext eller sätts automatiskt mha diagnoskod,
                                 // övriga (ålder, region etc) sätts automatiskt/hårdkodat och syns ej i GUI
                                 variableFactorValues.getValue(variable.name).filter { factor -> factor.responseText.isNotBlank()
@@ -323,7 +325,7 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
             // För varje diagnoskod
             variableDiagnoses.forEach { diagnosisCode, diagnosisVariables ->
                 // ... skapa en prediktions-diagnos
-                storePredictionDiagnosis(diagnosisCode, diagnosisVariables, variableQuestionMap, modelVersion)
+                storePredictionDiagnosis(forSubdiags, diagnosisCode, diagnosisVariables, variableQuestionMap, modelVersion)
             }
 
         }

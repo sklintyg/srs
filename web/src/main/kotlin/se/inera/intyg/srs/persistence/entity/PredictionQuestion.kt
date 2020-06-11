@@ -17,6 +17,7 @@ data class PredictionQuestion(val question: String?,
                               val helpText: String?,
                               val predictionId: String,
                               val modelVersion: String,
+                              val forSubdiagnosis: Boolean,
                               @OneToMany(mappedBy = "question",fetch = FetchType.EAGER)
 //                              @JoinColumn(name = "question_id")
                               var answers: Collection<PredictionResponse> = emptyList(),
@@ -33,6 +34,7 @@ data class PredictionQuestion(val question: String?,
 ) {
 
     override fun toString(): String {
-        return "PredictionQuestion(id=$id, question='$question', helpText='$helpText', predictionId='$predictionId', answers=$answers)"
+        return "PredictionQuestion(id=$id, question='$question', helpText='$helpText', predictionId='$predictionId', answers=$answers, " +
+            "modelVersion=$modelVersion, forSubdiagnosis=$forSubdiagnosis)"
     }
 }

@@ -18,7 +18,7 @@ import se.inera.intyg.srs.service.ZIP_CODE_KEY
 class RAdapterTest () {
 
     val resourceLoader:ResourceLoader = DefaultResourceLoader()
-    val modelFileService:ModelFileUpdateService = ModelFileUpdateService(resourceLoader, "classpath:/model/*", "classpath:/models_without_subdiag/*")
+    val modelFileService:ModelFileUpdateService = ModelFileUpdateService(resourceLoader, "classpath:/model_with_subdiag/*", "classpath:/model_without_subdiag/*")
 
     @Before
     fun setup() {

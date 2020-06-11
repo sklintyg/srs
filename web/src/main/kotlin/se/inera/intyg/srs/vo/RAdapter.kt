@@ -156,11 +156,7 @@ open class RAdapter(val modelService: ModelFileUpdateService,
 
             val rDataFrame = StringBuilder("data <- data.frame(").apply {
                 append("SA_Days_tot_modified = as.integer(90), ") //Calculate the probability that the sick leave lasts longer than 90 days
-                if (model.isTestModel) {
-                    append("Sex = '${person.sex.predictionString}', ")
-                } else {
-                    append("Kon = '${person.sex.toSwedish()}', ")
-                }
+                append("Sex = '${person.sex.predictionString}', ")
                 append("age_cat_fct = '${person.ageCategory}', ")
                 append("Region = '" + extraParams[LOCATION_KEY]?.get(REGION_KEY) + "', ")
                 append(extraParams[QUESTIONS_AND_ANSWERS_KEY]?.entries?.joinToString(", ", transform = { (key, value) -> "'$key' = '$value'" }))
@@ -186,11 +182,7 @@ open class RAdapter(val modelService: ModelFileUpdateService,
 
                 val rDataFrame2 = StringBuilder("data <- data.frame(").apply {
                     append("SA_Days_tot_modified = as.integer($daysIntoSickLeave), ")
-                    if (model.isTestModel) {
-                        append("Sex = '${person.sex.predictionString}', ")
-                    } else {
-                        append("Kon = '${person.sex.toSwedish()}', ")
-                    }
+                    append("Sex = '${person.sex.predictionString}', ")
                     append("age_cat_fct = '${person.ageCategory}', ")
                     append("Region = '" + extraParams[LOCATION_KEY]?.get(REGION_KEY) + "', ")
                     append(extraParams[QUESTIONS_AND_ANSWERS_KEY]?.entries?.joinToString(", ", transform = { (key, value) -> "'$key' = '$value'" }))
@@ -272,7 +264,7 @@ open class RAdapter(val modelService: ModelFileUpdateService,
             }
 
             // Find a suitable model by cutting of character by character from the end of the diagnosis code
-            while (currentId.length >= MIN_ID_POSITIONS) {
+            while (currentId.length > MIN_ID_POSITIONS) {
                 val model = modelService.modelForCode(currentId)
                 log.debug("modelForCode currentId: {}, gave: {}", currentId, model)
 
@@ -285,6 +277,17 @@ open class RAdapter(val modelService: ModelFileUpdateService,
 
                 // Once we have shortened the code, we need to indicate that the info is not on the original level
                 status = Diagnosprediktionstatus.DIAGNOSKOD_PA_HOGRE_NIVA
+            }
+            // if no hit when we reach the minimum length, try to find both with and after that without subdiag support at the minimum
+            // length otherwise we give up and return that the prediction model is missing
+            var model = modelService.modelForCode(currentId)
+            if (model != null) {
+                return Pair(model, status)
+            } else {
+                val modelWithoutSubdiag = modelService.modelForCodeWithoutSubdiag(currentId)
+                if (modelWithoutSubdiag != null) {
+                    return Pair(modelWithoutSubdiag, status)
+                }
             }
         }
         return Pair(null, Diagnosprediktionstatus.PREDIKTIONSMODELL_SAKNAS)

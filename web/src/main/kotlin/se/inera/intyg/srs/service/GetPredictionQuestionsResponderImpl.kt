@@ -1,7 +1,6 @@
 package se.inera.intyg.srs.service
 
 import org.apache.cxf.annotations.SchemaValidation
-import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -11,14 +10,12 @@ import se.inera.intyg.clinicalprocess.healthcond.srs.getpredictionquestions.v1.G
 import se.inera.intyg.clinicalprocess.healthcond.srs.getpredictionquestions.v1.GetPredictionQuestionsResponseType
 import se.inera.intyg.clinicalprocess.healthcond.srs.getpredictionquestions.v1.Prediktionsfraga
 import se.inera.intyg.clinicalprocess.healthcond.srs.getpredictionquestions.v1.Svarsalternativ
-import se.inera.intyg.srs.persistence.repository.DiagnosisRepository
-import se.inera.intyg.srs.util.getModelForDiagnosis
 import java.math.BigInteger
 
 @Service
 @SchemaValidation(type = SchemaValidation.SchemaValidationType.BOTH)
 class GetPredictionQuestionsResponderImpl(
-    @Autowired val diagnosisRepository: DiagnosisRepository,
+    @Autowired val diagnosisService: DiagnosisServiceImpl,
     @Value("\${model.currentVersion}") val currentModelVersion: String
 ) : GetPredictionQuestionsResponderInterface {
 
@@ -26,7 +23,10 @@ class GetPredictionQuestionsResponderImpl(
 
     override fun getPredictionQuestions(request: GetPredictionQuestionsRequestType): GetPredictionQuestionsResponseType {
         val response = GetPredictionQuestionsResponseType()
-        val diagnosis = diagnosisRepository.getModelForDiagnosis(request.diagnos.code, currentModelVersion) ?: return response
+//      val predictionModelVersion = request.prediktionsmodellversion ?: currentModelVersion
+        val predictionModelVersion = currentModelVersion
+        log.debug("getting prediction questions for ${request.diagnos.code} with and model version ${predictionModelVersion}")
+        val diagnosis = diagnosisService.getModelForDiagnosis(request.diagnos.code, predictionModelVersion) ?: return response
 
         if (log.isDebugEnabled) {
             log.debug("getPredictionQuestions diagnos:${request.diagnos.code}, diagnosisis: $diagnosis")
@@ -46,6 +46,7 @@ class GetPredictionQuestionsResponderImpl(
                 outboundQuestion.fragetext = savedQuestion.question.question
                 outboundQuestion.hjalptext = savedQuestion.question.helpText
                 outboundQuestion.prioritet = BigInteger.valueOf(savedQuestion.priority.toLong())
+//                outboundQuestion.prediktionsmodellversion = predictionModelVersion
                 savedQuestion.question.answers
                         .forEach { savedResponse ->
                             log.debug("Adding answer to response, savedQuestion: $savedResponse")

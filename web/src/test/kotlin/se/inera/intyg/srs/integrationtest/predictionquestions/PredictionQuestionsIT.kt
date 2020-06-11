@@ -14,11 +14,11 @@ open class PredictionQuestionsIT : BaseIntegrationTest() {
 
     @Test
     fun testGetPredictionQuestions() {
-        addDiagnosis(DiagnosisRequest("M24", 0.54,
-                listOf(PredictionQuestion("Stressad?", "abc", "Hjälptext",
+        addDiagnosis(DiagnosisRequest("M24", 0.54, false,
+                listOf(PredictionQuestion("Stressad?", "abc", "Hjälptext", false,
                         listOf(PredictionResponse("Lite kanske", "def", true),
                                 PredictionResponse("Bara på fredagar", "ghi", false))
-                    ), PredictionQuestion("Chill?", "jkl", "Hjälp mig då",
+                    ), PredictionQuestion("Chill?", "jkl", "Hjälp mig då", false,
                         listOf(PredictionResponse("Lätt mannen", "mno", false),
                                 PredictionResponse("Bara på måndagar", "pqr", true))
                 ))
@@ -56,11 +56,11 @@ open class PredictionQuestionsIT : BaseIntegrationTest() {
 
     @Test
     fun testGetPredictionQuestionsForHigherDiagnosis() {
-        addDiagnosis(DiagnosisRequest("M24", 0.54,
-                listOf(PredictionQuestion("Stressad?", "abc", "Hjälptext",
+        addDiagnosis(DiagnosisRequest("M24", 0.54, false,
+                listOf(PredictionQuestion("Stressad?", "abc", "Hjälptext", false,
                         listOf(PredictionResponse("Lite kanske", "def", true),
                                 PredictionResponse("Bara på fredagar", "ghi", false))
-                ), PredictionQuestion("Chill?", "jkl", "Hjälp mig då",
+                ), PredictionQuestion("Chill?", "jkl", "Hjälp mig då", false,
                         listOf(PredictionResponse("Lätt mannen", "mno", false),
                                 PredictionResponse("Bara på måndagar", "pqr", true))
                 ))

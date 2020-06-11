@@ -4,10 +4,14 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
+//import io.mockk.every
+//import io.mockk.mockk
+//import io.mockk.mockkStatic
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.stubbing.Answer
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v3.Diagnosprediktion
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v3.Diagnosprediktionstatus
@@ -21,11 +25,12 @@ import se.inera.intyg.srs.persistence.entity.PredictionResponse
 import se.inera.intyg.srs.persistence.entity.Probability
 import se.inera.intyg.srs.persistence.repository.DiagnosisRepository
 import se.inera.intyg.srs.persistence.repository.ProbabilityRepository
+import se.inera.intyg.srs.service.DiagnosisServiceImpl
 import se.inera.intyg.srs.service.LOCATION_KEY
 import se.inera.intyg.srs.service.QUESTIONS_AND_ANSWERS_KEY
 import se.inera.intyg.srs.service.REGION_KEY
 import se.inera.intyg.srs.service.ZIP_CODE_KEY
-import se.inera.intyg.srs.util.getModelForDiagnosis
+//import se.inera.intyg.srs.util.getModelForDiagnosis
 import java.time.LocalDateTime
 
 
@@ -33,7 +38,7 @@ class PredictionInformationModuleTest {
 
     private lateinit var consentModule: ConsentModule
     private lateinit var predictionInformationModule: PredictionInformationModule
-    private lateinit var diagnosisRepo: DiagnosisRepository
+    private lateinit var diagnosisService: DiagnosisServiceImpl
     private lateinit var probabilityRepo: ProbabilityRepository
 
     private val testPerson = Person("198402289287", "KIDS", Sex.WOMAN,
@@ -42,9 +47,9 @@ class PredictionInformationModuleTest {
     @BeforeEach
     fun setup() {
         consentModule = mock()
-        diagnosisRepo = mock()
+        diagnosisService = mock()
         probabilityRepo = mock()
-        predictionInformationModule = PredictionInformationModule(TestPredictionAdapter(),diagnosisRepo,probabilityRepo,mock(),
+        predictionInformationModule = PredictionInformationModule(TestPredictionAdapter(),diagnosisService,probabilityRepo,mock(),
             consentModule, mock(), "TEST_1.0")
         initData()
     }
@@ -52,26 +57,25 @@ class PredictionInformationModuleTest {
     private fun initData() {
         whenever(consentModule.consentNeeded()).thenReturn(false)
 
-        whenever(diagnosisRepo.getModelForDiagnosis(eq("F438A"), eq("TEST_1.0")))
-                .thenReturn(PredictionDiagnosis("F43", 0.32, 3, "TEST_1.0",
-                        listOf(PredictionPriority(1, "TEST_1.0",
-                                PredictionQuestion("question 1?", "help", "frageId-1", "TEST_1.0",
-                                        listOf(
-                                                PredictionResponse("answer alternative 1-1!", "svarsId-1a", true, 1, "TEST_1.0",null),
-                                                PredictionResponse("answer alternative 1-2!", "svarsId-1b", false, 1, "TEST_1.0",null)
-                                        )
-                                )
-                        ),
-                                PredictionPriority(2, "TEST_1.0",
-                                        PredictionQuestion("question 2?", "help", "frageId-2", "TEST_1.0",
-                                                listOf(
-                                                        PredictionResponse("answer alternative 2-1!", "svarsId-2c", true, 1, "TEST_1.0",null),
-                                                        PredictionResponse("answer alternative 2-2!", "svarsId-2d", false, 1, "TEST_1.0",null)
-                                                )
-                                        )
-                                )
+        whenever(diagnosisService.getModelForDiagnosis(eq("F438A"), eq("TEST_1.0")))
+            .thenReturn(PredictionDiagnosis("F43", 0.32, 3, "TEST_1.0", true,
+                listOf(PredictionPriority(1, "TEST_1.0", true,
+                    PredictionQuestion("question 1?", "help", "frageId-1", "TEST_1.0", true,
+                        listOf(
+                            PredictionResponse("answer alternative 1-1!", "svarsId-1a", true, 1, "TEST_1.0", true,null),
+                            PredictionResponse("answer alternative 1-2!", "svarsId-1b", false, 1, "TEST_1.0", true,null)
                         )
+                    )
+                ),
+                PredictionPriority(2, "TEST_1.0", false,
+                    PredictionQuestion("question 2?", "help", "frageId-2", "TEST_1.0", true,
+                        listOf(
+                            PredictionResponse("answer alternative 2-1!", "svarsId-2c", true, 1, "TEST_1.0", true,null),
+                            PredictionResponse("answer alternative 2-2!", "svarsId-2d", false, 1, "TEST_1.0", true,null)
+                        )
+                    )
                 ))
+            ))
         whenever(probabilityRepo.save<Probability>(any())).thenAnswer(
                 Answer<Probability>() {
                     it.getArgument(0) as Probability
@@ -82,6 +86,7 @@ class PredictionInformationModuleTest {
             val p: Probability = Probability("cert-1", 0.52, 2, "1.2.752.116.1.1.1.1.3",
                     "F438A", "1.2.752.116.1.1.1.1.3", "F43",
                     Diagnosprediktionstatus.DIAGNOSKOD_PA_HOGRE_NIVA.value(),
+                    "TEST_1.0",
                     LocalDateTime.now().minusDays(4), "VAST", "44235")
             with(p) {
                 ownOpinion = OwnOpinion("careGiver1", "careunit2", p, EgenBedomningRiskType.LAGRE.value(), LocalDateTime.now().minusDays(4))
@@ -93,10 +98,11 @@ class PredictionInformationModuleTest {
                             isDefault = false,
                             priority = 1,
                             modelVersion = "TEST_1.0",
-                            question = PredictionQuestion("Fråga 1", "Frågan är svaret", "frageId-1", "TEST_1.0",
+                            forSubdiagnosis = true,
+                            question = PredictionQuestion("Fråga 1", "Frågan är svaret", "frageId-1", "TEST_1.0", true,
                                     listOf(
-                                            PredictionResponse("answer alternative 1-1!", "svarsId-1a", true, 1, "TEST_1.0",null),
-                                            PredictionResponse("answer alternative 1-2!", "svarsId-1b", false, 1, "TEST_1.0",null)
+                                            PredictionResponse("answer alternative 1-1!", "svarsId-1a", true, 1, "TEST_1.0", true,null),
+                                            PredictionResponse("answer alternative 1-2!", "svarsId-1b", false, 1, "TEST_1.0", true,null)
                                     ), 1
                             )
                     )

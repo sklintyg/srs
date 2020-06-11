@@ -12,17 +12,16 @@ import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.EgenBedomningRiskT
 import se.inera.intyg.srs.persistence.entity.PatientAnswer
 import se.inera.intyg.srs.persistence.entity.PredictionDiagnosis
 import se.inera.intyg.srs.persistence.entity.Probability
-import se.inera.intyg.srs.persistence.repository.DiagnosisRepository
 import se.inera.intyg.srs.persistence.repository.PatientAnswerRepository
 import se.inera.intyg.srs.persistence.repository.ProbabilityRepository
 import se.inera.intyg.srs.persistence.repository.ResponseRepository
+import se.inera.intyg.srs.service.DiagnosisServiceImpl
 import se.inera.intyg.srs.service.LOCATION_KEY
 import se.inera.intyg.srs.service.QUESTIONS_AND_ANSWERS_KEY
 import se.inera.intyg.srs.service.REGION_KEY
 import se.inera.intyg.srs.service.ZIP_CODE_KEY
 import se.inera.intyg.srs.service.monitoring.logPrediction
 import se.inera.intyg.srs.util.PredictionInformationUtil
-import se.inera.intyg.srs.util.getModelForDiagnosis
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.Diagnos
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.IntygId
 import java.time.LocalDateTime
@@ -31,7 +30,7 @@ import kotlin.collections.HashMap
 
 @Service
 class PredictionInformationModule(val rAdapter: PredictionAdapter,
-                                  val diagnosisRepo: DiagnosisRepository,
+                                  val diagnosisService: DiagnosisServiceImpl,
                                   val probabilityRepo: ProbabilityRepository,
                                   val patientAnswerRepo: PatientAnswerRepository,
                                   val consentModule: ConsentModule,
@@ -71,7 +70,7 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
             diagnosPrediktion.intygId = buildIntygId(careUnitHsaId, incomingCertDiagnosis.certificateId)
 
             log.debug("Fetching model for incoming diagnosis ${incomingCertDiagnosis.code} modelVersion ${currentModelVersion}")
-            val diagnosis = diagnosisRepo.getModelForDiagnosis(incomingCertDiagnosis.code, currentModelVersion)
+            val diagnosis = diagnosisService.getModelForDiagnosis(incomingCertDiagnosis.code, currentModelVersion)
             log.debug("Got diagnosis $diagnosis")
 
             if (diagnosis != null) {
@@ -130,7 +129,8 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
                 diagnosPrediktionToPopulate.sannolikhetOvergransvarde = calculatedPrediction.prediction
                 diagnosPrediktionToPopulate.diagnos = buildDiagnos(calculatedPrediction.diagnosis)
                 diagnosPrediktionToPopulate.risksignal.riskkategori = calculateRisk(calculatedPrediction.prediction!!)
-                persistProbability(diagnosPrediktionToPopulate, incomingCertDiagnosis.certificateId, extraParams) // we only want to persist user input, not the decorated extraParams
+                persistProbability(diagnosPrediktionToPopulate, incomingCertDiagnosis.certificateId,
+                    diagnosisPredictionModel.modelVersion, extraParams) // we only want to persist user input, not the decorated extraParams
             } else {
                 diagnosPrediktionToPopulate.risksignal.riskkategori = 0
             }
@@ -298,8 +298,10 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
 
     }
 
-    private fun persistProbability(diagnosPrediction: Diagnosprediktion, certificateId: String, extraParams: Map<String, Map<String, String>>) {
+    private fun persistProbability(diagnosPrediction: Diagnosprediktion, certificateId: String, predictionModelVersion: String,
+                                   extraParams: Map<String, Map<String, String>>) {
         log.debug("Persisting probability for certificateId: $certificateId")
+        val isSubdiag = diagnosPrediction.diagnos.code.length>3;
         var probability = Probability(certificateId,
                 diagnosPrediction.sannolikhetOvergransvarde,
                 diagnosPrediction.risksignal.riskkategori,
@@ -308,6 +310,7 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
                 diagnosPrediction.diagnos.codeSystem,
                 diagnosPrediction.diagnos.code,
                 diagnosPrediction.diagnosprediktionstatus.value(),
+                predictionModelVersion,
                 LocalDateTime.now(),
                 extraParams[LOCATION_KEY]?.get(REGION_KEY),
                 extraParams[LOCATION_KEY]?.get(ZIP_CODE_KEY))
@@ -315,7 +318,8 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
         log.trace("extraParams: $extraParams")
         extraParams[QUESTIONS_AND_ANSWERS_KEY]?.forEach { q, r ->
             log.trace("question: $q, response: $r")
-            val predictionResponse = responseRepo.findPredictionResponseByQuestionAndResponse(q, r)
+            val predictionResponse = responseRepo.findPredictionResponseByQuestionAndResponseAndModelVersionAndForSubdiagnosis(q, r,
+                predictionModelVersion, isSubdiag)
             log.debug("Found predictionResponse $predictionResponse")
             if (predictionResponse != null) {
                 var patientAnswer = patientAnswerRepo.findByProbabilityAndPredictionResponse(probability, predictionResponse)

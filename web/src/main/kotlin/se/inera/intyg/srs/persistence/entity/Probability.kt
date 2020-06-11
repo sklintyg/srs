@@ -19,6 +19,7 @@ class Probability(val certificateId: String,
                   val diagnosisCodeSystem: String,
                   val diagnosis: String,
                   val predictionStatus: String,
+                  val predictionModelVersion: String,
                   val timestamp: LocalDateTime,
                   val region: String?,
                   val zipCode: String?,
@@ -35,6 +36,6 @@ class Probability(val certificateId: String,
         "Probability(id=$id, certificateId=$certificateId, probability=$probability, riskCategory=$riskCategory" +
                 "incomingDiagnosisCodeSystem=$incomingDiagnosisCodeSystem, incomingDiagnosis=$incomingDiagnosis, " +
                 "diagnosisCodeSystem=$diagnosisCodeSystem, diagnosis=$diagnosis, predictionStatus:$predictionStatus, " +
-                "timestamp=$timestamp, ownOpinion: $ownOpinion)"
+                "predictionModelVersion:$predictionModelVersion, timestamp=$timestamp, ownOpinion: $ownOpinion)"
 
 }

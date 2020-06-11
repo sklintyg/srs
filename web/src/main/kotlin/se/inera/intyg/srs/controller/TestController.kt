@@ -35,11 +35,12 @@ class TestController(val consentModule: ConsentModule,
                                  var intervalQuantity: Int,
                                  var accumulatedQuantity: Int)
 
-    data class PredictionQuestion(val question: String, val predictionId: String, val helpText: String, val responses: Collection<PredictionResponse>)
+    data class PredictionQuestion(val question: String, val predictionId: String, val helpText: String, val forSubdiags: Boolean,
+                                  val responses: Collection<PredictionResponse>)
 
     data class PredictionResponse(val answer: String, val predictionId: String, val default: Boolean)
 
-    data class DiagnosisRequest(val diagnosisId: String, val prevalence: Double,
+    data class DiagnosisRequest(val diagnosisId: String, val prevalence: Double, val forSubdiags: Boolean,
                                 val questions: List<PredictionQuestion>, val modelVersion:String = "2.2")
 
     data class ModelRequest(val x99v0: Boolean, val x9900v0: Boolean, val x99v1: Boolean)

@@ -74,19 +74,20 @@ class TestModule(private val consentRepo: ConsentRepository,
 
     fun createPredictionQuestion(request: TestController.DiagnosisRequest): PredictionDiagnosis =
         diagnosisRepo.save(PredictionDiagnosis(request.diagnosisId, request.prevalence, 3, request.modelVersion,
+            request.forSubdiags,
             mapToPredictions(request.questions)))
 
     private fun mapToPredictions(questions: List<TestController.PredictionQuestion>): List<PredictionPriority> =
         questions
                 .mapIndexed { i, question ->
-                    PredictionPriority(i + 1, "TEST_1.0", mapToQuestion(question))
+                    PredictionPriority(i + 1, "TEST_1.0", question.forSubdiags, mapToQuestion(question))
                 }
                 .map { predictPrioRepo.save(it) }
 
     private fun mapToQuestion(question: TestController.PredictionQuestion): PredictionQuestion {
         var predictionQuestion:PredictionQuestion = questionRepo.save(PredictionQuestion(
                 question.question, question.helpText,
-                question.predictionId, "TEST_1.0"))
+                question.predictionId, "TEST_1.0", question.forSubdiags))
         predictionQuestion.answers = mapToResponses(question.responses, predictionQuestion)
         return predictionQuestion
     }
@@ -94,7 +95,8 @@ class TestModule(private val consentRepo: ConsentRepository,
     private fun mapToResponses(responses: Collection<TestController.PredictionResponse>, predictionQuestion:PredictionQuestion) =
         responses
                 .mapIndexed { i, (answer, predictionId, default) ->
-                    PredictionResponse(answer, predictionId, default, i + 1,  "TEST_1.0", predictionQuestion)
+                    PredictionResponse(answer, predictionId, default, i + 1,  "TEST_1.0",
+                        predictionQuestion.forSubdiagnosis, predictionQuestion)
                 }
                 .map {
                     responseRepo.save(it)

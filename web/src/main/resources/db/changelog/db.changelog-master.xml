@@ -482,4 +482,33 @@
             tableName="prediction_diagnosis" />
     </changeSet>
 
+    <changeSet id="25" author="ch">
+        <addColumn tableName="prediction_question">
+            <column name="for_subdiagnosis" type="BOOLEAN" value="false"/>
+        </addColumn>
+        <addColumn tableName="prediction_response">
+            <column name="for_subdiagnosis" type="BOOLEAN" value="false"/>
+        </addColumn>
+        <addColumn tableName="prediction_diagnosis">
+            <column name="for_subdiagnosis" type="BOOLEAN" value="false"/>
+        </addColumn>
+        <addColumn tableName="prediction_priority">
+            <column name="for_subdiagnosis" type="BOOLEAN" value="false"/>
+        </addColumn>
+        <dropUniqueConstraint
+            constraintName="unique_diagnosis_id_model_version"
+            tableName="prediction_diagnosis"
+            uniqueColumns="diagnosis_id, model_version"
+        />
+        <addUniqueConstraint
+            columnNames="diagnosis_id, model_version, for_subdiagnosis"
+            constraintName="unique_predictiondiagnosis_diagnosisid_modelversion_forsubdiagnosis"
+            tableName="prediction_diagnosis" />
+
+        <addColumn tableName="probability">
+            <column name="prediction_model_version" type="VARCHAR(8)" value="2.1"/>
+        </addColumn>
+
+    </changeSet>
+
 </databaseChangeLog>

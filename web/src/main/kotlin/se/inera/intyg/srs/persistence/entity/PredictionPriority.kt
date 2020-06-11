@@ -14,6 +14,7 @@ import javax.persistence.Temporal
 @Entity
 class PredictionPriority(val priority: Int,
                          val modelVersion: String,
+                         val forSubdiagnosis: Boolean,
                          @ManyToOne
                          val question: PredictionQuestion,
                          @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
