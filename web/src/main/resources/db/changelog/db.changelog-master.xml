@@ -484,16 +484,16 @@
 
     <changeSet id="25" author="ch">
         <addColumn tableName="prediction_question">
-            <column name="for_subdiagnosis" type="BOOLEAN" value="false"/>
+            <column name="for_subdiagnosis" type="BOOLEAN" valueBoolean="false"/>
         </addColumn>
         <addColumn tableName="prediction_response">
-            <column name="for_subdiagnosis" type="BOOLEAN" value="false"/>
+            <column name="for_subdiagnosis" type="BOOLEAN" valueBoolean="false"/>
         </addColumn>
         <addColumn tableName="prediction_diagnosis">
-            <column name="for_subdiagnosis" type="BOOLEAN" value="false"/>
+            <column name="for_subdiagnosis" type="BOOLEAN" valueBoolean="false"/>
         </addColumn>
         <addColumn tableName="prediction_priority">
-            <column name="for_subdiagnosis" type="BOOLEAN" value="false"/>
+            <column name="for_subdiagnosis" type="BOOLEAN" valueBoolean="false"/>
         </addColumn>
         <dropUniqueConstraint
             constraintName="unique_diagnosis_id_model_version"
@@ -502,7 +502,7 @@
         />
         <addUniqueConstraint
             columnNames="diagnosis_id, model_version, for_subdiagnosis"
-            constraintName="unique_predictiondiagnosis_diagnosisid_modelversion_forsubdiagnosis"
+            constraintName="UQ_PredictionDiagnosis_DiagId_ModVer_ForSubdiag"
             tableName="prediction_diagnosis" />
 
         <addColumn tableName="probability">

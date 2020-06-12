@@ -5,6 +5,6 @@ import se.inera.intyg.srs.persistence.entity.PredictionQuestion
 
 interface QuestionRepository : CrudRepository<PredictionQuestion, Long> {
 
-    fun findByPredictionIdAndForSubdiagnosis(predictionId: String, forSubdiagnosis: Boolean): PredictionQuestion?
+    fun findByPredictionIdAndModelVersionAndForSubdiagnosis(predictionId: String, modelVersion: String, forSubdiagnosis: Boolean): PredictionQuestion?
 
 }

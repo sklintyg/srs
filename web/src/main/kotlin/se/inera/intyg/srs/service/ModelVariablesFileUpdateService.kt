@@ -217,7 +217,8 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
     private fun storeQuestionWithAnswers(forSubdiags:Boolean, variable:Variable, factorValues: List<VariableFactorValue>): PredictionQuestion {
         var question: PredictionQuestion? = null
         // Check if we have an existing question with the same prediction id/variable name
-        questionRepo.findByPredictionIdAndForSubdiagnosis(variable.name, forSubdiags)?.let { existingQuestion ->
+        questionRepo.findByPredictionIdAndModelVersionAndForSubdiagnosis(variable.name,
+            variable.modelVersion, forSubdiags)?.let { existingQuestion ->
             // if existing, then update
             log.debug("Updating existing question with question prediction id '${variable.name}'")
             question = questionRepo.save(existingQuestion.copy(
