@@ -196,6 +196,15 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
                 historicProbabilities = probabilityRepo.findByCertificateIdAndDiagnosisOrderByTimestampDesc(incomingCertDiagnosis.certificateId, diagToFind)
                 diagToFind = diagToFind.dropLast(1);
             }
+            if (historicProbabilities.isEmpty() && diagToFind.length == 3) {
+                historicProbabilities = probabilityRepo.findByCertificateIdAndDiagnosisOrderByTimestampDesc(incomingCertDiagnosis.certificateId, diagToFind)
+                if (historicProbabilities.isNotEmpty() && historicProbabilities.get(0).predictionModelVersion != "2.1") {
+                    // if we found historic probabilites on 3 character responses here it might be cause the resolution in model version 2.2 for this diagnosis is 4
+                    // if the model version is less than 2.2 (i.e. 2.1) it is ok to respond with those since version 2.1 didn't have resolution
+                    // thus... here it is the other way around, since the found probabilities isnät 2.1 we assign an empty list again
+                    historicProbabilities = listOf();
+                }
+            }
         }
         if (historicProbabilities.isNotEmpty()) {
             val historicProbability = historicProbabilities.first()
