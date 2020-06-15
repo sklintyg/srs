@@ -122,6 +122,8 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
                 rAdapter.getPrediction(person, incomingCertDiagnosis, decoratedExtraParams, daysIntoSickLeave)
             diagnosPrediktionToPopulate.diagnosprediktionstatus = calculatedPrediction?.status
             diagnosPrediktionToPopulate.berakningstidpunkt = calculatedPrediction?.timestamp
+            diagnosPrediktionToPopulate.sjukskrivningsdag = calculatedPrediction?.daysIntoSickLeave
+            diagnosPrediktionToPopulate.prediktionsmodellversion = calculatedPrediction?.modelVersion
 
             if (calculatedPrediction?.status == Diagnosprediktionstatus.OK ||
                     calculatedPrediction?.status == Diagnosprediktionstatus.DIAGNOSKOD_PA_HOGRE_NIVA) {
@@ -199,11 +201,13 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
             val historicProbability = historicProbabilities.first()
             log.trace("Found historic entry $historicProbability")
             diagnosPrediktion.sannolikhetOvergransvarde = historicProbability.probability
+            diagnosPrediktion.prediktionsmodellversion = historicProbability.predictionModelVersion
             diagnosPrediktion.diagnos = buildDiagnos(historicProbability.diagnosis, historicProbability.diagnosisCodeSystem)
             diagnosPrediktion.diagnosprediktionstatus = Diagnosprediktionstatus.valueOf(historicProbability.predictionStatus)
             diagnosPrediktion.inkommandediagnos.codeSystem = historicProbability.incomingDiagnosisCodeSystem
             diagnosPrediktion.inkommandediagnos.code = historicProbability.incomingDiagnosis
             diagnosPrediktion.risksignal.riskkategori = calculateRisk(historicProbability.probability)
+            diagnosPrediktion.sjukskrivningsdag = historicProbability.daysIntoSickLeave
 
             if (historicProbability.ownOpinion != null) {
                 diagnosPrediktion.lakarbedomningRisk = EgenBedomningRiskType.fromValue(historicProbability.ownOpinion!!.opinion)
@@ -313,7 +317,8 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
                 predictionModelVersion,
                 LocalDateTime.now(),
                 extraParams[LOCATION_KEY]?.get(REGION_KEY),
-                extraParams[LOCATION_KEY]?.get(ZIP_CODE_KEY))
+                extraParams[LOCATION_KEY]?.get(ZIP_CODE_KEY),
+                diagnosPrediction.sjukskrivningsdag)
         probability = probabilityRepo.save(probability)
         log.trace("extraParams: $extraParams")
         extraParams[QUESTIONS_AND_ANSWERS_KEY]?.forEach { q, r ->

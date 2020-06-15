@@ -23,6 +23,7 @@ class Probability(val certificateId: String,
                   val timestamp: LocalDateTime,
                   val region: String?,
                   val zipCode: String?,
+                  val daysIntoSickLeave: Int,
                   @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
                   val id: Long = -1) {
 
@@ -34,8 +35,9 @@ class Probability(val certificateId: String,
 
     override fun toString() =
         "Probability(id=$id, certificateId=$certificateId, probability=$probability, riskCategory=$riskCategory" +
-                "incomingDiagnosisCodeSystem=$incomingDiagnosisCodeSystem, incomingDiagnosis=$incomingDiagnosis, " +
-                "diagnosisCodeSystem=$diagnosisCodeSystem, diagnosis=$diagnosis, predictionStatus:$predictionStatus, " +
-                "predictionModelVersion:$predictionModelVersion, timestamp=$timestamp, ownOpinion: $ownOpinion)"
+            "incomingDiagnosisCodeSystem=$incomingDiagnosisCodeSystem, incomingDiagnosis=$incomingDiagnosis, " +
+            "diagnosisCodeSystem=$diagnosisCodeSystem, diagnosis=$diagnosis, predictionStatus:$predictionStatus, " +
+            "predictionModelVersion:$predictionModelVersion, timestamp=$timestamp, ownOpinion: $ownOpinion, " +
+            "daysIntoSickLeave: $daysIntoSickLeave)"
 
 }

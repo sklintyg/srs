@@ -16,4 +16,5 @@ interface PredictionAdapter {
     fun getPrediction(person: Person, certDiagnosis: CertDiagnosis, extraParams: Map<String, Map<String, String>>, daysIntoSickLeave: Int=15): Prediction
 }
 
-class Prediction(val diagnosis: String, val prediction: Double?, val status: Diagnosprediktionstatus, val timestamp: LocalDateTime)
+class Prediction(val diagnosis: String, val prediction: Double?, val status: Diagnosprediktionstatus, val timestamp: LocalDateTime,
+                 val daysIntoSickLeave:Int, val modelVersion:String?)

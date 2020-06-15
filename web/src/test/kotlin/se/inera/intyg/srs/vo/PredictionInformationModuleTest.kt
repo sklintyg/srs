@@ -4,9 +4,6 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
-//import io.mockk.every
-//import io.mockk.mockk
-//import io.mockk.mockkStatic
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
@@ -30,7 +27,6 @@ import se.inera.intyg.srs.service.LOCATION_KEY
 import se.inera.intyg.srs.service.QUESTIONS_AND_ANSWERS_KEY
 import se.inera.intyg.srs.service.REGION_KEY
 import se.inera.intyg.srs.service.ZIP_CODE_KEY
-//import se.inera.intyg.srs.util.getModelForDiagnosis
 import java.time.LocalDateTime
 
 
@@ -87,7 +83,7 @@ class PredictionInformationModuleTest {
                     "F438A", "1.2.752.116.1.1.1.1.3", "F43",
                     Diagnosprediktionstatus.DIAGNOSKOD_PA_HOGRE_NIVA.value(),
                     "TEST_1.0",
-                    LocalDateTime.now().minusDays(4), "VAST", "44235")
+                    LocalDateTime.now().minusDays(4), "VAST", "44235", 15)
             with(p) {
                 ownOpinion = OwnOpinion("careGiver1", "careunit2", p, EgenBedomningRiskType.LAGRE.value(), LocalDateTime.now().minusDays(4))
                 val answer: PatientAnswer = PatientAnswer(1)

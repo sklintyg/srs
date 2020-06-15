@@ -23,8 +23,7 @@ class GetPredictionQuestionsResponderImpl(
 
     override fun getPredictionQuestions(request: GetPredictionQuestionsRequestType): GetPredictionQuestionsResponseType {
         val response = GetPredictionQuestionsResponseType()
-//      val predictionModelVersion = request.prediktionsmodellversion ?: currentModelVersion
-        val predictionModelVersion = currentModelVersion
+        val predictionModelVersion = request.prediktionsmodellversion ?: currentModelVersion
         log.debug("getting prediction questions for ${request.diagnos.code} with and model version ${predictionModelVersion}")
         val diagnosis = diagnosisService.getModelForDiagnosis(request.diagnos.code, predictionModelVersion) ?: return response
 
@@ -46,7 +45,7 @@ class GetPredictionQuestionsResponderImpl(
                 outboundQuestion.fragetext = savedQuestion.question.question
                 outboundQuestion.hjalptext = savedQuestion.question.helpText
                 outboundQuestion.prioritet = BigInteger.valueOf(savedQuestion.priority.toLong())
-//                outboundQuestion.prediktionsmodellversion = predictionModelVersion
+                outboundQuestion.prediktionsmodellversion = predictionModelVersion
                 savedQuestion.question.answers
                         .forEach { savedResponse ->
                             log.debug("Adding answer to response, savedQuestion: $savedResponse")
