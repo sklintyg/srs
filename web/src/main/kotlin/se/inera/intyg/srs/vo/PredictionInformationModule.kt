@@ -122,6 +122,8 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
                 rAdapter.getPrediction(person, incomingCertDiagnosis, decoratedExtraParams, daysIntoSickLeave)
             diagnosPrediktionToPopulate.diagnosprediktionstatus = calculatedPrediction?.status
             diagnosPrediktionToPopulate.berakningstidpunkt = calculatedPrediction?.timestamp
+            diagnosPrediktionToPopulate.sjukskrivningsdag = calculatedPrediction?.daysIntoSickLeave
+            diagnosPrediktionToPopulate.prediktionsmodellversion = calculatedPrediction?.modelVersion
 
             if (calculatedPrediction?.status == Diagnosprediktionstatus.OK ||
                     calculatedPrediction?.status == Diagnosprediktionstatus.DIAGNOSKOD_PA_HOGRE_NIVA) {
@@ -194,16 +196,27 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
                 historicProbabilities = probabilityRepo.findByCertificateIdAndDiagnosisOrderByTimestampDesc(incomingCertDiagnosis.certificateId, diagToFind)
                 diagToFind = diagToFind.dropLast(1);
             }
+            if (historicProbabilities.isEmpty() && diagToFind.length == 3) {
+                historicProbabilities = probabilityRepo.findByCertificateIdAndDiagnosisOrderByTimestampDesc(incomingCertDiagnosis.certificateId, diagToFind)
+                if (historicProbabilities.isNotEmpty() && historicProbabilities.get(0).predictionModelVersion != "2.1") {
+                    // if we found historic probabilites on 3 character responses here it might be cause the resolution in model version 2.2 for this diagnosis is 4
+                    // if the model version is less than 2.2 (i.e. 2.1) it is ok to respond with those since version 2.1 didn't have resolution
+                    // thus... here it is the other way around, since the found probabilities isnät 2.1 we assign an empty list again
+                    historicProbabilities = listOf();
+                }
+            }
         }
         if (historicProbabilities.isNotEmpty()) {
             val historicProbability = historicProbabilities.first()
             log.trace("Found historic entry $historicProbability")
             diagnosPrediktion.sannolikhetOvergransvarde = historicProbability.probability
+            diagnosPrediktion.prediktionsmodellversion = historicProbability.predictionModelVersion
             diagnosPrediktion.diagnos = buildDiagnos(historicProbability.diagnosis, historicProbability.diagnosisCodeSystem)
             diagnosPrediktion.diagnosprediktionstatus = Diagnosprediktionstatus.valueOf(historicProbability.predictionStatus)
             diagnosPrediktion.inkommandediagnos.codeSystem = historicProbability.incomingDiagnosisCodeSystem
             diagnosPrediktion.inkommandediagnos.code = historicProbability.incomingDiagnosis
             diagnosPrediktion.risksignal.riskkategori = calculateRisk(historicProbability.probability)
+            diagnosPrediktion.sjukskrivningsdag = historicProbability.daysIntoSickLeave
 
             if (historicProbability.ownOpinion != null) {
                 diagnosPrediktion.lakarbedomningRisk = EgenBedomningRiskType.fromValue(historicProbability.ownOpinion!!.opinion)
@@ -313,7 +326,8 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
                 predictionModelVersion,
                 LocalDateTime.now(),
                 extraParams[LOCATION_KEY]?.get(REGION_KEY),
-                extraParams[LOCATION_KEY]?.get(ZIP_CODE_KEY))
+                extraParams[LOCATION_KEY]?.get(ZIP_CODE_KEY),
+                diagnosPrediction.sjukskrivningsdag)
         probability = probabilityRepo.save(probability)
         log.trace("extraParams: $extraParams")
         extraParams[QUESTIONS_AND_ANSWERS_KEY]?.forEach { q, r ->

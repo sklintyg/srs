@@ -511,4 +511,10 @@
 
     </changeSet>
 
+    <changeSet id="26" author="ch">
+        <addColumn tableName="probability">
+            <column name="days_into_sick_leave" type="INTEGER" value="15"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

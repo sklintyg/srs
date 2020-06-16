@@ -144,14 +144,14 @@ open class RAdapter(val modelService: ModelFileUpdateService,
             val (model, status) = getModelForDiagnosis(diagnosis.code)
 
             if (model == null) {
-                return Prediction(diagnosis.code, null, status, LocalDateTime.now())
+                return Prediction(diagnosis.code, null, status, LocalDateTime.now(), daysIntoSickLeave, null)
             }
 
             try {
                 loadModel(model.file)
             } catch (e: Exception) {
                 log.error("Loading model file $model.fileName did not succeed: ", e)
-                return Prediction(diagnosis.code, null, Diagnosprediktionstatus.NOT_OK, LocalDateTime.now())
+                return Prediction(diagnosis.code, null, Diagnosprediktionstatus.NOT_OK, LocalDateTime.now(), daysIntoSickLeave, model.version)
             }
 
             val rDataFrame = StringBuilder("data <- data.frame(").apply {
@@ -171,7 +171,7 @@ open class RAdapter(val modelService: ModelFileUpdateService,
                 val prediction = rOutput.asDouble()
                 log.debug("Successful prediction, result: " + prediction)
                 val actualDiagnosisPredicted = getActualPredictedDiagnosis(diagnosis.code, model.diagnosis, extraParams[QUESTIONS_AND_ANSWERS_KEY])
-                Prediction(actualDiagnosisPredicted, prediction, status, LocalDateTime.now())
+                Prediction(actualDiagnosisPredicted, prediction, status, LocalDateTime.now(), daysIntoSickLeave, model.version)
             } else if (rOutput != null && daysIntoSickLeave > 15) {
                 // If we currently are more than 15 days into the sick leave we need to use Bayes Theorem P(T>X | T>Y) = P(T>X)/P(T>Y)
                 // The above is read the probability that T will be bigger than X given that T is bigger than Y.
@@ -197,11 +197,11 @@ open class RAdapter(val modelService: ModelFileUpdateService,
                 val predictionDaysInto = prediction/prediction2
                 log.trace("predictionDaysInto: $predictionDaysInto")
                 val actualDiagnosisPredicted = getActualPredictedDiagnosis(diagnosis.code, model.diagnosis, extraParams[QUESTIONS_AND_ANSWERS_KEY])
-                Prediction(actualDiagnosisPredicted, predictionDaysInto, status, LocalDateTime.now())
+                Prediction(actualDiagnosisPredicted, predictionDaysInto, status, LocalDateTime.now(), daysIntoSickLeave, model.version)
             } else {
                 log.debug("R produced no output")
                 wipeRLogFileAndReportError()
-                Prediction(diagnosis.code, null, Diagnosprediktionstatus.NOT_OK, LocalDateTime.now())
+                Prediction(diagnosis.code, null, Diagnosprediktionstatus.NOT_OK, LocalDateTime.now(), daysIntoSickLeave, model.version)
             }
         }
     }

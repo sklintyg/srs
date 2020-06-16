@@ -19,15 +19,14 @@ class GetDiagnosisCodesResponderImpl(
 ) : GetDiagnosisCodesResponderInterface {
     override fun getDiagnosisCodes(request: GetDiagnosisCodesRequestType): GetDiagnosisCodesResponseType {
         val response = GetDiagnosisCodesResponseType()
-//        val predictionModelVersion = request.prediktionsmodellversion ?: currentModelVersion
-        val predictionModelVersion = currentModelVersion
+        val predictionModelVersion = request.prediktionsmodellversion ?: currentModelVersion
         response.diagnos.addAll(diagnosisRepo.findByModelVersion(predictionModelVersion).map { savedDiagnosis ->
             val outgoingDiagnosis = Diagnos()
             outgoingDiagnosis.codeSystem = CODE_SYSTEM
             outgoingDiagnosis.code = savedDiagnosis.diagnosisId
             outgoingDiagnosis
         })
-//        response.prediktionsmodellversion = predictionModelVersion
+        response.prediktionsmodellversion = predictionModelVersion
         return response
     }
 }
