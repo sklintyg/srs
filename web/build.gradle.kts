@@ -113,7 +113,7 @@ tasks {
                     "-Dserver.port=${port}")
         } else {
             jvmArgs = listOf(
-                    "-Dspring.profiles.active=runtime, local",
+                    "-Dspring.profiles.active=runtime",
                     "-Djava.library.path=/usr/local/lib/R/3.6/site-library/rJava/jri",
                     "-Dloader.path=WEB-INF/lib-provided,WEB-INF/lib,WEB-INF/classes",
                     "-Dserver.port=${port}")
