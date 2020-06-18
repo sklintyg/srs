@@ -61,7 +61,7 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
         log.debug("createInfo(person: $person, extraParams: $extraParams, careUnitHsaId: " +
                 "$careUnitHsaId, predictIndividualRisk: $predictIndividualRisk, daysIntoSickLeave: $daysIntoSickLeave)")
         val outgoingPrediction = mutableListOf<Diagnosprediktion>()
-
+        val incomingCurrentDiagnosis = person.certDiags.get(0).code;
         person.certDiags.forEachIndexed { index, incomingCertDiagnosis ->
             log.trace("working with incomingCertDiagnosis: ${incomingCertDiagnosis.code} certificateId: ${incomingCertDiagnosis.certificateId} index: $index")
 
@@ -83,7 +83,7 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
             // Fill extension certificates (index>0) with historic entries and fill the current with historic or calculated risk
             if ((!predictIndividualRisk || index > 0) && incomingCertDiagnosis.certificateId.isNotEmpty() && diagnosis != null) {
                 log.trace("Do not predict individual risk for index:$index, looking for historic entries on the certificate/diagnosis")
-                fillWithHistoricPrediction(diagnosPrediktion, incomingCertDiagnosis, diagnosis)
+                fillWithHistoricPrediction(diagnosPrediktion, incomingCertDiagnosis, diagnosis, incomingCurrentDiagnosis)
             } else if (index == 0 && diagnosis != null && predictIndividualRisk) {
                 log.trace("Predict individual risk, we got a diagnosis and got correct prediction params")
                 fillWithCalculatedPrediction(diagnosPrediktion, person, incomingCertDiagnosis, extraParams, diagnosis, daysIntoSickLeave)
@@ -183,16 +183,18 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
      * @param certificateId the certificate which had an earlier risk prediction
      * @param diagnosis Diagnosis data entity
      */
-    private fun fillWithHistoricPrediction(diagnosPrediktion: Diagnosprediktion, incomingCertDiagnosis: CertDiagnosis, predictionDiagnosis:PredictionDiagnosis) {
+    private fun fillWithHistoricPrediction(diagnosPrediktion: Diagnosprediktion, incomingCertDiagnosis: CertDiagnosis, predictionDiagnosis:PredictionDiagnosis,
+                                           incomingCurrentDiagnosis: String) {
         log.debug("fillWithHistoricPrediction(certId: ${incomingCertDiagnosis.certificateId}, diagnosis: ${incomingCertDiagnosis.code})")
         // Check if we have a historic prediction
-        var diagToFind = incomingCertDiagnosis.code;
+        var diagToFind = incomingCurrentDiagnosis;
         var historicProbabilities: List<Probability> = listOf();
         if (diagToFind.length == 3) { // e.g. S52
             historicProbabilities = probabilityRepo.findByCertificateIdAndDiagnosisOrderByTimestampDesc(incomingCertDiagnosis.certificateId, diagToFind)
         } else { // e.g. F438a -> try F438a then F438 and stop (if 4 is the resolution)
             while (diagToFind.length >= predictionDiagnosis.resolution?:3 && historicProbabilities.isEmpty()) {
-                log.debug("Trying to find historic prediction on diagnosis code ${diagToFind}")
+                log.debug("Trying to find historic prediction on diagnosis code ${diagToFind}, " +
+                    "predictionDiagnosis resolution: ${predictionDiagnosis.resolution}, ")
                 historicProbabilities = probabilityRepo.findByCertificateIdAndDiagnosisOrderByTimestampDesc(incomingCertDiagnosis.certificateId, diagToFind)
                 diagToFind = diagToFind.dropLast(1);
             }
