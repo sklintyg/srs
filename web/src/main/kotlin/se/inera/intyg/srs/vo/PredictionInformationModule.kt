@@ -67,7 +67,7 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
 
             val diagnosPrediktion = Diagnosprediktion()
             diagnosPrediktion.inkommandediagnos = originalDiagnosis(incomingCertDiagnosis)
-            diagnosPrediktion.intygId = buildIntygId(careUnitHsaId, incomingCertDiagnosis.certificateId)
+            diagnosPrediktion.intygId = buildIntygId(incomingCertDiagnosis.certificateId, careUnitHsaId)
 
             log.debug("Fetching model for incoming diagnosis ${incomingCertDiagnosis.code} modelVersion ${currentModelVersion}")
             val diagnosis = diagnosisService.getModelForDiagnosis(incomingCertDiagnosis.code, currentModelVersion)
