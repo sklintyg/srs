@@ -14,7 +14,7 @@ interface ProbabilityRepository : CrudRepository<Probability, Long> {
     fun findByCertificateIdInAndOrderedByCertificateIdAndTimestamp(@Param("certificateIds") certificateIds: List<String>): List<Probability>
 
     @Query("FROM Probability p LEFT JOIN FETCH p.ownOpinion LEFT JOIN FETCH p.patientAnswers " +
-            "WHERE p.certificateId = :certificateId AND p.diagnosis = :diagnosis ORDER BY Timestamp DESC")
+            "WHERE p.certificateId = :certificateId AND p.diagnosis = :diagnosis ORDER BY timestamp DESC")
     fun findByCertificateIdAndDiagnosisOrderByTimestampDesc(certificateId: String, diagnosis: String): List<Probability>
 
 }
