@@ -124,7 +124,11 @@ class GetSRSInformationResponderImpl(val measureModule: MeasureInformationModule
     private fun calculateAge(personId: String): String {
         val year = personId.substring(0..3).toInt()
         val month = personId.substring(4..5).toInt()
-        val day = personId.substring(6..7).toInt()
+        var day = personId.substring(6..7).toInt()
+        // If we have a samordningsnummer, remove 60 days to get the correct day
+        if (day > 60) {
+            day = day - 60;
+        }
         val birthDate = LocalDate.of(year, month, day)
         val today = LocalDate.now()
         return calculateAgeCategory(ChronoUnit.YEARS.between(birthDate, today).toInt())
