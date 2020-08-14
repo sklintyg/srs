@@ -1,6 +1,6 @@
 #!groovy
 
-def baseVersion = "1.2.*"
+def baseVersion = "1.3.*"
 
 stage('checkout tools') {
     node {
