@@ -30,26 +30,19 @@ allprojects {
 
     repositories {
         mavenLocal()
-        maven {
-            url = uri("https://build-inera.nordicmedtest.se/nexus/repository/releases/")
-            mavenContent {
-                releasesOnly()
+        maven ("https://nexus.drift.inera.se/repository/it-public/")
+        mavenCentral {
+            content {
+                // this repository contains everything BUT artifacts with group starting with "se.inera"
+                excludeGroupByRegex("se\\.inera.*")
             }
         }
-        maven {
-            url = uri("https://build-inera.nordicmedtest.se/nexus/repository/snapshots/")
-            mavenContent {
-                snapshotsOnly()
-            }
-        }
-        mavenCentral()
-        jcenter()
     }
 
     publishing {
         repositories {
             maven {
-                url = uri("https://build-inera.nordicmedtest.se/nexus/repository/releases/")
+                url = uri("https://nexus.drift.inera.se/repository/maven-releases/")
                 credentials {
                     username = System.getProperty("nexusUsername")
                     password = System.getProperty("nexusPassword")
@@ -77,11 +70,27 @@ subprojects {
 
     dependencyManagement {
         imports {
-            mavenBom("org.springframework:spring-framework-bom:${Dependencies.springVersion}")
-            mavenBom("org.springframework.boot:spring-boot-dependencies:${Dependencies.springBootVersion}") {
-                bomProperty("kotlin.version", Dependencies.kotlinVersion)
-            }
+            mavenBom("org.springframework.boot:spring-boot-dependencies:${Dependencies.springBootVersion}")
             mavenBom("org.junit:junit-bom:${TestDependencies.junit5Version}")
+        }
+        dependencies {
+            dependency ("org.springframework:spring-web:${Dependencies.springVersion}")
+            dependency ("org.springframework:spring-webmvc:${Dependencies.springVersion}")
+            dependency ("org.springframework:spring-aop:${Dependencies.springVersion}")
+            dependency ("org.springframework:spring-beans:${Dependencies.springVersion}")
+            dependency ("org.springframework:spring-context:${Dependencies.springVersion}")
+            dependency ("org.springframework:spring-core:${Dependencies.springVersion}")
+            dependency ("org.springframework:spring-orm:${Dependencies.springVersion}")
+            dependency ("org.springframework:spring-tx:${Dependencies.springVersion}")
+            dependency ("org.springframework:spring-aspects:${Dependencies.springVersion}")
+            dependency ("org.springframework:spring-jdbc:${Dependencies.springVersion}")
+
+            dependency("org.jetbrains.kotlin:kotlin-stdlib-jdk8:${Dependencies.kotlinVersion}")
+            dependency("org.jetbrains.kotlin:kotlin-stdlib-jdk7:${Dependencies.kotlinVersion}")
+            dependency("org.jetbrains.kotlin:kotlin-stdlib:${Dependencies.kotlinVersion}")
+            dependency("org.jetbrains.kotlin:kotlin-stdlib-common:${Dependencies.kotlinVersion}")
+            dependency("org.jetbrains.kotlin:kotlin-test:${Dependencies.kotlinVersion}")
+            dependency("org.jetbrains.kotlin:kotlin-test-common:${Dependencies.kotlinVersion}")
         }
     }
 

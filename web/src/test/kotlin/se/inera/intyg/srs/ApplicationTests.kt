@@ -45,7 +45,7 @@ open class ApplicationTests {
         ctx.register(TestPredictionAdapter::class.java)
     }
 
-    @Test
-    fun dummyTest() {
-    }
+    //@Test
+    //fun dummyTest() {
+    //}
 }

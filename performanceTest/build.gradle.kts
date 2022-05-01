@@ -73,7 +73,7 @@ publishing {
 dependencies {
     val kotlinVersion = "1.3.21"
 
-    compile(kotlin("stdlib", kotlinVersion))
+    compile(kotlin("stdlib-jdk8", kotlinVersion))
     compile(kotlin("reflect", kotlinVersion))
 
     compile("se.inera.intyg.clinicalprocess.healthcond.srs:intyg-clinicalprocess-healthcond-srs-schemas:0.0.13")

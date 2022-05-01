@@ -26,10 +26,12 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.apache.cxf:cxf-spring-boot-starter-jaxws:${Dependencies.cxfBootStarterVersion}")
-    implementation("org.liquibase:liquibase-core:${Dependencies.liquibaseVersion}")
+    implementation("org.liquibase:liquibase-core")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.9.9")
     implementation("org.nuiton.thirdparty:JRI:0.9-9")
     implementation("org.apache.poi:poi-ooxml:4.0.1")
+    implementation(kotlin("stdlib-jdk8:${Dependencies.kotlinVersion}" ))
+
 
     runtime("com.h2database:h2")
     runtime("mysql:mysql-connector-java")
@@ -42,7 +44,6 @@ dependencies {
     testImplementation("io.rest-assured:json-schema-validator:${TestDependencies.restAssuredVersion}")
     testImplementation("io.rest-assured:json-path:${TestDependencies.restAssuredVersion}")
     testImplementation("io.rest-assured:xml-path:${TestDependencies.restAssuredVersion}")
-    implementation(kotlin("stdlib-jdk8"))
 }
 
 springBoot {
@@ -125,9 +126,9 @@ repositories {
 }
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.kotlinOptions {
-    jvmTarget = "1.8"
+    jvmTarget = "11"
 }
 val compileTestKotlin: KotlinCompile by tasks
 compileTestKotlin.kotlinOptions {
-    jvmTarget = "1.8"
+    jvmTarget = "11"
 }

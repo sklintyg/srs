@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+
+  srs:
+    build: .
+    container_name: srs
+    restart: always
+    ports:
+      - "18820:5005"
+      - "18020:8080"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
