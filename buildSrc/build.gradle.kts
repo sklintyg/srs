@@ -8,7 +8,7 @@ repositories {
   gradlePluginPortal()
   mavenLocal()
   mavenCentral()
-  maven("https://build-inera.nordicmedtest.se/nexus/repository/releases/")
+  maven("http://nexus.drift.inera.se/repository/it-public/")
 }
 
 dependencies {
@@ -17,10 +17,10 @@ dependencies {
 
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.kotlinOptions {
-  jvmTarget = "1.8"
+  jvmTarget = "11"
 }
 
 val compileTestKotlin: KotlinCompile by tasks
 compileTestKotlin.kotlinOptions {
-  jvmTarget = "1.8"
+  jvmTarget = "11"
 }

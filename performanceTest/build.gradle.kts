@@ -61,7 +61,7 @@ publishing {
     }
     repositories {
         maven {
-            url = uri("https://build-inera.nordicmedtest.se/nexus/repository/releases/")
+            url = maven("http://nexus.drift.inera.se/repository/it-public/")
             credentials {
                 username = System.getProperty("nexusUsername")
                 password = System.getProperty("nexusPassword")

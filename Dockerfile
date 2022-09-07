@@ -1,4 +1,6 @@
-FROM tomcat:9.0-jre8
+# DEPRECATED - OLD Dockerfile - Use sklintyg/devops/openshift/srs-base/Dockerfile instead.
+
+FROM tomcat:9.0-jre11
 
 LABEL maintainer="SKL SRS" \
       description="SRS Backend"

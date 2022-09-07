@@ -130,12 +130,13 @@ tasks {
 }
 repositories {
     mavenCentral()
+    maven("http://nexus.drift.inera.se/repository/it-public/")
 }
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.kotlinOptions {
-    jvmTarget = "1.8"
+    jvmTarget = "11"
 }
 val compileTestKotlin: KotlinCompile by tasks
 compileTestKotlin.kotlinOptions {
-    jvmTarget = "1.8"
+    jvmTarget = "11"
 }
