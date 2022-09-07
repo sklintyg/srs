@@ -30,6 +30,57 @@ class PrediktionIT : BaseIntegrationTest() {
     }
 
     @Test
+    fun testPredictionModelv3() {
+        setModels("m797v3")
+        val questions = listOf(
+            TestController.PredictionQuestion("Question", "SA_1_gross", "Help text", false,
+                listOf(
+                    TestController.PredictionResponse("SA_1_gross", "(0,90]", false),
+                    TestController.PredictionResponse("SA_1_gross", "(180,366]", false),
+                    TestController.PredictionResponse("SA_1_gross", "(90,180]", false),
+                    TestController.PredictionResponse("SA_1_gross", "0", true)
+                )),
+            TestController.PredictionQuestion("Question", "SA_SyssStart_fct", "Help text", false,
+                listOf(
+                    TestController.PredictionResponse("SA_SyssStart_fct", "not_unemp", true),
+                    TestController.PredictionResponse("SA_SyssStart_fct", "unemp", false)
+                )),
+            TestController.PredictionQuestion("Question", "SA_ExtentFirst", "Help text", false,
+                listOf(
+                    TestController.PredictionResponse("SA_ExtentFirst", "0.25", false),
+                    TestController.PredictionResponse("SA_ExtentFirst", "0.5", false),
+                    TestController.PredictionResponse("SA_ExtentFirst", "0.75", false),
+                    TestController.PredictionResponse("SA_ExtentFirst", "1", true)
+                )),
+            TestController.PredictionQuestion("Question", "comorbidity", "Help text", false,
+                listOf(
+                    TestController.PredictionResponse("comorbidity", "no", true),
+                    TestController.PredictionResponse("comorbidity", "yes", false)
+                )),
+            TestController.PredictionQuestion("Question", "DP_atStart", "Help text", false,
+                listOf(
+                    TestController.PredictionResponse("DP_atStart", "true", false),
+                    TestController.PredictionResponse("DP_atStart", "false", true)
+                )),
+            TestController.PredictionQuestion("Question", "Visits_yearBefore_all_r1_median", "Help text", false,
+                listOf(
+                    TestController.PredictionResponse("Visits_yearBefore_all_r1_median", "aboveMedian", false),
+                    TestController.PredictionResponse("Visits_yearBefore_all_r1_median", "LessT2V", true)
+                )
+
+            ));
+        addDiagnosis(TestController.DiagnosisRequest("M79", 0.37, false, listOf(), "3.0"))
+        addDiagnosis(TestController.DiagnosisRequest("M797", 0.0, false, questions, "3.0"))
+        val response = sendPrediktionRequest("getPrediktion_Model1Request_output_M797_0.65.xml", "M797")
+        response.assertThat()
+            .body("$PREDIKTION_ROOT.prevalens", equalTo("0.37"))
+            .body("$PREDIKTION_ROOT.sannolikhet-overgransvarde", equalTo("0.65"))
+            .body("$PREDIKTION_ROOT.risksignal.riskkategori", equalTo("3"))
+            .body("$PREDIKTION_ROOT.risksignal.beskrivning", equalTo("Mycket hög risk att sjukfallet varar i mer än 90 dagar"))
+            .body("$PREDIKTION_ROOT.diagnosprediktionstatus", equalTo("OK"))
+    }
+
+    @Test
     fun testHighestVersionOfPredictionShouldBeUsed() {
         // Om två prediktionsfiler för samma diagnos finns ska den med högst
         // versionsnummer användas

@@ -77,7 +77,8 @@ abstract class BaseIntegrationTest {
             TestController.ModelRequest(
                 models.contains("x99v0"),
                 models.contains("x9900v0"),
-                models.contains("x99v1"))
+                models.contains("x99v1"),
+                models.contains("m797v3"))
 
     @Suppress("UNCHECKED_CAST")
     protected fun getIntyg(intygsId: String) =

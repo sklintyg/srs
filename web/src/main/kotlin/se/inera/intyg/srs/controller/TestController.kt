@@ -43,7 +43,7 @@ class TestController(val consentModule: ConsentModule,
     data class DiagnosisRequest(val diagnosisId: String, val prevalence: Double, val forSubdiags: Boolean,
                                 val questions: List<PredictionQuestion>, val modelVersion:String = "3.0")
 
-    data class ModelRequest(val x99v0: Boolean, val x9900v0: Boolean, val x99v1: Boolean)
+    data class ModelRequest(val x99v0: Boolean, val x9900v0: Boolean, val x99v1: Boolean, val m797v3: Boolean)
 
     @PostMapping("/diagnosis")
     fun createDiagnosis(@RequestBody request: DiagnosisRequest) =
