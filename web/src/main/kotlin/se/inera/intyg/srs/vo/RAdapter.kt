@@ -141,7 +141,7 @@ open class RAdapter(val modelService: ModelFileUpdateService,
         // to this service will be excessive during the pilot. However, if this is more widely deployed once the pilot
         // is over, we would need to consider porting the R models to some solution that scales better.
         lock.withLock {
-            val (model, status) = getModelForDiagnosis(diagnosis.code)
+            val (model, status) = getModelForDiagnosis(diagnosis.code) // Version?
 
             if (model == null) {
                 return Prediction(diagnosis.code, null, status, LocalDateTime.now(), daysIntoSickLeave, null)
@@ -234,7 +234,6 @@ open class RAdapter(val modelService: ModelFileUpdateService,
         log.debug("R loading from: {}", file.absolutePath)
         rengine.eval("model <- readRDS('${file.absolutePath}')  ", false) ?: throw RuntimeException("The prediction model does not exist!")
     }
-
     /**
      * Finds an R model for the given diagnosis code.
      * If we have a perfect match, e.g. M75 then return that model immediately and set status OK
@@ -251,44 +250,30 @@ open class RAdapter(val modelService: ModelFileUpdateService,
         var currentId = cleanDiagnosisCode(diagnosisId)
         log.debug("getModelForDiagnosis diagnosisId: {}, cleanDiagnosisId: {}", diagnosisId, currentId)
         var status: Diagnosprediktionstatus = Diagnosprediktionstatus.OK
-        if (currentId.length == 3) {
-            log.debug("We got a three character diagnosis code, fallback to model without subdiag group params");
-            val model = modelService.modelForCodeWithoutSubdiag(currentId)
-            log.debug("modelForCodeWithoutSubDiag currentId: {}, gave: {}", currentId, model?.version)
-            if (model != null) {
-                return Pair(model, status);
-            }
-        } else {
-            if (currentId.length > MAX_ID_POSITIONS) {
-                return Pair(null, Diagnosprediktionstatus.NOT_OK)
-            }
+        if (currentId.length > MAX_ID_POSITIONS) {
+            return Pair(null, Diagnosprediktionstatus.NOT_OK)
+        }
 
-            // Find a suitable model by cutting of character by character from the end of the diagnosis code
-            while (currentId.length > MIN_ID_POSITIONS) {
-                val model = modelService.modelForCode(currentId)
-                log.debug("modelForCode currentId: {}, gave: {}", currentId, model)
+        // Find a suitable model by cutting of character by character from the end of the diagnosis code
+        while (currentId.length > MIN_ID_POSITIONS) {
+            val model = modelService.modelForCode(currentId)
+            log.debug("modelForCode currentId: {}, gave: {} {}", currentId, model?.diagnosis, model?.version)
 
 
-                if (model != null) {
-                    return Pair(model, status)
-                }
-                // Since we didn't find a model, Remove one character from the end of the id/diagnosisCode string to try again
-                currentId = currentId.substring(0, currentId.length - 1)
-
-                // Once we have shortened the code, we need to indicate that the info is not on the original level
-                status = Diagnosprediktionstatus.DIAGNOSKOD_PA_HOGRE_NIVA
-            }
-            // if no hit when we reach the minimum length, try to find both with and after that without subdiag support at the minimum
-            // length otherwise we give up and return that the prediction model is missing
-            var model = modelService.modelForCode(currentId)
             if (model != null) {
                 return Pair(model, status)
-            } else {
-                val modelWithoutSubdiag = modelService.modelForCodeWithoutSubdiag(currentId)
-                if (modelWithoutSubdiag != null) {
-                    return Pair(modelWithoutSubdiag, status)
-                }
             }
+            // Since we didn't find a model, Remove one character from the end of the id/diagnosisCode string to try again
+            currentId = currentId.substring(0, currentId.length - 1)
+
+            // Once we have shortened the code, we need to indicate that the info is not on the original level
+            status = Diagnosprediktionstatus.DIAGNOSKOD_PA_HOGRE_NIVA
+        }
+        // if no hit when we reach the minimum length, try to find both with and after that without subdiag support at the minimum
+        // length otherwise we give up and return that the prediction model is missing
+        var model = modelService.modelForCode(currentId)
+        if (model != null) {
+            return Pair(model, status)
         }
         return Pair(null, Diagnosprediktionstatus.PREDIKTIONSMODELL_SAKNAS)
     }

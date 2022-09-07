@@ -14,7 +14,7 @@ open class TestPredictionAdapter : PredictionAdapter {
 
     override fun getPrediction(person: Person, diagnosis: CertDiagnosis, extraParams: Map<String, Map<String, String>>, daysInto:Int): Prediction {
         log.debug("Test prediction adapter got getPrediction(person: $person, diagnosis: $diagnosis, extraParams: $extraParams)")
-        return Prediction("F43", 0.52, Diagnosprediktionstatus.OK, LocalDateTime.now(), daysInto, "2.2")
+        return Prediction("F43", 0.52, Diagnosprediktionstatus.OK, LocalDateTime.now(), daysInto, "3.0")
     }
 
 }

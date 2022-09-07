@@ -13,8 +13,6 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import org.apache.cxf.Bus
-import org.apache.cxf.interceptor.LoggingInInterceptor
-import org.apache.cxf.interceptor.LoggingOutInterceptor
 import org.apache.cxf.jaxws.EndpointImpl
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.SpringApplication
@@ -99,7 +97,7 @@ open class Application : SpringBootServletInitializer() {
         endpoint.schemaLocations = listOf("classpath:core_components/clinicalprocess_healthcond_certificate_types_2.0.xsd",
                 "classpath:core_components/clinicalprocess_healthcond_srs_1.0.xsd",
                 "classpath:interactions/GetSRSInformation/GetSRSInformationResponder_3.0.xsd")
-        // Use these to get full loging of input and output at the web service
+        // Use these to get full logging of input and output at the web service
         //endpoint.inInterceptors.add(LoggingInInterceptor())
         //endpoint.outInterceptors.add(LoggingOutInterceptor())
         endpoint.publish("/getsrs")

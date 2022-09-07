@@ -53,7 +53,7 @@ class PredictionInformationModuleTest {
     private fun initData() {
         whenever(consentModule.consentNeeded()).thenReturn(false)
 
-        whenever(diagnosisService.getModelForDiagnosis(eq("F438A"), eq("TEST_1.0")))
+        whenever(diagnosisService.getModelForDiagnosis(eq("F438A"), eq("TEST_1.0"), eq(true)))
             .thenReturn(PredictionDiagnosis("F43", 0.32, 3, "TEST_1.0", true,
                 listOf(PredictionPriority(1, "TEST_1.0", true,
                     PredictionQuestion("question 1?", "help", "frageId-1", "TEST_1.0", true,
@@ -71,6 +71,25 @@ class PredictionInformationModuleTest {
                         )
                     )
                 ))
+            ))
+        whenever(diagnosisService.getModelForDiagnosis(eq("F438A"), eq("TEST_1.0"), eq(false)))
+            .thenReturn(PredictionDiagnosis("F348A", 0.32, 3, "TEST_1.0", true,
+                listOf(PredictionPriority(1, "TEST_1.0", true,
+                    PredictionQuestion("question 1?", "help", "frageId-1", "TEST_1.0", true,
+                        listOf(
+                            PredictionResponse("answer alternative 1-1!", "svarsId-1a", true, 1, "TEST_1.0", true,null),
+                            PredictionResponse("answer alternative 1-2!", "svarsId-1b", false, 1, "TEST_1.0", true,null)
+                        )
+                    )
+                ),
+                    PredictionPriority(2, "TEST_1.0", false,
+                        PredictionQuestion("question 2?", "help", "frageId-2", "TEST_1.0", true,
+                            listOf(
+                                PredictionResponse("answer alternative 2-1!", "svarsId-2c", true, 1, "TEST_1.0", true,null),
+                                PredictionResponse("answer alternative 2-2!", "svarsId-2d", false, 1, "TEST_1.0", true,null)
+                            )
+                        )
+                    ))
             ))
         whenever(probabilityRepo.save<Probability>(any())).thenAnswer(
                 Answer<Probability>() {

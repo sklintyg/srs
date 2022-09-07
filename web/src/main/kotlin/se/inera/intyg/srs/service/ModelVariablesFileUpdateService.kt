@@ -20,7 +20,6 @@ import se.inera.intyg.srs.persistence.repository.ResponseRepository
  */
 @Component
 class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val variablesFile: String,
-                                      @Value("\${model.variablesFileWithoutSubdiag}") val variablesFileWithoutSubdiag: String,
                                       @Value("\${recommendations.importMaxLines: 1000}") val importMaxLines: Int,
                                       val questionRepo: QuestionRepository,
                                       val responseRepo: ResponseRepository,
@@ -36,7 +35,6 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
         doRemoveOldQuestionsAndResponses(modelVersion)
         log.info("Updating questions and responses, modelVersion: $modelVersion")
         doUpdateQuestionsAndResponses(variablesFile, modelVersion, true)
-        doUpdateQuestionsAndResponses(variablesFileWithoutSubdiag, modelVersion, false)
         log.info("Finished update of model variables, modelVersion: $modelVersion")
     }
 
@@ -52,33 +50,105 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
         return modelVersion
     }
 
+    /**
+     * A DTO for a Variable
+     * @constructor Creates a Variable object
+     */
     data class Variable(
-            val name: String,
-            val type: String,
-            val automaticSelectionDiagnosisCode: String?,
-            val questionText: String?,
-            val helpText: String?,
-            val modelVersion: String
+        /**
+         * The name of the variable in the prediction model, e.g. edu_cat_fct
+         */
+        val name: String,
+        /**
+         * Variable type, e.g. factor or integer (response)
+         */
+        val type: String,
+        /**
+         * Diagnosis code for automatic selection
+         * (some questions can be automatically responded to based on the diagnosis code of the certificate)
+         * This approach was used before prediction model version 3.0
+         */
+        val automaticSelectionDiagnosisCode: String?,
+        /**
+         * The question text (title of the question in the GUI), e.g. "Tagit högskolepoäng"
+         */
+        val questionText: String?,
+        /**
+         * Extra description of how to interpret the question, e.g. "Har patienten tagit poäng på högskolenivå?"
+         */
+        val helpText: String?,
+        /**
+         * The version of the prediction model for which this variable/question is used, e.g. "3.0"
+         */
+        val modelVersion: String
     )
 
+    /**
+     * Representation of a possible value och a variable, i.e a response alternative for a question
+     */
     data class VariableFactorValue(
-            val varName: String,
-            val responseText: String,
-            val responseId: String,
-            val order: Int?,
-            val isDefault: Boolean,
-            val automaticSelectionDiagnosisCode: String?,
-            val modelVersion: String
+        /**
+         * The name of the variable in the prediction model, e.g. edu_cat_fct
+         */
+        val varName: String,
+        /**
+         * The text that is displayed on this response alternative in the GUI e.g. "Ja"
+         */
+        val responseText: String,
+        /**
+         * The id for the response alternative used as input to the prediction model
+         */
+        val responseId: String,
+        /**
+         * The order in which this alternative is displayed in the GUI starting from 1, e.g. 2 means the second alternative
+         */
+        val order: Int?,
+        /**
+         * True if this is the default reponse alternative for this question
+         */
+        val isDefault: Boolean,
+        /**
+         * A semi colon (;) separated list of diagnosis codes for which this alternative is automatically chosen
+         */
+        val automaticSelectionDiagnosisCode: String?,
+        /**
+         * The version of the prediction model for which this value/response alternative is valid
+         */
+        val modelVersion: String
     )
 
+    /**
+     * DTO for mapping a diagnosis group to a variable/question.
+     */
     data class DiagnosisVariable(
-            val diagnosisCode: String,
-            val varName: String,
-            val order: Int?,
-            val resolution: Int,
-            val modelVersion: String
+        /**
+         *  The 3 first digits of a diagnosis code.
+         *  All diagnoses sharing the same suffix will be in the same diagnosis group.
+         */
+        val diagnosisCode: String,
+        /**
+         * A variable name/question to map to this diagnosis group
+         */
+        val varName: String,
+        /**
+         * The order in which this question is displayed in the GUI for the specified diagnosis group
+         */
+        val order: Int?,
+        /**
+         * Deprecated.
+         * Used before prediction model version 3.0
+         * Was set to 4 if the variable name ended with "_subdiag_group", otherwise always 3
+         */
+        val resolution: Int,
+        /**
+         * The version of the prediction model for which this mapping is valid
+         */
+        val modelVersion: String
     )
 
+    /**
+     * Reads the variables (questions) sheet named "Kodning av variabelnamn" and returns a list Variable DTOs
+     */
     private fun readVariables(workbook: XSSFWorkbook, modelVersion: String): List<Variable> {
         log.debug("Reading variables sheet")
         val sheet = workbook.getSheet("Kodning av variabelnamn")
@@ -88,16 +158,16 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
         val variables:ArrayList<Variable> = arrayListOf();
         while (readMoreRows && unimportableRows < 4) {
             val row = sheet.getRow(rowNumber) ?: break
-            val varName = row.getCell(0).stringCellValue
+            val varName = row.getCell(0).stringCellValue // "Kodning av variabelnamn"; Column A
             if (varName.isNullOrBlank()) {
                 unimportableRows++
                 rowNumber++
                 continue
             }
-            val varType = row.getCell(1).stringCellValue
-            val varAutomaticSelectionDiagnosisCode = row.getCell(2)?.stringCellValue
-            val varQuestionText = row.getCell(3)?.stringCellValue
-            val varHelpText = row.getCell(5)?.stringCellValue
+            val varType = row.getCell(1).stringCellValue // "Kodning av variabelnamn"; Column B
+            val varAutomaticSelectionDiagnosisCode = row.getCell(2)?.stringCellValue // "Kodning av variabelnamn"; Column C
+            val varQuestionText = row.getCell(3)?.stringCellValue // "Kodning av variabelnamn"; Column D
+            val varHelpText = row.getCell(5)?.stringCellValue // "Kodning av variabelnamn"; Column F
             val variable = Variable(varName, varType, varAutomaticSelectionDiagnosisCode, varQuestionText, varHelpText, modelVersion)
             variables.add(variable)
             rowNumber++
@@ -105,6 +175,11 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
         log.info("Found ${variables.size} variables")
         return variables
     }
+
+    /**
+     * Reads the variable factor values (response alternatives) sheet named "Kodning av värden för factor" and returns a map of variableName -> response list
+     * I.e. we find a list of responses for each question (variable)
+     */
     private fun readVariableFactorValues(workbook: XSSFWorkbook, modelVersion:String): Map<String, List<VariableFactorValue>> {
         log.debug("Reading factor values sheet")
         val sheet = workbook.getSheet("Kodning av värden för factor")
@@ -114,18 +189,18 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
         val responseMap:HashMap<String, ArrayList<VariableFactorValue>> = HashMap()
         while (readMoreRows && unimportableRows < 4) {
             val row = sheet.getRow(rowNumber) ?: break
-            val varName = row.getCell(0).stringCellValue
+            val varName = row.getCell(0).stringCellValue // "Kodning av värden för factor"; Column A
             if (varName.isNullOrBlank()) {
                 unimportableRows++
                 rowNumber++
                 continue
             }
-            val responseText = row.getCell(1).stringCellValue
-            val responseId = row.getCell(2).stringCellValue
-            val order = row.getCell(3)?.numericCellValue?.toInt()
-            val isDefaultTxt = row.getCell(4)?.stringCellValue
+            val responseText = row.getCell(1).stringCellValue // "Kodning av värden för factor"; Column B
+            val responseId = row.getCell(2).stringCellValue // "Kodning av värden för factor"; Column C
+            val order = row.getCell(3)?.numericCellValue?.toInt() // "Kodning av värden för factor"; Column D
+            val isDefaultTxt = row.getCell(4)?.stringCellValue // "Kodning av värden för factor"; Column E
             val isDefault = isDefaultTxt != null && isDefaultTxt.equals("T")
-            val automaticSelectionDiagnosisCode = row.getCell(5)?.stringCellValue
+            val automaticSelectionDiagnosisCode = row.getCell(5)?.stringCellValue // "Kodning av värden för factor"; Column F
 
             val variableFactorValue =
                     VariableFactorValue(varName, responseText, responseId, order, isDefault, automaticSelectionDiagnosisCode, modelVersion)
@@ -142,7 +217,8 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
     }
 
     /**
-     * Returns a map of variableName -> List of diagnosisVariable
+     * Finds the questions per diagnosis by reading the sheet named "Variabler per diagnos".
+     * Returns a map of diagnosisCode -> List of diagnosisVariable
      */
     private fun readDiagnosisVariables(workbook: XSSFWorkbook, modelVersion: String): Map<String, List<DiagnosisVariable>> {
         log.debug("Reading diagnosis variable combinations sheet")
@@ -153,15 +229,15 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
         val responseMap:HashMap<String, ArrayList<DiagnosisVariable>> = HashMap()
         while (readMoreRows && unimportableRows < 4) {
             val row = sheet.getRow(rowNumber) ?: break
-            val diagnosisCode = row.getCell(0).stringCellValue
+            val diagnosisCode = row.getCell(0).stringCellValue // "Variabler per diagnos"; Column A
             if (diagnosisCode.isNullOrBlank()) {
                 unimportableRows++
                 rowNumber++
                 continue
             }
             var resolution = 3;
-            val varName = row.getCell(1).stringCellValue
-            var order = row.getCell(2)?.numericCellValue?.toInt()
+            val varName = row.getCell(1).stringCellValue // "Variabler per diagnos"; Column B
+            var order = row.getCell(2)?.numericCellValue?.toInt() // "Variabler per diagnos"; Column C
             // We want to have subdiag_groups with us but make sure it is with order 0
             if (order == null && varName.isNotBlank() && varName.contains("_subdiag_group")) {
                 order = 0
@@ -293,13 +369,21 @@ class ModelVariablesFileUpdateService(@Value("\${model.variablesFile}") val vari
         return diagnosis!!
     }
 
+    /**
+     * @param file The questions and reponse input file (Excel)
+     * @param modelVersion the version of the prediction model these questions belong to
+     * @param forSubdiags
+     */
     private fun doUpdateQuestionsAndResponses(file:String, modelVersion: String, forSubdiags:Boolean=true) {
         log.info("Performing update of model variables (questions and responses) for model version $modelVersion from file $file")
         val excelFileStream = resourceLoader.getResource(file).inputStream
         XSSFWorkbook(excelFileStream).use { workbook ->
 
-            val variables = readVariables(workbook, modelVersion) // map of variableName -> variable (question)
+            // Get the questions
+            val variables = readVariables(workbook, modelVersion) // list of variables, used below to create map of variableName -> question
+            // Get the response alternatives
             val variableFactorValues = readVariableFactorValues(workbook, modelVersion) // map of variableName -> response list
+            // Get the questions per diagnosis mapping
             val variableDiagnoses = readDiagnosisVariables(workbook, modelVersion) // map of diagnosis -> diagnosis variable list (for the variable)
 
             log.debug("Persisting questions and responses")

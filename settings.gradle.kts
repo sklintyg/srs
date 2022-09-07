@@ -2,7 +2,7 @@ import se.inera.intyg.srs.build.Config.Dependencies
 
 pluginManagement {
     repositories {
-        maven("https://build-inera.nordicmedtest.se/nexus/repository/releases/")
+        maven("http://nexus.drift.inera.se/repository/it-public/")
         gradlePluginPortal()
         mavenLocal()
     }

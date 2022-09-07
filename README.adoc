@@ -1,5 +1,32 @@
 = SRS (Stöd för Rätt Sjukskrivning)
 
+
+== 2022 ==
+Starting the application locally:
+----
+./gradlew clean bootRun -Denv=local -Dport=8081
+----
+Will use application-local.properties to override values form application.properties
+
+Starting in mode for receiving Integration test requests:
+----
+./gradlew clean bootRun -Denv=it -Dport=8081
+----
+
+Running integration tests:
+----
+./gradlew restAssuredTest -Dport=8081
+----
+
+== Notes on prediction model version 2.2 and forSubdiagnosis (search tags: forSubDiags _subdiag_group resolution)
+In prediction model version 2.2 there were two variants of the prediction models, one for 3-character diagnosis codes (e.g. M79) and
+one for sub diagnosises (e.g. M797) both model files were named with a three letter code for the diagnosis froup (e.g. M79).
+The one for subdiagnosises contained extra questions ending with _subdiag_group that could be answered automatically depending on which of
+the sub diagnosises we worked with.
+In Prediction model 3.0 all of the diagnosises are represented for themselves istead, i.e. M797 has a corresponding PredictionDiagnosis
+entity, its own model and set of questions.
+
+
 == Runtime
 
 To get the application up and running, you have to do three things in preparation:

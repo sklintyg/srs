@@ -18,7 +18,7 @@ import se.inera.intyg.srs.service.ZIP_CODE_KEY
 class RAdapterTest () {
 
     val resourceLoader:ResourceLoader = DefaultResourceLoader()
-    val modelFileService:ModelFileUpdateService = ModelFileUpdateService(resourceLoader, "classpath:/model_with_subdiag/*", "classpath:/model_without_subdiag/*")
+    val modelFileService:ModelFileUpdateService = ModelFileUpdateService(resourceLoader, "classpath:/models_3_0/*")
 
     @Before
     fun setup() {
@@ -33,25 +33,24 @@ class RAdapterTest () {
 
         val extraParams = mapOf(
                 LOCATION_KEY to mapOf(
-                        REGION_KEY to "VAST",
+                        REGION_KEY to "Vast",
                         ZIP_CODE_KEY to "44235"
                 ),
                 QUESTIONS_AND_ANSWERS_KEY to mapOf(
-                        "SA_1_gross" to "(0,90]",
-                        "SA_ExtentFirst" to "1",
-                        "SA_SyssStart_fct" to "not_unemp",
-                        "birth_cat_fct" to "SW",
-                        "any_visits_-365_+6_Mental_notF43" to "0",
-                        "comorbidity" to "no",
-                        "any_visits_-6_+15_F43_subdiag_group" to "Annat"
+                    "SA_ExtentFirst" to "1",
+                    "SA_SyssStart_fct" to "not_unemp",
+                    "SA_1_gross" to "(0,90]",
+                    "comorbidity" to "no",
+                    "birth_cat_fct" to "SW",
+                    "edu_cat_fct" to "No university"
                 )
         )
 
         val prediction = rAdapter.getPrediction(person, CertDiagnosis("cert-id-1","F438A"), extraParams,10)
 
-        assertEquals(Diagnosprediktionstatus.DIAGNOSKOD_PA_HOGRE_NIVA, prediction.status)
-        assertEquals("F438", prediction.diagnosis)
-        assertEquals(0.41, prediction.prediction)
+        assertEquals(Diagnosprediktionstatus.OK, prediction.status)
+        assertEquals("F438A", prediction.diagnosis)
+        assertEquals(0.65, prediction.prediction)
 
     }
 }

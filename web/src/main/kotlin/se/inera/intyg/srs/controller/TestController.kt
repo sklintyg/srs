@@ -41,7 +41,7 @@ class TestController(val consentModule: ConsentModule,
     data class PredictionResponse(val answer: String, val predictionId: String, val default: Boolean)
 
     data class DiagnosisRequest(val diagnosisId: String, val prevalence: Double, val forSubdiags: Boolean,
-                                val questions: List<PredictionQuestion>, val modelVersion:String = "2.2")
+                                val questions: List<PredictionQuestion>, val modelVersion:String = "3.0")
 
     data class ModelRequest(val x99v0: Boolean, val x9900v0: Boolean, val x99v1: Boolean)
 

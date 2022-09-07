@@ -5,8 +5,10 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val localBuild = project.gradle.startParameter.taskNames.contains("bootRun")
 var isIt:Boolean? = false;
+var isLocal:Boolean? = false;
 ext {
     isIt = System.getProperty("env")?.equals("it")
+    isLocal = System.getProperty("env")?.equals("local")
 }
 var port:String? = System.getProperty("port")?:"8080"
 
@@ -111,6 +113,12 @@ tasks {
                     "-Djava.library.path=/usr/local/lib/R/3.6/site-library/rJava/jri",
                     "-Dloader.path=WEB-INF/lib-provided,WEB-INF/lib,WEB-INF/classes",
                     "-Dserver.port=${port}")
+        } else if (isLocal == true) {
+            jvmArgs = listOf(
+                "-Dspring.profiles.active=runtime, local",
+                "-Djava.library.path=/usr/local/lib/R/3.6/site-library/rJava/jri",
+                "-Dloader.path=WEB-INF/lib-provided,WEB-INF/lib,WEB-INF/classes",
+                "-Dserver.port=${port}")
         } else {
             jvmArgs = listOf(
                     "-Dspring.profiles.active=runtime",

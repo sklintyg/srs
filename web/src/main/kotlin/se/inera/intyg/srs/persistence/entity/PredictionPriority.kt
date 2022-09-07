@@ -27,4 +27,9 @@ class PredictionPriority(val priority: Int,
                          @Column(name = "modified", updatable = false)
                          @Temporal(javax.persistence.TemporalType.TIMESTAMP)
                          var modified: Date = Date()
-)
+) {
+  override fun toString(): String {
+    return "PredictionPriority(id=$id, priority='$priority', modelVersion='$modelVersion', forSubDiagnosis='$forSubdiagnosis', " +
+        "created='$created', modified='$modified', question='$question')"
+  }
+}

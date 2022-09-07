@@ -14,26 +14,17 @@ import java.io.File
  */
 @Component
 class ModelFileUpdateService(val resourceLoader: ResourceLoader,
-        @Value("\${model.location-pattern}") val locationPattern: String,
-        @Value("\${model.location-pattern-without-subdiag}") val locationPatternWithoutSubdiag:String ) {
+        @Value("\${model.location-pattern}") val locationPattern: String) {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
     private val DATA_FILE_EXTENSION = ".rds"
 
     private var models = mapOf<String, List<Model>>()
-    private var modelsWithoutSubdiag = mapOf<String, List<Model>>()
 
     init {
         update()
     }
-
-    fun modelForCodeWithoutSubdiag(currentId: String, version: String? = null): Model? =
-        if (version == null) {
-            modelsWithoutSubdiag[currentId]?.maxBy { it.version }
-        } else {
-            modelsWithoutSubdiag[currentId]?.find { it.version == version }
-        }
 
     fun modelForCode(currentId: String, version: String? = null): Model? =
         if (version == null) {
@@ -51,22 +42,12 @@ class ModelFileUpdateService(val resourceLoader: ResourceLoader,
         models = collect(Sequence { resources.iterator() })
     }
 
-    fun applyModelsWithoutSubdiag(resources: List<Resource>) {
-        log.info("Applying models without sub diags: {}", resources)
-        modelsWithoutSubdiag = collect(Sequence { resources.iterator() })
-    }
-
     private final fun doUpdate(locationPattern: String) {
         log.info("Performing model update... locationPattern: {}", locationPattern)
         models = collect(Sequence {
             ResourcePatternUtils.getResourcePatternResolver(resourceLoader).getResources(locationPattern).iterator()
         })
         log.info("Models found {}", models.map {(k) -> k })
-        modelsWithoutSubdiag = collect(Sequence {
-            ResourcePatternUtils.getResourcePatternResolver(resourceLoader).getResources(locationPatternWithoutSubdiag).iterator()
-        })
-        log.info("ModelsWithoutSubdiag found {}", modelsWithoutSubdiag.map {(k) -> k })
-
     }
 
     private fun collect(sequence: Sequence<Resource>): Map<String, List<Model>> {

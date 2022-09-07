@@ -3,9 +3,9 @@ package se.inera.intyg.srs.build
 object Config {
 
     object Jvm {
-        const val sourceCompatibility = "1.8"
-        const val targetCompatibility = "1.8"
-        const val kotlinJvmTarget = "1.8"
+        const val sourceCompatibility = "11"
+        const val targetCompatibility = "11"
+        const val kotlinJvmTarget = "11"
         const val encoding = "UTF-8"
     }
 

@@ -138,7 +138,6 @@ class TestModule(private val consentRepo: ConsentRepository,
         }
 
         modelFileUpdateService.applyModels(resources)
-        modelFileUpdateService.applyModelsWithoutSubdiag(resources)
     }
 
     fun getIntyg(intygsId: String) =

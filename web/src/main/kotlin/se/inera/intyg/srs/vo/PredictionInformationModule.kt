@@ -73,17 +73,12 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
             val diagnosis = diagnosisService.getModelForDiagnosis(incomingCertDiagnosis.code, currentModelVersion)
             log.debug("Got diagnosis $diagnosis")
 
-            if (diagnosis != null) {
-                diagnosPrediktion.diagnos = buildDiagnos(diagnosis.diagnosisId)
-                diagnosPrediktion.prevalens = diagnosis.prevalence
-            }
-
             log.debug("certificateId ${incomingCertDiagnosis.certificateId} diagnosis ${diagnosis?.diagnosisId}")
             diagnosPrediktion.risksignal = Risksignal()
             // Fill extension certificates (index>0) with historic entries and fill the current with historic or calculated risk
             if ((!predictIndividualRisk || index > 0) && incomingCertDiagnosis.certificateId.isNotEmpty() && diagnosis != null) {
                 log.trace("Do not predict individual risk for index:$index, looking for historic entries on the certificate/diagnosis")
-                fillWithHistoricPrediction(diagnosPrediktion, incomingCertDiagnosis, diagnosis, incomingCurrentDiagnosis)
+                fillWithHistoricPrediction(diagnosPrediktion, incomingCertDiagnosis, incomingCurrentDiagnosis)
             } else if (index == 0 && diagnosis != null && predictIndividualRisk) {
                 log.trace("Predict individual risk, we got a diagnosis and got correct prediction params")
                 fillWithCalculatedPrediction(diagnosPrediktion, person, incomingCertDiagnosis, extraParams, diagnosis, daysIntoSickLeave)
@@ -91,12 +86,38 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
                     diagnosis?.prevalence?.toString() ?: "", person.sex.name, person.ageCategory,
                     diagnosPrediktion?.sannolikhetOvergransvarde?.toString() ?: "", diagnosPrediktion.risksignal.riskkategori,
                     diagnosPrediktion?.diagnosprediktionstatus?.toString() ?: "", incomingCertDiagnosis.certificateId, careUnitHsaId)
-
             } else {
                 log.trace("No consent was given, no prediction was requested or incorrect combination of parameters, " +
                         "responding with prediction NOT_OK")
                 diagnosPrediktion.diagnosprediktionstatus = Diagnosprediktionstatus.NOT_OK
                 diagnosPrediktion.risksignal.riskkategori = 0
+                log.debug("diagnosPrediktion.diagnos 5 ($index): ${diagnosPrediktion.diagnos?.code}");
+            }
+
+            // Construct to get correct prevalence and also to display diagnosis code with prevalence (e.g. M79)
+            // in the title of webcert when no prediction ha been made
+            // Prediction can be made on M797 so if we have done a prediction M797 should be shown instead
+            // Example of current behaviour for M797:
+            // For new certificates. Show "the risk is regarding M79" before any individual risk is calculated.
+            // If a historic calculation is done on M797, show "the risk is regarding M797"
+            // If an individual prediction is done at this request, show "the risk is regarding M797"
+            // For renewals: Show "the risk is regarding M79" even if we have an earlier calculation (* this might seem a bit strange,
+            // M79 is describing the prevalence in this case and it is unclear if it points at the risk or the prevalence)
+            // If a new calculation is done, show "the risk is regarding M797", if a renewed calculation exists when loading also show
+            // "the risk regards M797"
+
+            if (diagnosPrediktion.prevalens == null || diagnosPrediktion.prevalens <= 0f) {
+                val limitedDiagnosis = diagnosisService.getModelForDiagnosis(incomingCertDiagnosis.code, currentModelVersion, true);
+                log.debug("Got limited diagnosis $limitedDiagnosis");
+                if (limitedDiagnosis != null) {
+                    diagnosPrediktion.prevalens = limitedDiagnosis.prevalence;
+                    log.debug("diagnosPrediktion.diagnos 6 ($index): ${diagnosPrediktion.diagnos?.code}");
+                    if (diagnosPrediktion.diagnos == null) {
+                        log.debug("Updating diagnosis to $diagnosPrediktion.diagnosId");
+                        diagnosPrediktion.diagnos = buildDiagnos(limitedDiagnosis.diagnosisId);
+                        log.debug("diagnosPrediktion.diagnos 7 ($index): ${diagnosPrediktion.diagnos?.code}");
+                    }
+                }
             }
 
             diagnosPrediktion.risksignal.beskrivning =
@@ -119,7 +140,7 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
         if (isCorrectPredictionParamsAgainstDiagnosis(diagnosisPredictionModel, decoratedExtraParams, incomingCertDiagnosis)) {
 
             var calculatedPrediction: Prediction? =
-                rAdapter.getPrediction(person, incomingCertDiagnosis, decoratedExtraParams, daysIntoSickLeave)
+                rAdapter.getPrediction(person, incomingCertDiagnosis, decoratedExtraParams, daysIntoSickLeave) // Version?
             diagnosPrediktionToPopulate.diagnosprediktionstatus = calculatedPrediction?.status
             diagnosPrediktionToPopulate.berakningstidpunkt = calculatedPrediction?.timestamp
             diagnosPrediktionToPopulate.sjukskrivningsdag = calculatedPrediction?.daysIntoSickLeave
@@ -183,31 +204,12 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
      * @param certificateId the certificate which had an earlier risk prediction
      * @param diagnosis Diagnosis data entity
      */
-    private fun fillWithHistoricPrediction(diagnosPrediktion: Diagnosprediktion, incomingCertDiagnosis: CertDiagnosis, predictionDiagnosis:PredictionDiagnosis,
-                                           incomingCurrentDiagnosis: String) {
+    private fun fillWithHistoricPrediction(diagnosPrediktion: Diagnosprediktion, incomingCertDiagnosis: CertDiagnosis, incomingCurrentDiagnosis: String) {
         log.debug("fillWithHistoricPrediction(certId: ${incomingCertDiagnosis.certificateId}, diagnosis: ${incomingCertDiagnosis.code})")
         // Check if we have a historic prediction
-        var diagToFind = incomingCurrentDiagnosis;
-        var historicProbabilities: List<Probability> = listOf();
-        if (diagToFind.length == 3) { // e.g. S52
-            historicProbabilities = probabilityRepo.findByCertificateIdAndDiagnosisOrderByTimestampDesc(incomingCertDiagnosis.certificateId, diagToFind)
-        } else { // e.g. F438a -> try F438a then F438 and stop (if 4 is the resolution)
-            while (diagToFind.length >= predictionDiagnosis.resolution?:3 && historicProbabilities.isEmpty()) {
-                log.debug("Trying to find historic prediction on diagnosis code ${diagToFind}, " +
-                    "predictionDiagnosis resolution: ${predictionDiagnosis.resolution}, ")
-                historicProbabilities = probabilityRepo.findByCertificateIdAndDiagnosisOrderByTimestampDesc(incomingCertDiagnosis.certificateId, diagToFind)
-                diagToFind = diagToFind.dropLast(1);
-            }
-            if (historicProbabilities.isEmpty() && diagToFind.length == 3) {
-                historicProbabilities = probabilityRepo.findByCertificateIdAndDiagnosisOrderByTimestampDesc(incomingCertDiagnosis.certificateId, diagToFind)
-                if (historicProbabilities.isNotEmpty() && historicProbabilities.get(0).predictionModelVersion != "2.1") {
-                    // if we found historic probabilites on 3 character responses here it might be cause the resolution in model version 2.2 for this diagnosis is 4
-                    // if the model version is less than 2.2 (i.e. 2.1) it is ok to respond with those since version 2.1 didn't have resolution
-                    // thus... here it is the other way around, since the found probabilities isnät 2.1 we assign an empty list again
-                    historicProbabilities = listOf();
-                }
-            }
-        }
+        val historicProbabilities: List<Probability> =
+            probabilityRepo.findByCertificateIdAndDiagnosisOrderByTimestampDesc(incomingCertDiagnosis.certificateId, incomingCurrentDiagnosis)
+
         if (historicProbabilities.isNotEmpty()) {
             val historicProbability = historicProbabilities.first()
             log.trace("Found historic entry $historicProbability")
