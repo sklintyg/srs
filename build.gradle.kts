@@ -31,13 +31,13 @@ allprojects {
     repositories {
         mavenLocal()
         maven {
-            url = uri("https://build-inera.nordicmedtest.se/nexus/repository/releases/")
+            url = uri("https://nexus.drift.inera.se/repository/it-public/")
             mavenContent {
                 releasesOnly()
             }
         }
         maven {
-            url = uri("https://build-inera.nordicmedtest.se/nexus/repository/snapshots/")
+            url = uri("https://nexus.drift.inera.se/repository/it-public/")
             mavenContent {
                 snapshotsOnly()
             }
@@ -49,10 +49,10 @@ allprojects {
     publishing {
         repositories {
             maven {
-                url = uri("https://build-inera.nordicmedtest.se/nexus/repository/releases/")
+                url = uri("https://nexus.drift.inera.se/repository/maven-releases/")
                 credentials {
-                    username = System.getProperty("nexusUsername")
-                    password = System.getProperty("nexusPassword")
+                    username = System.getProperty("ineraNexusUsername")
+                    password = System.getProperty("ineraNexusPassword")
                 }
             }
         }
