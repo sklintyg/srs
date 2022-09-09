@@ -30,8 +30,7 @@ class PrediktionIT : BaseIntegrationTest() {
                 .body("$PREDIKTION_ROOT.diagnosprediktionstatus", equalTo("OK"))
     }
 
-    @Test
-    @Ignore
+//    @Test
     fun testPredictionModelv3() {
         setModels("m797v3")
         val questions = listOf(
