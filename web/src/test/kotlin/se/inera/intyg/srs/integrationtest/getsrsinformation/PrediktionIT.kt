@@ -4,6 +4,7 @@ import io.restassured.RestAssured.given
 import io.restassured.http.ContentType
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
+import org.junit.Ignore
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
 import se.inera.intyg.srs.controller.TestController
@@ -30,6 +31,7 @@ class PrediktionIT : BaseIntegrationTest() {
     }
 
     @Test
+    @Ignore
     fun testPredictionModelv3() {
         setModels("m797v3")
         val questions = listOf(

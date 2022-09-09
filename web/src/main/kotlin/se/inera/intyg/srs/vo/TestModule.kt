@@ -137,7 +137,7 @@ class TestModule(private val consentRepo: ConsentRepository,
             load("PM_X9900_v0.0.rds")
         }
         if (models.m797v3) {
-            load("../models_3_0/Model_M797_v3.0.rds")
+            load("Model_M797_v3.0.rds")
         }
 
         modelFileUpdateService.applyModels(resources)
