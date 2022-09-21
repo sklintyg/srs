@@ -78,7 +78,7 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
             // Fill extension certificates (index>0) with historic entries and fill the current with historic or calculated risk
             if ((!predictIndividualRisk || index > 0) && incomingCertDiagnosis.certificateId.isNotEmpty() && diagnosis != null) {
                 log.trace("Do not predict individual risk for index:$index, looking for historic entries on the certificate/diagnosis")
-                fillWithHistoricPrediction(diagnosPrediktion, incomingCertDiagnosis, incomingCurrentDiagnosis)
+                fillWithHistoricPrediction(diagnosPrediktion, incomingCertDiagnosis, diagnosis, incomingCurrentDiagnosis)
             } else if (index == 0 && diagnosis != null && predictIndividualRisk) {
                 log.trace("Predict individual risk, we got a diagnosis and got correct prediction params")
                 fillWithCalculatedPrediction(diagnosPrediktion, person, incomingCertDiagnosis, extraParams, diagnosis, daysIntoSickLeave)
@@ -201,15 +201,52 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
     /**
      * Looks for a historic prediction and fills the result object diagnosPrediktion
      * @param diagnosPrediktion The result object to fill with historic prediction data
-     * @param certificateId the certificate which had an earlier risk prediction
-     * @param diagnosis Diagnosis data entity
+     * @param incomingCertDiagnosis the diagnosis of the certificate on this request entry, i.e. the incoming diagnosis on the historic certificate
+     * @param predictionDiagnosis the prediction diagnosis (prediction model pointer) corresponding to this historic prediction
+     * @param incomingCurrentDiagnosis The non historic diagnosis (i.e. index 0 in the WS request). The one we are currently making predictions for.
      */
-    private fun fillWithHistoricPrediction(diagnosPrediktion: Diagnosprediktion, incomingCertDiagnosis: CertDiagnosis, incomingCurrentDiagnosis: String) {
-        log.debug("fillWithHistoricPrediction(certId: ${incomingCertDiagnosis.certificateId}, diagnosis: ${incomingCertDiagnosis.code})")
+    private fun fillWithHistoricPrediction(diagnosPrediktion: Diagnosprediktion, incomingCertDiagnosis: CertDiagnosis, predictionDiagnosis:PredictionDiagnosis,
+                                           incomingCurrentDiagnosis: String) {
+        log.debug("fillWithHistoricPrediction(certId: ${incomingCertDiagnosis.certificateId}, diagnosis: ${incomingCertDiagnosis.code}, " +
+            "currentDiagnosis/diagnosisToFind: ${incomingCurrentDiagnosis})")
+        val currentDiagnosis = diagnosisService.getModelForDiagnosis(incomingCurrentDiagnosis, currentModelVersion);
         // Check if we have a historic prediction
-        val historicProbabilities: List<Probability> =
-            probabilityRepo.findByCertificateIdAndDiagnosisOrderByTimestampDesc(incomingCertDiagnosis.certificateId, incomingCurrentDiagnosis)
+        var diagToFind = incomingCurrentDiagnosis;
+        var historicProbabilities: List<Probability> = listOf();
+        // ex: F438a -> try F438a then F438 and stop (if F438 is the prediction diagnosis, don't try to find F43 if the current prediction diagnosis is longer)
+        var currentHistoricVersion:String?;
+        var minSearchLength = 3;
+        while (diagToFind.length >= minSearchLength && historicProbabilities.isEmpty()) {
+            log.debug("Trying to find historic prediction on diagnosis code ${diagToFind}, " +
+                "minimum diagnosis length: ${currentDiagnosis?.diagnosisId?.length}, ")
+            historicProbabilities = probabilityRepo.findByCertificateIdAndDiagnosisOrderByTimestampDesc(incomingCertDiagnosis.certificateId, diagToFind)
+            diagToFind = diagToFind.dropLast(1);
 
+            if (historicProbabilities.isNotEmpty()) {
+                currentHistoricVersion = historicProbabilities.first()?.predictionModelVersion
+                // if the latest prediction on this certificate was done with 3.0
+                if (currentHistoricVersion == "3.0") {
+                    minSearchLength = currentDiagnosis?.diagnosisId?.length?:4 // Then we have switched to using 3.0
+                } else {
+                    minSearchLength = 4; // else use 4 as min search length for version 2.2, since we have already checked length 3 above
+                }
+                log.debug("Found historic prediction that used model ${historicProbabilities.first().diagnosis}, minSearchLength is ${minSearchLength}")
+                if (historicProbabilities.first().diagnosis.length < minSearchLength) {
+                    log.debug("The historic prediction was done with a model of less diagnosis code length than the minimum allowed, skipping the result")
+                    historicProbabilities = listOf()
+                }
+            }
+        }
+        if (historicProbabilities.isEmpty() && diagToFind.length == 3) {
+            historicProbabilities = probabilityRepo.findByCertificateIdAndDiagnosisOrderByTimestampDesc(incomingCertDiagnosis.certificateId, diagToFind)
+            if (historicProbabilities.isNotEmpty() && historicProbabilities.get(0).predictionModelVersion != "2.1") {
+                // if we found historic probabilites on 3 character responses here it might be cause the resolution
+                // (resolution is replaced by prediction diagnosis length from v3.0) in model version 2.2 for this diagnosis is 4
+                // if the model version is less than 2.2 (i.e. 2.1) it is ok to respond with those since version 2.1 didn't have resolution
+                // thus... here it is the other way around, since the found probabilities isn't 2.1 we assign an empty list again
+                historicProbabilities = listOf();
+            }
+        }
         if (historicProbabilities.isNotEmpty()) {
             val historicProbability = historicProbabilities.first()
             log.trace("Found historic entry $historicProbability")
