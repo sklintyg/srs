@@ -214,7 +214,7 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
         var diagToFind = incomingCurrentDiagnosis;
         var historicProbabilities: List<Probability> = listOf();
         // ex: F438a -> try F438a then F438 and stop (if F438 is the prediction diagnosis, don't try to find F43 if the current prediction diagnosis is longer)
-        var currentHistoricVersion:String?;
+        var foundHistoricVersion:String?;
         var minSearchLength = 3;
         while (diagToFind.length >= minSearchLength && historicProbabilities.isEmpty()) {
             log.debug("Trying to find historic prediction on diagnosis code ${diagToFind}, " +
@@ -223,12 +223,15 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
             diagToFind = diagToFind.dropLast(1);
 
             if (historicProbabilities.isNotEmpty()) {
-                currentHistoricVersion = historicProbabilities.first()?.predictionModelVersion
+                foundHistoricVersion = historicProbabilities.first()?.predictionModelVersion
                 // if the latest prediction on this certificate was done with 3.0
-                if (currentHistoricVersion == "3.0") {
-                    minSearchLength = currentDiagnosis?.diagnosisId?.length?:4 // Then we have switched to using 3.0
+                if (foundHistoricVersion == "3.0") {
+                    minSearchLength = currentDiagnosis?.diagnosisId?.length?:3 // Then we have switched to using 3.0
+                } else if (foundHistoricVersion == "2.2") {
+                    val oldDiagnosis = diagnosisService.getModelForDiagnosis(incomingCurrentDiagnosis, "2.2");
+                    minSearchLength = oldDiagnosis?.resolution?:3
                 } else {
-                    minSearchLength = 4; // else use 4 as min search length for version 2.2, since we have already checked length 3 above
+                    minSearchLength = 3
                 }
                 log.debug("Found historic prediction that used model ${historicProbabilities.first().diagnosis}, minSearchLength is ${minSearchLength}")
                 if (historicProbabilities.first().diagnosis.length < minSearchLength) {

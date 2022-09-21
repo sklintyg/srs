@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.ArgumentMatchers.anyString
 import org.mockito.stubbing.Answer
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v3.Diagnosprediktion
 import se.inera.intyg.clinicalprocess.healthcond.srs.getsrsinformation.v3.Diagnosprediktionstatus
@@ -20,7 +19,6 @@ import se.inera.intyg.srs.persistence.entity.PredictionPriority
 import se.inera.intyg.srs.persistence.entity.PredictionQuestion
 import se.inera.intyg.srs.persistence.entity.PredictionResponse
 import se.inera.intyg.srs.persistence.entity.Probability
-import se.inera.intyg.srs.persistence.repository.DiagnosisRepository
 import se.inera.intyg.srs.persistence.repository.ProbabilityRepository
 import se.inera.intyg.srs.service.DiagnosisServiceImpl
 import se.inera.intyg.srs.service.LOCATION_KEY
@@ -178,6 +176,17 @@ class PredictionInformationModuleTest {
         val diagnosPrediktioner:List<Diagnosprediktion>? = info[testPerson]
         val diagnosPrediktion:Diagnosprediktion = diagnosPrediktioner!![0]
         with (diagnosPrediktion) {
+            println("inkommandeDiagnos: $inkommandediagnos \n" +
+                "prevalens: $prevalens \n" +
+                "sannolikhetOverGransvarde: $sannolikhetOvergransvarde \n" +
+                "forklaringsinformation: $forklaringsinformation \n" +
+                "risksignal.beskrivning: ${risksignal.beskrivning} \n" +
+                "risksignal.riskkategori: ${risksignal.riskkategori} \n" +
+                "diagnosPrediktionsStatus:  $diagnosprediktionstatus \n" +
+                "lakarbedomningRisk: $lakarbedomningRisk \n" +
+                "prediktionsfaktorer: $prediktionsfaktorer \n" +
+                "berakningstidpunkt: $berakningstidpunkt")
+
             assertEquals("F438A", inkommandediagnos.code)
             assertEquals("1.2.752.116.1.1.1.1.3", inkommandediagnos.codeSystem)
             assertEquals(0.32, prevalens)
@@ -194,17 +203,6 @@ class PredictionInformationModuleTest {
             assertEquals("VAST", prediktionsfaktorer.fragasvar[0].svarsidSrs)
             assertEquals("frageId-1", prediktionsfaktorer.fragasvar[1].frageidSrs)
             assertEquals("svarsId-1a", prediktionsfaktorer.fragasvar[1].svarsidSrs)
-
-            println("inkommandeDiagnos: $inkommandediagnos \n" +
-                    "prevalens: $prevalens \n" +
-                    "sannolikhetOverGransvarde: $sannolikhetOvergransvarde \n" +
-                    "forklaringsinformation: $forklaringsinformation \n" +
-                    "risksignal.beskrivning: ${risksignal.beskrivning} \n" +
-                    "risksignal.riskkategori: ${risksignal.riskkategori} \n" +
-                    "diagnosPrediktionsStatus:  $diagnosprediktionstatus \n" +
-                    "lakarbedomningRisk: $lakarbedomningRisk \n" +
-                    "prediktionsfaktorer: $prediktionsfaktorer \n" +
-                    "berakningstidpunkt: $berakningstidpunkt")
         }
     }
 
