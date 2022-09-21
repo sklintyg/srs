@@ -38,12 +38,13 @@ class DiagnosisServiceImpl(val diagnosisRepository: DiagnosisRepository) {
             currentId = currentId.substring(0,3);
         }
 
-        log.debug("getModelForDiagnosis will look for model for $diagnosisId")
+        log.debug("getModelForDiagnosis will look for model for $diagnosisId with version $modelVersion, forPrevalence: $forPrevalence")
         if (currentId.length > MAX_ID_POSITIONS) {
             return null
         }
 
         while (currentId.length > MIN_ID_POSITIONS) {
+            log.debug("Looking for currentId: $currentId")
             val diagnosis = diagnosisRepository.findOneByDiagnosisIdAndModelVersionAndForSubdiagnosis(currentId, modelVersion, true)
             if (diagnosis != null) {
                 log.debug("getModelForDiagnosis found model for $currentId with subdiagnosis")
@@ -53,7 +54,9 @@ class DiagnosisServiceImpl(val diagnosisRepository: DiagnosisRepository) {
             currentId = currentId.substring(0, currentId.length - 1)
         }
         // We didn't find any model and we are at the minimum length
-        val diagnosis = diagnosisRepository.findOneByDiagnosisIdAndModelVersionAndForSubdiagnosis(currentId, modelVersion, true)
+        log.debug("didn't find any model and we are at the minimum length")
+        val forSubDiagnosis = modelVersion=="3.0" // 3.0 has forSubDiags true always
+        val diagnosis = diagnosisRepository.findOneByDiagnosisIdAndModelVersionAndForSubdiagnosis(currentId, modelVersion, forSubDiagnosis)
         return if (diagnosis != null) {
             diagnosis
         } else {

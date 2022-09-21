@@ -227,7 +227,7 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
                 // if the latest prediction on this certificate was done with 3.0
                 if (foundHistoricVersion == "3.0") {
                     minSearchLength = currentDiagnosis?.diagnosisId?.length?:3 // Then we have switched to using 3.0
-                } else if (foundHistoricVersion == "2.2" && historicProbabilities.first().diagnosis != currentDiagnosis?.diagnosisId) {
+                } else if (foundHistoricVersion == "2.2") {
                     val oldDiagnosis = diagnosisService.getModelForDiagnosis(incomingCurrentDiagnosis, "2.2");
                     minSearchLength = oldDiagnosis?.resolution?:3
                 } else {
