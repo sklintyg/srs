@@ -153,7 +153,7 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
                 diagnosPrediktionToPopulate.diagnos = buildDiagnos(calculatedPrediction.diagnosis)
                 diagnosPrediktionToPopulate.risksignal.riskkategori = calculateRisk(calculatedPrediction.prediction!!)
                 persistProbability(diagnosPrediktionToPopulate, incomingCertDiagnosis.certificateId,
-                    diagnosisPredictionModel.modelVersion, extraParams) // we only want to persist user input, not the decorated extraParams
+                    diagnosisPredictionModel, extraParams) // we only want to persist user input, not the decorated extraParams
             } else {
                 diagnosPrediktionToPopulate.risksignal.riskkategori = 0
             }
@@ -355,10 +355,9 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
 
     }
 
-    private fun persistProbability(diagnosPrediction: Diagnosprediktion, certificateId: String, predictionModelVersion: String,
+    private fun persistProbability(diagnosPrediction: Diagnosprediktion, certificateId: String, predictionModel:PredictionDiagnosis,
                                    extraParams: Map<String, Map<String, String>>) {
         log.debug("Persisting probability for certificateId: $certificateId")
-        val isSubdiag = diagnosPrediction.diagnos.code.length>3;
         var probability = Probability(certificateId,
                 diagnosPrediction.sannolikhetOvergransvarde,
                 diagnosPrediction.risksignal.riskkategori,
@@ -367,7 +366,7 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
                 diagnosPrediction.diagnos.codeSystem,
                 diagnosPrediction.diagnos.code,
                 diagnosPrediction.diagnosprediktionstatus.value(),
-                predictionModelVersion,
+                predictionModel.modelVersion,
                 LocalDateTime.now(),
                 extraParams[LOCATION_KEY]?.get(REGION_KEY),
                 extraParams[LOCATION_KEY]?.get(ZIP_CODE_KEY),
@@ -377,7 +376,7 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
         extraParams[QUESTIONS_AND_ANSWERS_KEY]?.forEach { q, r ->
             log.trace("question: $q, response: $r")
             val predictionResponse = responseRepo.findPredictionResponseByQuestionAndResponseAndModelVersionAndForSubdiagnosis(q, r,
-                predictionModelVersion, isSubdiag)
+                predictionModel.modelVersion, predictionModel.forSubdiagnosis)
             log.debug("Found predictionResponse $predictionResponse")
             if (predictionResponse != null) {
                 var patientAnswer = patientAnswerRepo.findByProbabilityAndPredictionResponse(probability, predictionResponse)
