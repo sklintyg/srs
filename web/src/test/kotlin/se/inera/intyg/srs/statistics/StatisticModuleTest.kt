@@ -2,7 +2,7 @@ package se.inera.intyg.srs.statistics
 
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
-import org.junit.Assert.assertEquals
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Diagnosstatistik
@@ -68,7 +68,7 @@ class StatisticModuleTest {
     fun multipleDiagnoses() {
         val result = doGetInfo(listOf(DIAGNOSIS_A12, DIAGNOSIS_B12))
 
-        assertEquals("Wrong number of entries in result", 2, result.size)
+        assertEquals(2, result.size, "Wrong number of entries in result")
         assertEquals(DIAGNOSIS_A12, result.get(0).diagnos.code)
         assertEquals(BigInteger.valueOf(100), result.get(0).data[0].individer)
         assertEquals(Statistikstatus.OK, result.get(0).statistikstatus)

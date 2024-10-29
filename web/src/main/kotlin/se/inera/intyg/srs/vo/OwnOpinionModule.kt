@@ -7,7 +7,7 @@ import se.inera.intyg.srs.persistence.entity.Probability
 import se.inera.intyg.srs.persistence.repository.OwnOpinionRepository
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.ResultCodeEnum
 import java.time.LocalDateTime
-import javax.transaction.Transactional
+import jakarta.transaction.Transactional
 
 @Service
 open class OwnOpinionModule(private val ownOpinionRepo: OwnOpinionRepository) {

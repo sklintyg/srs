@@ -3,13 +3,13 @@ package se.inera.intyg.srs.persistence.entity
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
 import java.util.*
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
-import javax.persistence.ManyToOne
-import javax.persistence.Temporal
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import jakarta.persistence.ManyToOne
+import jakarta.persistence.Temporal
 
 @Entity
 class PredictionPriority(val priority: Int,
@@ -21,11 +21,11 @@ class PredictionPriority(val priority: Int,
                          val id: Long = -1,
                          @CreationTimestamp
                          @Column(name = "created", updatable = false)
-                         @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+                         @Temporal(jakarta.persistence.TemporalType.TIMESTAMP)
                          var created: Date = Date(),
                          @UpdateTimestamp
                          @Column(name = "modified", updatable = false)
-                         @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+                         @Temporal(jakarta.persistence.TemporalType.TIMESTAMP)
                          var modified: Date = Date()
 ) {
   override fun toString(): String {

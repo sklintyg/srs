@@ -1,8 +1,5 @@
 import io.spring.gradle.dependencymanagement.DependencyManagementPlugin
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import se.inera.intyg.IntygPluginCheckstyleExtension
-import se.inera.intyg.JavaVersion
-import se.inera.intyg.TagReleaseTask
 import se.inera.intyg.srs.build.Config.Dependencies
 import se.inera.intyg.srs.build.Config.Jvm
 import se.inera.intyg.srs.build.Config.TestDependencies
@@ -10,10 +7,8 @@ import se.inera.intyg.srs.build.Config.TestDependencies
 plugins {
     kotlin("jvm")
     `kotlin-dsl`
-    maven
     `maven-publish`
 
-    id("se.inera.intyg.plugin.common") apply false
     id("io.spring.dependency-management")
 }
 
@@ -43,7 +38,6 @@ allprojects {
             }
         }
         mavenCentral()
-        jcenter()
     }
 
     publishing {
@@ -59,21 +53,11 @@ allprojects {
     }
 }
 
-apply(plugin = "se.inera.intyg.plugin.common")
-
 subprojects {
-    apply(plugin = "org.gradle.maven")
     apply(plugin = "org.gradle.maven-publish")
-    apply(plugin = "se.inera.intyg.plugin.common")
     apply(plugin = "kotlin")
 
     apply<DependencyManagementPlugin>()
-
-    configure<IntygPluginCheckstyleExtension> {
-        javaVersion = JavaVersion.JAVA11
-        showViolations = true
-        ignoreFailures = false
-    }
 
     dependencyManagement {
         imports {
@@ -99,18 +83,15 @@ subprojects {
         implementation("com.google.guava:guava:${Dependencies.guavaVersion}")
 
         testImplementation("org.springframework.boot:spring-boot-starter-test")
-        testImplementation("org.junit.jupiter:junit-jupiter-api")
+        testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
+        testRuntimeOnly("org.junit.platform:junit-platform-launcher")
         testImplementation("org.junit.platform:junit-platform-runner") {
             exclude(module = "junit")
         }
         testImplementation("org.mockito:mockito-core:${TestDependencies.mockitoCoreVersion}")
-        // mockito-inline: To be able to mock final classes
-        testImplementation ("org.mockito:mockito-inline:${TestDependencies.mockitoCoreVersion}")
         testImplementation("org.mockito:mockito-junit-jupiter:${TestDependencies.mockitoCoreVersion}")
 
         testImplementation(kotlin("test"))
-
-        testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     }
 
     tasks {
@@ -130,12 +111,4 @@ subprojects {
             kotlinOptions.jvmTarget = Jvm.kotlinJvmTarget
         }
     }
-}
-
-tasks {
-    register<TagReleaseTask>("tagRelease")
-}
-
-dependencies {
-    subprojects.forEach { archives(it) }
 }

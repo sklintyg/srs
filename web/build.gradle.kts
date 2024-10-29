@@ -33,8 +33,12 @@ dependencies {
     implementation("org.nuiton.thirdparty:JRI:0.9-9")
     implementation("org.apache.poi:poi-ooxml:4.0.1")
 
-    runtime("com.h2database:h2")
-    runtime("mysql:mysql-connector-java")
+    implementation("org.springframework.boot:spring-boot-starter-logging")
+    implementation("co.elastic.logging:logback-ecs-encoder:1.6.0")
+    implementation("org.slf4j:slf4j-api")
+
+    runtimeOnly("com.h2database:h2")
+    runtimeOnly("mysql:mysql-connector-java:8.0.32")
 
     // Test dependencies
     testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0")
@@ -54,7 +58,7 @@ springBoot {
 tasks {
 
     val pathingJar by creating(Jar::class) {
-        dependsOn(configurations.runtime)
+        dependsOn(configurations.runtimeOnly)
         archiveAppendix.set("pathing")
 
         doFirst {
@@ -80,7 +84,8 @@ tasks {
     test {
         exclude("**/*IT*")
         testLogging.showStandardStreams = true
-        jvmArgs = listOf("-Djava.library.path=/usr/local/lib/R/3.6/site-library/rJava/jri")
+        jvmArgs = listOf("-Dspring.profiles.active=test",
+                        "-Djava.library.path=/opt/homebrew/lib/R/4.4/site-library/rJava/jri")
     }
 
     bootJar {
@@ -110,19 +115,19 @@ tasks {
         if (isIt == true) {
             jvmArgs = listOf(
                     "-Dspring.profiles.active=runtime, it",
-                    "-Djava.library.path=/usr/local/lib/R/3.6/site-library/rJava/jri",
-                    "-Dloader.path=WEB-INF/lib-provided,WEB-INF/lib,WEB-INF/classes",
+                    "-Djava.library.path=/opt/homebrew/lib/R/4.4/site-library/rJava/jri",
+                    "-Dloader.path=WEB-INF/lib-provided,WEB-INF/lib,WEB-INF/classes,/Users/rickardotvos/.sdkman/candidates/java/current/jre/lib/server",
                     "-Dserver.port=${port}")
         } else if (isLocal == true) {
             jvmArgs = listOf(
                 "-Dspring.profiles.active=runtime, local",
-                "-Djava.library.path=/usr/local/lib/R/3.6/site-library/rJava/jri",
+                "-Djava.library.path=/opt/homebrew/lib/R/4.4/site-library/rJava/jri",
                 "-Dloader.path=WEB-INF/lib-provided,WEB-INF/lib,WEB-INF/classes",
                 "-Dserver.port=${port}")
         } else {
             jvmArgs = listOf(
                     "-Dspring.profiles.active=runtime",
-                    "-Djava.library.path=/usr/local/lib/R/3.6/site-library/rJava/jri",
+                    "-Djava.library.path=/opt/homebrew/lib/R/4.4/site-library/rJava/jri",
                     "-Dloader.path=WEB-INF/lib-provided,WEB-INF/lib,WEB-INF/classes",
                     "-Dserver.port=${port}")
         }
@@ -130,13 +135,13 @@ tasks {
 }
 repositories {
     mavenCentral()
-    maven("http://nexus.drift.inera.se/repository/it-public/")
+    maven("https://nexus.drift.inera.se/repository/it-public/")
 }
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.kotlinOptions {
-    jvmTarget = "11"
+    jvmTarget = "21"
 }
 val compileTestKotlin: KotlinCompile by tasks
 compileTestKotlin.kotlinOptions {
-    jvmTarget = "11"
+    jvmTarget = "21"
 }

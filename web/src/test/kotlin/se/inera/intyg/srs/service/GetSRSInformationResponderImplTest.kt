@@ -1,7 +1,7 @@
 package se.inera.intyg.srs.service
 
 import com.nhaarman.mockitokotlin2.mock
-import org.junit.Assert.assertEquals
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 class GetSRSInformationResponderImplTest {

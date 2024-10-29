@@ -7,13 +7,12 @@ plugins {
     war
     `maven-publish`
 
-    kotlin("jvm") version "1.3.21"
-    kotlin("plugin.spring") version "1.3.21"
+    kotlin("jvm") version "2.0.20"
+    kotlin("plugin.spring") version "6.1.0"
     kotlin("plugin.jpa") version "1.3.21"
 
-    id("io.spring.dependency-management") version "1.0.7.RELEASE"
-    id("se.inera.intyg.plugin.common") version "1.0.62"
-    id("org.springframework.boot") version "2.1.3.RELEASE"
+    id("io.spring.dependency-management") version "1.1.6"
+    id("org.springframework.boot") version "3.3.4"
     id("org.ajoberstar.grgit") version "2.0.0"
     // FIXME: doesn't work anymore
     //id("org.jlleitschuh.gradle.ktlint") version "3.0.0"
@@ -26,7 +25,7 @@ group = "se.inera.intyg.srs"
 version = System.getProperty("buildVersion") ?: "0.0.1-SNAPSHOT"
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    kotlinOptions { jvmTarget = "1.8" }
+    kotlinOptions { jvmTarget = "21" }
 }
 
 val versionTask = task<VersionPropertyFileTask>("createVersionPropertyFile")
@@ -61,7 +60,7 @@ publishing {
     }
     repositories {
         maven {
-            url = maven("http://nexus.drift.inera.se/repository/it-public/")
+            url = maven("https://nexus.drift.inera.se/repository/it-public/")
             credentials {
                 username = System.getProperty("nexusUsername")
                 password = System.getProperty("nexusPassword")
@@ -71,7 +70,7 @@ publishing {
 }
 
 dependencies {
-    val kotlinVersion = "1.3.21"
+    val kotlinVersion = "2.0.20"
 
     compile(kotlin("stdlib", kotlinVersion))
     compile(kotlin("reflect", kotlinVersion))
@@ -85,19 +84,19 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web-services")
     implementation("org.apache.cxf:cxf-spring-boot-starter-jaxws:3.2.5")
 
-    compile("org.liquibase:liquibase-core:3.6.3")
-    compile("com.fasterxml.jackson.module:jackson-module-kotlin:2.9.4")
+    compile("org.liquibase:liquibase-core:4.27.0")
+    compile("com.fasterxml.jackson.module:jackson-module-kotlin:2.9.9")
     compile("org.nuiton.thirdparty:JRI:0.9-9")
-    compile("com.google.guava:guava:23.0")
+    compile("com.google.guava:guava:32.1.3-jre")
     compile("org.apache.poi:poi-ooxml:4.0.1")
 
-    runtime("com.h2database:h2")
-    runtime("mysql:mysql-connector-java")
+    runtimeOnly("com.h2database:h2")
+    runtimeOnly("mysql:mysql-connector-java:8.0.32")
 
     testCompile("org.springframework.boot:spring-boot-starter-test")
     testCompile("com.jayway.restassured:rest-assured:2.8.0")
     testCompile("com.nhaarman:mockito-kotlin-kt1.1:1.5.0")
-    testCompile("org.exparity:hamcrest-date:2.0.1")
+    testCompile("org.exparity:hamcrest-date:2.0.5")
 }
 
 repositories {

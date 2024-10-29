@@ -373,7 +373,7 @@ class PredictionInformationModule(val rAdapter: PredictionAdapter,
                 diagnosPrediction.sjukskrivningsdag)
         probability = probabilityRepo.save(probability)
         log.trace("extraParams: $extraParams")
-        extraParams[QUESTIONS_AND_ANSWERS_KEY]?.forEach { q, r ->
+        extraParams[QUESTIONS_AND_ANSWERS_KEY]?.forEach { (q, r) ->
             log.trace("question: $q, response: $r")
             val predictionResponse = responseRepo.findPredictionResponseByQuestionAndResponseAndModelVersionAndForSubdiagnosis(q, r,
                 predictionModel.modelVersion, predictionModel.forSubdiagnosis)

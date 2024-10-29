@@ -35,6 +35,7 @@ class ConsentModuleTest {
     fun setup() {
         repo = mock()
         consentModule = ConsentModule(repo, clock)
+        // consentModule = ConsentModule(repo)
         initData()
     }
 

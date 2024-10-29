@@ -1,14 +1,14 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  kotlin("jvm") version "1.3.61"
+  kotlin("jvm") version "2.0.20"
 }
 
 repositories {
   gradlePluginPortal()
   mavenLocal()
   mavenCentral()
-  maven("http://nexus.drift.inera.se/repository/it-public/")
+  maven("https://nexus.drift.inera.se/repository/it-public/")
 }
 
 dependencies {
@@ -17,10 +17,10 @@ dependencies {
 
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.kotlinOptions {
-  jvmTarget = "11"
+  jvmTarget = "21"
 }
 
 val compileTestKotlin: KotlinCompile by tasks
 compileTestKotlin.kotlinOptions {
-  jvmTarget = "11"
+  jvmTarget = "21"
 }

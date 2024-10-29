@@ -1,6 +1,6 @@
 package se.inera.intyg.srs.vo
 
-import org.junit.Before
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable
@@ -20,7 +20,7 @@ class RAdapterTest () {
     val resourceLoader:ResourceLoader = DefaultResourceLoader()
     val modelFileService:ModelFileUpdateService = ModelFileUpdateService(resourceLoader, "classpath:/models_3_0/*")
 
-    @Before
+    @BeforeEach
     fun setup() {
         modelFileService.update()
     }

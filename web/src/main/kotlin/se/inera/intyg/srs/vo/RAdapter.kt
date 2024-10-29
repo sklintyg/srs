@@ -16,7 +16,7 @@ import java.time.LocalDateTime
 import java.util.*
 import java.util.concurrent.locks.Lock
 import java.util.concurrent.locks.ReentrantLock
-import javax.annotation.PreDestroy
+import jakarta.annotation.PreDestroy
 import kotlin.concurrent.withLock
 
 @Configuration
@@ -278,6 +278,6 @@ open class RAdapter(val modelService: ModelFileUpdateService,
         return Pair(null, Diagnosprediktionstatus.PREDIKTIONSMODELL_SAKNAS)
     }
 
-    private fun cleanDiagnosisCode(diagnosisId: String): String = diagnosisId.toUpperCase(Locale.ENGLISH).replace(".", "")
+    private fun cleanDiagnosisCode(diagnosisId: String): String = diagnosisId.uppercase(Locale.ENGLISH).replace(".", "")
 
 }

@@ -2,7 +2,7 @@ package se.inera.intyg.srs.measures
 
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
-import org.junit.Assert.assertEquals
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import se.inera.intyg.clinicalprocess.healthcond.srs.types.v1.Atgardsrekommendationstatus.*

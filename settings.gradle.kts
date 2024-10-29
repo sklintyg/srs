@@ -1,24 +1,22 @@
-import se.inera.intyg.srs.build.Config.Dependencies
-
 pluginManagement {
+    val kotlinVersion: String by settings
+    val springDependencyManagementVersion: String by settings
+    val springBootVersion: String by settings
     repositories {
-        maven("http://nexus.drift.inera.se/repository/it-public/")
+        maven("https://nexus.drift.inera.se/repository/it-public/")
         gradlePluginPortal()
         mavenLocal()
     }
     resolutionStrategy {
         eachPlugin {
             if (requested.id.id.startsWith("org.jetbrains.kotlin.")) {
-                useVersion(Dependencies.kotlinVersion)
-            }
-            if (requested.id.id.startsWith("se.inera.intyg.plugin.common")) {
-                useVersion(Dependencies.intygPluginVersion)
+                useVersion(kotlinVersion)
             }
             if (requested.id.id.startsWith("io.spring.dependency-management")) {
-                useVersion(Dependencies.springDependencyManagementVersion)
+                useVersion(springDependencyManagementVersion)
             }
             if (requested.id.id.startsWith("org.springframework.boot")) {
-                useVersion(Dependencies.springBootVersion)
+                useVersion(springBootVersion)
             }
         }
     }

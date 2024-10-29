@@ -10,6 +10,14 @@
         To get a consistent logging config during all tests we could point to this config in application-test.properties.
          -->
     <include resource="org/springframework/boot/logging/logback/base.xml" />
-    <logger name="se.inera.intyg.srs" level="TRACE" />
-    <logger name="org.springframework" level="INFO"/>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <include resource="co/elastic/logging/logback/boot/ecs-console-appender.xml" />
+    
+    <logger name="org.springframework" level="INFO" additivity="false">
+        <appender-ref ref="ECS_JSON_CONSOLE"/>
+    </logger>
+
+     <logger name="se.inera.intyg.srs" level="TRACE" additivity="false">
+        <appender-ref ref="ECS_JSON_CONSOLE"/>
+    </logger>
 </configuration>
