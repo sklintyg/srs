@@ -26,4 +26,8 @@ LABEL se.inera.from_image=${from_image}         \
 ENV APP_NAME=${artifact}
 ENV SCRIPT_DEBUG=true
 
-RUN cp /web/build/libs/*.war /deployments/ && rm /deployments/*-plain.war
+# Copy all .war files to a  directory
+ADD /web/build/libs/*.war /deployments/
+
+# Move only the .war files that do not end with -plain.war to /deployments/
+RUN rm -f /deployments/*-plain.war
