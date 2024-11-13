@@ -347,7 +347,7 @@
     </changeSet>
 
     <changeSet id="18" author="ch">
-        <validCheckSum>9:f86689b8b53a3de5d770560b9b278820</validCheckSum>
+        <validCheckSum>8:2cc9d04e9a521881537c70f41dd02047</validCheckSum>
         <dropForeignKeyConstraint baseTableName="measure_priority" constraintName="priority_measure_fk" />
 
         <sql dbms="!h2">ALTER TABLE measure MODIFY id BIGINT AUTO_INCREMENT</sql>
@@ -362,7 +362,7 @@
     </changeSet>
 
     <changeSet id="19" author="ch">
-        <validCheckSum>9:c30cf2d067116d95fc2b190ecb34ede5</validCheckSum>
+        <validCheckSum>8:63bb92bc5c9e0bc206b1d00feced029b</validCheckSum>
         <dropForeignKeyConstraint baseTableName="prediction_priority" constraintName="priority_diagnosis_fk" />
 
         <dropForeignKeyConstraint baseTableName="prediction_priority" constraintName="priority_question_fk" />
