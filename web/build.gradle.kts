@@ -35,6 +35,9 @@ dependencies {
 
     implementation("org.springframework.boot:spring-boot-starter-logging")
     implementation("co.elastic.logging:logback-ecs-encoder:1.6.0")
+    implementation("net.logstash.logback:logstash-logback-encoder:7.2")
+    implementation("org.apache.cxf:cxf-spring-boot-starter-jaxrs:3.4.5")
+    implementation("org.apache.cxf:cxf-rt-features-logging:3.4.5")
     implementation("org.slf4j:slf4j-api")
 
     runtimeOnly("com.h2database:h2")
